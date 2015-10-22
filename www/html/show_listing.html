@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  </head>
+  <body>
+    <div data-role="page" id="show_listing" data-cache="never" data-theme="a">
+      <div data-role="panel" id="navpanel" data-theme="d" data-display="overlay" data-position="left">
+        <div data-role="controlgroup" data-corners="false">
+    	    <ul data-role='listview' data-icon="false" data-theme='e' class='mainMenu'></ul>
+        </div>
+      </div>    
+      <div data-role="header" data-theme="d">
+        <div id='px-page-title' class='pg-title center-wrapper'>View Pixi</div>
+	<a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
+	<a href='#' data-theme="app-loc" id='add-pixi-link'><img src='../img/rsz_camera-icon_blue.png'></a>
+	<div id='show-list-hdr'></div>
+      </div>
+      <div class="app-content" data-theme="a" data-role="content">
+        <div id='list_title'></div>
+        <div id='seller-name'></div>
+	<div id="form_errors" style="display:none" class="error"></div>
+	<div id='post_form'><form id="post-doc" method="post" data-ajax="false">
+	  <div id='seller-post' class='clear-all'>
+	    <table>
+	      <tr><td class='cal-size'>
+	          <div data-role="fieldcontain" class="ui-hide-label">
+		    <input name="content" id="content" class='slide-menu' placeholder="Type message to seller..." data-theme='a' required />
+	          </div></td>
+	          <td><input type='submit' value='Send' data-theme='b' data-inline='true' id='contact-btn' data-mini='true'></td>
+	      </tr>
+	    </table>
+	  </div>
+	  <input type="hidden" name="user_id" id="user_id" />
+	  <input type="hidden" name="recipient_id" id="recipient_id" />
+	  <input type="hidden" name="pixi_id" id="pixi_id" />
+	</form></div>
+
+        <div id='px-pix' class='mtop mbot'>
+	  <div class="bxslider"></div>
+	</div>
+	<div class="mtop mbot" id='pixi-details'></div>
+	<div class="mtop mbot center-wrapper" id='edit-pixi-details'>
+	  <a href='#' id='edit-pixi-btn' data-role='button' data-inline='true' data-theme='b' data-mini='true' style='display:none'>Edit</a>
+	  <a href='#' id='cancel-pixi-btn' data-role='button' data-inline='true' data-theme='b' style='display:none'>Cancel</a>
+	  <a href='#' id='remove-pixi-btn' data-role='button' data-inline='true' data-theme='b' style='display:none'>Remove</a>
+	  <a href='#' id='submit-pixi-btn' data-role='button' data-inline='true' data-theme='d' style='display:none'>Done!</a>
+	</div>
+	<div class="mtop mbot" id='pixi-footer-details'></div>
+      </div>
+    </div>
+  </body>
+</html>
