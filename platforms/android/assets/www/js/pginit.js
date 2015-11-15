@@ -62,14 +62,14 @@ var App = {
          });
       },
        "local": {
-         "URL":  "http://192.168.1.7:3000/",
+         "URL":  "http://192.168.1.7:3001/",
          // perform unauthenticated query
          "query": function (action, method, data, callback) { 
 	   console.log("[local.query]");
            App.servers.query(App.servers.public.URL+action, method, {"data": data}, callback); }
        },
        "public": {
-         "URL":  "http://192.168.1.7:3000/",
+         "URL":  "http://192.168.1.7:3001/",
          // perform unauthenticated query
          "query": function (action, method, data, callback) { 
 	   console.log("[public.query]");

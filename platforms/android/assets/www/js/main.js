@@ -138,30 +138,6 @@ $(document).ajaxError( function(e, xhr, options){
       window.location.replace('/users/sign_in');
 });	
 
-// process slider
-function load_slider(cntl) {
-
-  // picture slider
-  if( $('.bxslider').length > 0 ) {
-    console.log('in bxslider');
-
-    $('.bxslider').bxSlider({
-      slideMargin: 10,
-      mode: 'fade'
-    });
-
-    // vertically center align images in slider
-    $('.bxslider-inner').each(function(){
-      var height_parent = $(this).css('height').replace('px', '') * 1;
-      var height_child = $('div', $(this)).css('height').replace('px', '') * 1;
-      var padding_top_child = $('div', $(this)).css('padding-top').replace('px', '') * 1;
-      var padding_bottom_child = $('div', $(this)).css('padding-bottom').replace('px', '') * 1;
-      var top_margin = (height_parent - (height_child + padding_top_child + padding_bottom_child)) / 2;
-      $(this).html('<div style="height: ' + top_margin + 'px; width: 100%;"></div>' + $(this).html());
-    });
-  }
-}
-
 $(document).ready(function(){
 
   console.log('doc ready');
@@ -419,7 +395,7 @@ function resetBoard() {
       newUrl = url + '/listings/category.json' + token +  '&loc=' + loc + '&cid=' + cid; 
     }
     else {
-      newUrl = url + '/listings/location.json' + token + '&loc=' + loc;
+      newUrl = url + '/listings/local.json' + token + '&loc=' + loc;
     }
   }
   else {

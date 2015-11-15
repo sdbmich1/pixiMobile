@@ -1,7 +1,7 @@
 // initialize var
 //var url = 'http://pixiboard.com';
 //var url = 'http://10.0.2.2:3000';
-var url = 'http://192.168.1.7:3000';
+var url = 'http://192.168.1.7:3001';
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -10,6 +10,7 @@ var listPage = '../html/show_listing.html';
 var homePage = "../html/listings.html";
 var catPath = pxPath + 'category.json' ;
 var locPath = pxPath + 'local.json' ;
+var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType,
   addr, postType = 'recv';
 
@@ -124,6 +125,11 @@ $(document).on('pageinit', '#formapp', function() {
   $("#category_id").trigger("change"); // update item
   pixPopup("#popupPix");  // load popup page
 });
+
+// get user id
+function getUserID() {
+  return window.localStorage["user_id"];
+}
 
 // build image string to display pix 
 function getPixiPic(pic, style, fld) {
@@ -379,7 +385,7 @@ $(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
   resetActiveClass($this);
 
   // clear container
-  $('#mxboard').html('');
+  $('#pixi-list').html('').listview('refresh');
 
   // load post page
   loadListPage(postType, 'post');
@@ -387,7 +393,7 @@ $(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
 });
 
 // process list btn click
-$(document).on('click', '#active-btn, #draft-btn, #sold-btn, #sent-inv-btn, #recv-inv-btn', function(e) {
+$(document).on('click', plist, function(e) {
   var $this = $(this);
 
   // reset active class
@@ -781,11 +787,15 @@ function processLogin(res, resFlg) {
 
       // set user
       usr = res.user;
+      console.log('user id = '+ usr.id);
+      console.log('user pixi count = '+ usr.pixi_count);
 
       //store credentials on device
       window.localStorage["email"] = email;
       window.localStorage["password"] = pwd;
       window.localStorage["token"] = res.token;
+      window.localStorage["user_id"] = usr.id;
+      window.localStorage["pixi_count"] = usr.pixi_count;
 
       // go to main board
       goToUrl("./html/listings.html", false);
@@ -926,6 +936,22 @@ $(document).on("pageinit", "#txn-form", function(event) {
   loadData(invUrl, 'txn'); 
 });
 
+// process click on invoice item
+$(document).on('click', ".conv-item", function(e) {
+  e.preventDefault();
+
+  pid = $(this).attr("data-conv-id");
+  console.log('pid = ' + pid);
+
+  // clear container
+  if ( pid !== undefined && pid != '' ) {
+    $('#pixi-list').html('');
+
+    var convUrl = url + '/conversations/' + pid + '.json' + token;
+    loadData(convUrl, 'conv'); 
+  }
+});
+
 // parameter for show listing page
 $(document).on("pageinit", "#show_listing, #comment-page", function(event) {
   var pixiUrl = pxPath + pid + '.json' + token;
@@ -944,6 +970,7 @@ $(document).on("pageinit", "#signup", function(event) {
 // parameter for show listing page
 $(document).on("pageinit", "#show-invoice", function(event) {
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+  console.log('pageinit show invoice');
   getInvoice();
 });
 
@@ -1014,7 +1041,7 @@ var menu = [
   { title: 'Pay Bill', href: '../html/invoice.html', icon: '../img/rsz_pixipay_wings_blue.png', id: 'pay-menu-btn' },
   { title: 'MY STUFF', href: '#', icon: '', id: 'menu-divider' },
   { title: 'My Pixis', href: '../html/pixis.html', icon: '../img/pixi_wings_blue.png', id: 'pixis-menu-btn' },
-  { title: 'My Posts', href: '../html/posts.html', icon: '../img/09-chat-2.png', id: 'posts-menu-btn' },
+  { title: 'My Messages', href: '../html/posts.html', icon: '../img/09-chat-2.png', id: 'posts-menu-btn' },
   { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Settings', href: '../html/user_form.html', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
@@ -1055,7 +1082,7 @@ $(document).on("pagebeforeshow", function(event) {
 
       // add post count if posts menu item
       if(menu[i].id == 'posts-menu-btn') {
-        item_str = '<span class="ui-li-count">' + usr.unread_count + '</span>';
+        item_str = '<div id="postMenu" class="ui-li-count">' + usr.unread_count + '</div>';
       }
     }
 
@@ -1109,4 +1136,13 @@ function curDate() {
         ((''+day).length<2 ? '0' : '') + day + '/' + d.getFullYear(); 
 
   return output;
+}
+
+// builds list page
+function build_list(cls, localUrl, pic, hdr, txt, cnt) {
+  cnt = cnt || "";
+  var str = "<li class='plist'>" + '<a href="#" ' + localUrl + ' class="pending_title ' + cls + '" data-ajax="false">'  
+    + pic + '<div class="pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
+    + cnt + '</li>';
+  return str;
 }
