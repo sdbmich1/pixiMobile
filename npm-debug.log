@@ -1,0 +1,52 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   '/check_reqs' ]
+2 info using npm@1.3.2
+3 info using node@v0.10.13
+4 verbose node symlink C:\Program Files (x86)\nodejs\\node.exe
+5 verbose cache add [ '/check_reqs', null ]
+6 verbose cache add name=undefined spec="/check_reqs" args=["/check_reqs",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: '/check_reqs',
+7 verbose parsed url   path: '/check_reqs',
+7 verbose parsed url   href: '/check_reqs' }
+8 silly lockFile 20153458-check-reqs /check_reqs
+9 verbose lock /check_reqs C:\Users\Sean\AppData\Roaming\npm-cache\20153458-check-reqs.lock
+10 info maybeGithub Attempting /check_reqs from git://github.com//check_reqs
+11 silly lockFile 2ef4c94c-git-github-com-check-reqs git://github.com//check_reqs
+12 verbose lock git://github.com//check_reqs C:\Users\Sean\AppData\Roaming\npm-cache\2ef4c94c-git-github-com-check-reqs.lock
+13 verbose addRemoteGit [ 'git://github.com//check_reqs', 'master' ]
+14 silly lockFile 2ef4c94c-git-github-com-check-reqs git://github.com//check_reqs
+15 silly lockFile 2ef4c94c-git-github-com-check-reqs git://github.com//check_reqs
+16 info maybeGithub Attempting /check_reqs from git+ssh://git@github.com:/check_reqs
+17 silly lockFile 74bba5d0-it-ssh-git-github-com-check-reqs git+ssh://git@github.com:/check_reqs
+18 verbose lock git+ssh://git@github.com:/check_reqs C:\Users\Sean\AppData\Roaming\npm-cache\74bba5d0-it-ssh-git-github-com-check-reqs.lock
+19 verbose addRemoteGit [ 'ssh://git@github.com:/check_reqs', 'master' ]
+20 silly lockFile 803929a8-ssh-git-github-com-check-reqs ssh://git@github.com:/check_reqs
+21 silly lockFile 20153458-check-reqs /check_reqs
+22 silly lockFile 20153458-check-reqs /check_reqs
+23 error addLocal Could not install /check_reqs
+24 error Error: ENOENT, stat 'c:\check_reqs'
+25 error If you need help, you may report this log at:
+25 error     <http://github.com/isaacs/npm/issues>
+25 error or email it to:
+25 error     <npm-@googlegroups.com>
+26 error System Windows_NT 6.2.9200
+27 error command "C:\\Program Files (x86)\\nodejs\\\\node.exe" "C:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "/check_reqs"
+28 error cwd c:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile
+29 error node -v v0.10.13
+30 error npm -v 1.3.2
+31 error path c:\check_reqs
+32 error code ENOENT
+33 error errno 34
+34 verbose exit [ 34, true ]

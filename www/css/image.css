@@ -25,7 +25,7 @@
 .item { 
   border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
   float: left; 
-  margin: 5px; }
+  margin: 5px; margin-left: 10px!important;}
 
 .pic-frame { 
   border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
@@ -98,7 +98,7 @@
   margin: 10px 5px 10px 0;
 }
 
-img.usr-sm-photo {
+img.tiny, img.usr-sm-photo {
   height: 30px!important;
   width: 30px!important;
   vertical-align: middle;
@@ -130,6 +130,53 @@ img.usr-med-photo {
   vertical-align: middle!important;
 }
 
-img.tiny {
-  @extend .usr-sm-photo;
+.frame-container {
+  position: relative;
+  height: 25%;
+  width:100%!important; 
+  background-size: 100% 100%;
+  background-size: cover!important;
+  -moz-background-size: cover!important;
+  border-radius: 3px;
 }
+
+.item-container {
+  background: url("../img/gm_grey.jpg") no-repeat;
+  position: relative;
+  height: 120px;
+  width:100%!important; 
+  background-size: 100% 100%;
+  background-size: cover!important;
+  -moz-background-size: cover!important;
+}
+
+.featured-container {
+  background: url("../img/black.png") no-repeat;
+  height: 150px;
+  position: relative;
+  width:100%!important; 
+  background-size: 100% 100%;
+  background-size: cover!important;
+  -moz-background-size: cover!important;
+  border-radius: 3px;
+}
+
+.featured-container > .bx-wrapper {
+  max-width: 100%!important;
+}
+
+.featured-container > .bx-wrapper > .bx-viewport {
+    min-height: 180px;
+    border: none!important;
+    box-shadow: none!important;
+    background: transparent!important;
+  }
+
+#item-pix > .bx-wrapper {
+  .bx-viewport {
+    border: none!important;
+    box-shadow: none!important;
+    background: transparent!important;
+  }
+}
+

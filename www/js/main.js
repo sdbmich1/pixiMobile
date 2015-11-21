@@ -166,6 +166,7 @@ $(document).ready(function(){
 // reload masonry on ajax calls to swap data
 $(document).on("click", ".pixi-cat", function(showElem){
   var cid = $(this).attr("data-cat-id");
+  console.log('category id = ' + cid);
 
   // toggle value
   $('#category_id').val(cid);
@@ -176,11 +177,12 @@ $(document).on("click", ".pixi-cat", function(showElem){
   }
 
   // process ajax call
-  resetBoard();
+  resetBoard(cid);
 });
 
 // reload board
 function reload_board(element) {
+  console.log('in reload board');
   var $container = $('#px-container');
 
   $container.imagesLoaded( function(){
@@ -230,9 +232,13 @@ function load_masonry(nav, nxt, item, sz){
     $container.imagesLoaded( function(){
       $container.masonry({
         itemSelector : '.item',
-	gutter : 1,
+	gutter : 10,
 	isFitWidth: true,
-        columnWidth : sz
+        columnWidth : sz,
+	layoutPriorities : {
+	  upperPosition: 1,
+	  shelfOrder: 1
+        }
       });
     });
 
@@ -244,10 +250,10 @@ function load_masonry(nav, nxt, item, sz){
 // check for category board
 $(document).on("click", "#cat-link", function(){
   var loc = $('#site_id').val(); // grab the selected location 
-  var url = '/categories.json?loc=' + loc;
+  var newUrl = url + '/categories.json' + token + '&loc=' + loc;
 
   // process ajax call
-  processUrl(url);
+  loadData(newUrl, 'cat');
 });	
 
 
@@ -380,14 +386,15 @@ $(document).on("click", "#recent-link", function() {
 });
 
 // reset board pixi based on location
-function resetBoard() {
+function resetBoard(cid) {
   var loc = $('#site_id').val(); // grab the selected location 
-  var cid = $('#category_id').val(); // grab the selected category 
+  cid = cid || $('#category_id').val(); // grab the selected category 
   var newUrl;
 
   // set search form fields
   $('#cid').val(cid);
   $('#loc').val(loc);
+  console.log('resetBoard category id = ' + cid);
 
   // check location
   if (loc > 0) {
@@ -410,8 +417,9 @@ function resetBoard() {
   console.log('resetBoard url = ' + newUrl);
 
   // refresh the page
-  $('#px-container').empty();
+  $('#pxboard').empty();
   resetScroll(newUrl);
+  reload_board();
 }
 
 $(function() {
@@ -431,6 +439,8 @@ $(document).on('click', '#home-link', function(e) {
   $('#site_id').val('').prop('selectedIndex',0);
   $('#category_id').val('').prop('selectedIndex',0);
   $('#search').val('');
+  reset_top('#px-search', '#pixi-loc, #cat-top, #px-search');
+  console.log('in home-link reset');
 
   // reset board
   resetBoard();
@@ -471,7 +481,7 @@ function resetScroll(px_url) {
   });
 
   // initialize infinite scroll
-  load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
+  //load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
 }
 
 // return masonry item size
@@ -525,3 +535,12 @@ $(window).scroll(function(e) {
     }
   }
 });
+
+// check for category board
+function set_home_location(loc){
+  var newUrl = url + '/pages/location_name.json?loc_name=' + loc;
+  console.log('set home location url = ' + newUrl);
+
+  // process ajax call
+  loadData(newUrl, 'home');
+}

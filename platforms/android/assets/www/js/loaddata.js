@@ -24,6 +24,9 @@ function loadData(listUrl, dType, params) {
 
       // load data based on display type
       switch (dType) {
+      case 'home':
+        set_home_data(data, dFlg);
+	break;
       case 'board':
         loadBoard(data, dFlg); 
 	break;
@@ -84,6 +87,15 @@ function loadData(listUrl, dType, params) {
     }
   });
   return result;
+}
+
+function set_home_data(data, dFlg) {
+  if (data !== undefined) {
+    console.log('home region = ' + data.id);
+    window.localStorage['home_site_id'] = data.id;
+    window.localStorage['home_site_name'] = data.name;
+    window.localStorage['home_image'] = data.photo_url;
+  }
 }
 
 // process results
@@ -248,7 +260,7 @@ function loadUserPage(data, resFlg) {
 function showAddress(data, resFlg, eFlg) {
   var addr, city, state, zip, hphone, mphone;
 
-  if (data !== undefined) {
+  if (data !== undefined && data.contacts.length > 0) {
     addr = data.contacts[0].address || '';
     city = data.contacts[0].city || '';
     state = data.contacts[0].state || '';
@@ -284,7 +296,7 @@ function loadContactPage(data, resFlg) {
   var state='';
 
   if (resFlg) {
-    if (data !== undefined) {
+    if (data !== undefined && data.contacts.length > 0) {
       state = data.contacts[0].state || '';
     }
 
@@ -296,16 +308,27 @@ function loadContactPage(data, resFlg) {
     $('#state').val(state);
   }
   else {
+    $('#usr-prof').append('No contact info found').trigger('create');
     console.log('Contact page load failed');
     PGproxy.navigator.notification.alert("Page load failed", function() {}, 'View Contact', 'Done');
   }
 }
 
+// load cover image
+function load_cover() {
+  var cover = window.localStorage['home_image'];
+  var px_str = '<div class="item-container" style="background: url(' + cover + ') no-repeat;"><div class="home-title-grp">'
+   + '<span class="mleft20 mtop small-title-white">' + window.localStorage['home_site_name'] + '</span></div></div>';
+  $('#board-top').append(px_str).trigger("create");
+}
+
 // load board if resFlg else return not found
 function loadBoard(data, resFlg) {
-  var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 });
+  var $container = $('#px-container'); 
   var item_str = '';
   var post_dt, localUrl;
+
+  load_cover();
 
   if(resFlg) {
     usr = data.user;  // store user
@@ -315,24 +338,24 @@ function loadBoard(data, resFlg) {
     $.each(data, function(index, item) {
 
         // build pixi item string
-	post_dt = $.timeago(item.updated_at);
+	var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + item.price : '$0';
 	localUrl = 'data-pixi-id="' + item.pixi_id + '"';
 
         item_str += '<div class="item"><div class="center-wrapper">'
 	  + '<a href="#" ' + localUrl + ' class="bd-item" data-ajax="false">'  
-	  + getPixiPic(item.pictures[0].photo_url, 'height:115px; width:115px;') + '</a>'
-	  + '<div class="sm-top profile-txt mbdescr">' + item.nice_title + '</div>'
+	  + getPixiPic(item.pictures[0].photo_url, 'height:135px; width:135px;') + '</a>'
+	  + '<div class="sm-top profile-txt mbdescr">' + item.title + '<br /><span class="mgdescr">' + item.site_name + '</span></div>'
 	  + '<div class="sm-top mgdescr">' + '<div class="item-cat pixi-grey-bkgnd">' 
-	  + '<a href="' + catPath + token + '&cid=' + item.category_id + '"' + ' class="pixi-cat"' + ' data-cat-id=' + item.category_id + '>'
-	  + item.category_name + '</a></div><div class="item-dt pixi-grey-bkgnd">' + post_dt + '</div></div></div></div>';
+	  + '<a href="#" class="pixi-cat"' + ' data-cat-id=' + item.category_id + '>'
+	  + item.category_name + '</a></div><div class="item-dt pixi-grey-bkgnd">' + prc + '</div></div></div></div>';
     });
 
-    // build masonry blocks for board
-    var $elem = $(item_str).css({ opacity: 0 });
-    $container.imagesLoaded(function(){
-      $elem.animate({ opacity: 1 });
-      $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
-    });
+    // attach to div
+    $('#pxboard').append(item_str);
+
+    // initialize infinite scroll
+    load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
+    // reload_items(item_str, $container); 
 
     // load categories
     if (data.categories !== undefined) {
@@ -350,6 +373,15 @@ function loadBoard(data, resFlg) {
 
   // turn off spinner
   uiLoading(false);
+}
+
+// build masonry blocks for board
+function reload_items(item_str, $container) {
+    var $elem = $(item_str).css({ opacity: 0 });
+    $container.imagesLoaded(function(){
+      $elem.animate({ opacity: 1 });
+      $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
+    });
 }
 
 // load year dropdown

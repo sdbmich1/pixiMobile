@@ -1,7 +1,7 @@
 // initialize var
-//var url = 'http://pixiboard.com';
-//var url = 'http://10.0.2.2:3000';
-var url = 'http://192.168.1.7:3001';
+var url = 'http://54.215.187.243';
+//var url = 'http://staging.pixiboard.com';
+//var url = 'http://192.168.1.7:3001';
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -9,7 +9,7 @@ var pxPath = listPath + '/';
 var listPage = '../html/show_listing.html';
 var homePage = "../html/listings.html";
 var catPath = pxPath + 'category.json' ;
-var locPath = pxPath + 'local.json' ;
+var locPath = pxPath + 'local.json';
 var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType,
   addr, postType = 'recv';
@@ -52,13 +52,14 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set token string for authentication
   token = '?auth_token=' + window.localStorage["token"];
-  var listUrl = listPath + '.json' + token;
+  //var listUrl = listPath + '.json' + token;
+  var listUrl = locPath + token + '&loc=' + window.localStorage["home_site_id"];
+
+  // set site id
+  $('#site_id').val(window.localStorage["home_site_id"]);
 
   // load main board
   loadData(listUrl, 'board');
-
-  // initialize infinite scroll
-  // load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
 });
 
 // load pixi form data
@@ -133,7 +134,8 @@ function getUserID() {
 
 // build image string to display pix 
 function getPixiPic(pic, style, fld) {
-  var img_str = '<img style="' + style + '" src="' + url + pic + '"';
+  var pstr = pic; //(url.match(/^pixiboard/)) ? pic : url + pic;
+  var img_str = '<img style="' + style + '" src="' + pstr + '"';
 
   fld = fld || '';  // set fld id
   if(fld.length > 0) {
@@ -491,7 +493,8 @@ $(document).on('click', '#search-nav', function(e) {
 });
 
 // toggle menu state
-$(document).on('click', '#home-link', function(e) {
+$(document).on('click', '#home-link1', function(e) {
+  console.log('in home-link click');
   reset_top('#px-search', '#pixi-loc, #cat-top, #px-search');
 });
 

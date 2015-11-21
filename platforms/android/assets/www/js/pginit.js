@@ -15,12 +15,12 @@ var App = {
     	  var jqmReadyDeferred    = $.Deferred();
  
           if (App.testing_on_desktop) {
-            console.log("PhoneGap finished loading");
+            console.log("PhoneGap finished loading on desktop");
             _onDeviceReady();
 	    deviceReadyDeferred.resolve();
           } else {
             document.addEventListener("deviceReady", function () {
-                console.log("PhoneGap finished loading");
+                console.log("PhoneGap finished loading on mobile");
                 _onDeviceReady();
 		deviceReadyDeferred.resolve();
             }, false);
@@ -47,6 +47,7 @@ var App = {
         function initPages () {
 	  console.log("[initPages]");
 	  localStorage.clear();
+	  getLocation(true);
 	  checkPreAuth();
         }
     },

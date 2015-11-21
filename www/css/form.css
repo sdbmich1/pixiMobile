@@ -113,3 +113,11 @@ form {margin-bottom: 5px!important;}
 .wdth50 { width: 47px; }
 .width60 { width: 60px; }
 .width120 { width: 120px; }
+
+.home-title-grp {
+  text-shadow: 1px 1px 1px #000;
+  color: #ffffff;
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+}
