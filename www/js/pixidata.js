@@ -193,7 +193,6 @@ function show_arrow(style) {
 
 function pixi_details(item) {
   var str = '';
-  console.log('in pixi details');
 
   if(item.price !== undefined) {
     var prc = parseFloat(item.price).toFixed(2);
