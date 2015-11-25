@@ -183,11 +183,12 @@ $(document).on("click", ".pixi-cat", function(showElem){
 // reload board
 function reload_board(element) {
   console.log('in reload board');
-  var $container = $('#px-container');
+  var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 });
 
   $container.imagesLoaded( function(){
     $container.masonry('reload');
   });
+  isScrolled = false;
 }
 
 // initialize infinite scroll
@@ -204,6 +205,7 @@ function initScroll(cntr, nav, nxt, item) {
       extraScrollPx: 150,
       bufferPx : 100,
       localMode    : true,
+      debug: true,
       loading: {
         img:  'http://i.imgur.com/6RMhx.gif',
 	msgText: "<em>Loading...</em>"
@@ -389,41 +391,40 @@ $(document).on("click", "#recent-link", function() {
 function resetBoard(cid) {
   var loc = $('#site_id').val(); // grab the selected location 
   cid = cid || $('#category_id').val(); // grab the selected category 
-  var newUrl;
+  nextPg = 1;
 
   // set search form fields
   $('#cid').val(cid);
   $('#loc').val(loc);
-  console.log('resetBoard category id = ' + cid);
 
   // check location
   if (loc > 0) {
     if (cid > 0) {
-      newUrl = url + '/listings/category.json' + token +  '&loc=' + loc + '&cid=' + cid; 
+      homeUrl = url + '/listings/category.json' + token +  '&loc=' + loc + '&cid=' + cid; 
     }
     else {
-      newUrl = url + '/listings/local.json' + token + '&loc=' + loc;
+      homeUrl = url + '/listings/local.json' + token + '&loc=' + loc;
     }
   }
   else {
     if (cid > 0) {
-      newUrl = url + '/listings/category.json' + token + '&cid=' + cid; 
+      homeUrl = url + '/listings/category.json' + token + '&cid=' + cid; 
     }
     else {
-      newUrl = url + '/listings.json' + token;
+      homeUrl = url + '/listings.json' + token;
     }
   }
 
-  console.log('resetBoard url = ' + newUrl);
-
   // refresh the page
-  $('#pxboard').empty();
-  resetScroll(newUrl);
-  reload_board();
+  $(".item").remove();
+  $('#pxboard').html('');
+
+  // refresh board
+  reload_items(renderBoard(homeUrl, nextPg, true));
 }
 
+// Fix input element click problem
 $(function() {
-  // Fix input element click problem
   $('.dropdown input, .dropdown label, .dropdown-menu input, .dropdown-menu select').click(function(e) {
     e.stopPropagation();
   });
@@ -481,7 +482,7 @@ function resetScroll(px_url) {
   });
 
   // initialize infinite scroll
-  //load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
+  load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
 }
 
 // return masonry item size

@@ -11,6 +11,9 @@
     <feature name="Geolocation">
         <param name="android-package" value="org.apache.cordova.GeoBroker" />
     </feature>
+    <feature name="Notification">
+        <param name="android-package" value="org.apache.cordova.Notification" />
+    </feature>
     <preference name="phonegap-version" value="3.6.3" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />

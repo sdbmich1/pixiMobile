@@ -11,8 +11,9 @@ var homePage = "../html/listings.html";
 var catPath = pxPath + 'category.json' ;
 var locPath = pxPath + 'local.json';
 var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
+var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType,
-  addr, postType = 'recv';
+  addr, homeUrl, postType = 'recv';
 
 // ajax setup
 $(function(){
@@ -43,23 +44,43 @@ $(document).on('pageinit', '#mypixis, #myinv', function() {
   loadListPage(myPixiPage, dType); 
 });
 
+// process next page
+$(document).on('click', '.nxt-pg', function(e) {
+  renderBoard(homeUrl, nextPg);
+});
+
+function renderBoard(hUrl, pg, rFlg) {
+  rFlg = rFlg || false;
+  nextPg++;  // increment page counter
+  var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
+  console.log('in render board' + pgName);
+  $('a.nxt-pg').attr('href', pgName);
+  var str = (pg == 1 && !rFlg) ? 'board' : 'reload';
+  return loadData(hUrl + "&page=" + pg, str);
+}
+
 // load initial board
 $(document).on('pageinit', '#listapp', function() {
   pxPath = listPath + '/';  // reset pxPath
+  console.log('in listapp pageinit');
 
   // set time ago format
   $("time.timeago").timeago();
 
   // set token string for authentication
   token = '?auth_token=' + window.localStorage["token"];
-  //var listUrl = listPath + '.json' + token;
-  var listUrl = locPath + token + '&loc=' + window.localStorage["home_site_id"];
+  homeUrl = locPath + token + '&loc=' + window.localStorage["home_site_id"];
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
 
   // load main board
-  loadData(listUrl, 'board');
+  renderBoard(homeUrl, nextPg);
+});
+
+// load initial board
+$(document).on('pageshow', '#listapp', function(event, ui) {
+   load_cover();
 });
 
 // load pixi form data
@@ -1038,8 +1059,14 @@ $(document).on("click", ".sl-menu", function(e) {
   }
 });
 
+$(document).on("click", "#home-menu-btn", function(e) {
+  var activePage = $.mobile.activePage.attr("id");
+  nextPg = 1;
+    goToUrl(homePage, true);
+});
+
 var menu = [
-  { title: 'Home', href: homePage, icon: '../img/home_button_blue.png', id: 'home-menu-btn' },
+  { title: 'Home', href: '#', icon: '../img/home_button_blue.png', id: 'home-menu-btn' },
   { title: 'Send Bill', href: '../html/invoice_form.html', icon: '../img/162-receipt.png', id: 'bill-menu-btn' },
   { title: 'Pay Bill', href: '../html/invoice.html', icon: '../img/rsz_pixipay_wings_blue.png', id: 'pay-menu-btn' },
   { title: 'MY STUFF', href: '#', icon: '', id: 'menu-divider' },
@@ -1148,4 +1175,49 @@ function build_list(cls, localUrl, pic, hdr, txt, cnt) {
     + pic + '<div class="pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
     + cnt + '</li>';
   return str;
+}
+
+var isScrolled = false;
+$(document).on("scrollstop", checkScroll);
+
+function checkScroll() {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp') {
+
+    /* window's scrollTop() */
+    scrolled = $('.app-content').scrollTop(),
+
+    /* viewport */
+    screenHeight = $.mobile.getScreenHeight(),
+
+    /* content div height within active page */
+    contentHeight = $(".ui-content", activePage).outerHeight(),
+
+    /* header's & footer's height within active page (remove -1 for unfixed) */
+    header = $(".ui-header", activePage).outerHeight() - 1,
+    footer = $(".ui-footer", activePage).outerHeight() - 1,
+
+    /* total height to scroll */
+    scrollEnd = contentHeight - screenHeight + header + footer;
+    console.log('scrolled = ' + scrolled);
+    console.log('scrollEnd = ' + scrollEnd);
+    
+    if (scrolled >= scrollEnd && !isScrolled) {
+      addMore(activePage);
+      isScrolled = true;
+    }
+  }
+}
+
+function addMore(page) {
+  /* remove scrollstop event listener */
+  $(document).off("scrollstop");
+
+  setTimeout(function() {
+    renderBoard(homeUrl, nextPg);
+
+    /* re-attach scrollstop */
+    $(document).on("scrollstop", checkScroll);
+    isScrolled = false;
+  }, 500);
 }

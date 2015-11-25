@@ -30,6 +30,10 @@ function loadData(listUrl, dType, params) {
       case 'board':
         loadBoard(data, dFlg); 
 	break;
+      case 'reload':
+        result = load_board_items(data, '', dFlg); 
+	reload_items(result);
+	break;
       case 'list':
 	result = data;
 	break;
@@ -325,37 +329,12 @@ function load_cover() {
 // load board if resFlg else return not found
 function loadBoard(data, resFlg) {
   var $container = $('#px-container'); 
-  var item_str = '';
-  var post_dt, localUrl;
+  var result = '', item_str = '';
 
-  load_cover();
+  //load_cover();
 
   if(resFlg) {
-    usr = data.user;  // store user
-    myPixiPage = 'active';
-
-    // load pixis
-    $.each(data, function(index, item) {
-
-        // build pixi item string
-	var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + item.price : '$0';
-	localUrl = 'data-pixi-id="' + item.pixi_id + '"';
-
-        item_str += '<div class="item"><div class="center-wrapper">'
-	  + '<a href="#" ' + localUrl + ' class="bd-item" data-ajax="false">'  
-	  + getPixiPic(item.pictures[0].photo_url, 'height:135px; width:135px;') + '</a>'
-	  + '<div class="sm-top profile-txt mbdescr">' + item.title + '<br /><span class="mgdescr">' + item.site_name + '</span></div>'
-	  + '<div class="sm-top mgdescr">' + '<div class="item-cat pixi-grey-bkgnd">' 
-	  + '<a href="#" class="pixi-cat"' + ' data-cat-id=' + item.category_id + '>'
-	  + item.category_name + '</a></div><div class="item-dt pixi-grey-bkgnd">' + prc + '</div></div></div></div>';
-    });
-
-    // attach to div
-    $('#pxboard').append(item_str);
-
-    // initialize infinite scroll
-    load_masonry('#px-nav', '#px-nav a.nxt-pg', '#pxboard .item', 1);
-    // reload_items(item_str, $container); 
+    result = load_board_items(data, item_str, resFlg);
 
     // load categories
     if (data.categories !== undefined) {
@@ -373,11 +352,44 @@ function loadBoard(data, resFlg) {
 
   // turn off spinner
   uiLoading(false);
+  return result;
+}
+
+// build board
+function load_board_items(data, str, resFlg) {
+  if (!resFlg) return '';
+
+  var post_dt, localUrl;
+  usr = data.user;  // store user
+  myPixiPage = 'active';
+
+  // load pixis
+  $.each(data, function(index, item) {
+    var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + item.price : '$0';
+    localUrl = 'data-pixi-id="' + item.pixi_id + '"';
+
+    str += '<div class="item"><div class="center-wrapper">'
+      + '<a href="#" ' + localUrl + ' class="bd-item" data-ajax="false">'  
+      + getPixiPic(item.pictures[0].photo_url, 'height:135px; width:135px;') + '</a>'
+      + '<div class="sm-top profile-txt mbdescr">' + item.title + '<br /><span class="mgdescr">' + item.site_name + '</span></div>'
+      + '<div class="sm-top mgdescr">' + '<div class="item-cat pixi-grey-bkgnd">' 
+      + '<a href="#" class="pixi-cat"' + ' data-cat-id=' + item.category_id + '>'
+      + item.category_name + '</a></div><div class="item-dt pixi-grey-bkgnd">' + prc + '</div></div></div></div>';
+  });
+
+  // attach to div
+  $('#pxboard').append(str);
+
+    // initialize infinite scroll
+    load_masonry('#px-nav', '#px-nav a', '#pxboard .item', 1);
+  return str;
 }
 
 // build masonry blocks for board
-function reload_items(item_str, $container) {
-    var $elem = $(item_str).css({ opacity: 0 });
+function reload_items(str) {
+  
+  var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 }); 
+    var $elem = $(str).css({ opacity: 0 });
     $container.imagesLoaded(function(){
       $elem.animate({ opacity: 1 });
       $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
