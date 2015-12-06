@@ -44,11 +44,6 @@ function loadPosts(data, resFlg) {
 
 function send_msg(item) {
   var item_str = '';
-
-  // display post content
-  item_str += " | <span class='timestamp'>Posted " + post_dt + ".</span></div><div class='clear-all'></div><div class=''>"
-    + "<div>RE: <a href='#' data-pixi-id='" + item.pixi_id + "' class='pixi-link'>" + item.pixi_title + "</a></div>"
-    + "<span>" + item.content + "</span>";
 	
   // render post form if user
   if(getUserID() == item.recipient_id) {

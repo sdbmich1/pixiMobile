@@ -1,7 +1,6 @@
 // initialize var
-var url = 'http://54.215.187.243';
-//var url = 'http://staging.pixiboard.com';
-//var url = 'http://192.168.1.7:3001';
+var localPixFlg = false;
+var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -13,7 +12,7 @@ var locPath = pxPath + 'local.json';
 var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
 var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType,
-  addr, homeUrl, postType = 'recv';
+  addr, cover, pgTitle, homeUrl, postType = 'recv';
 
 // ajax setup
 $(function(){
@@ -49,6 +48,7 @@ $(document).on('click', '.nxt-pg', function(e) {
   renderBoard(homeUrl, nextPg);
 });
 
+// used to render main board
 function renderBoard(hUrl, pg, rFlg) {
   rFlg = rFlg || false;
   nextPg++;  // increment page counter
@@ -78,9 +78,16 @@ $(document).on('pageinit', '#listapp', function() {
   renderBoard(homeUrl, nextPg);
 });
 
-// load initial board
-$(document).on('pageshow', '#listapp', function(event, ui) {
-   load_cover();
+// load store page
+$(document).on('pageinit', '#store', function() {
+  pxPath = listPath + '/';  // reset pxPath
+  console.log('in store pageinit');
+
+  // set time ago format
+  $("time.timeago").timeago();
+
+  // load main board
+  renderBoard(homeUrl, nextPg);
 });
 
 // load pixi form data
@@ -155,7 +162,7 @@ function getUserID() {
 
 // build image string to display pix 
 function getPixiPic(pic, style, fld) {
-  var pstr = pic; //(url.match(/^pixiboard/)) ? pic : url + pic;
+  var pstr = (!localPixFlg) ? pic : url + '/' + pic;
   var img_str = '<img style="' + style + '" src="' + pstr + '"';
 
   fld = fld || '';  // set fld id
@@ -628,7 +635,7 @@ $(document).on('click', "#reply-btn", function (e) {
     params.post = { content: txt, user_id: $('#user_id').val(), pixi_id: $('#pixi_id').val(), recipient_id: $('#recipient_id').val() };
 
     // set path
-    var pxUrl = url + '/posts/reply.json' + token;
+    var pxUrl = url + '/conversations/reply.json' + token;
 
     // post data
     postData(pxUrl, params, 'reply');
@@ -1178,14 +1185,28 @@ function build_list(cls, localUrl, pic, hdr, txt, cnt) {
 }
 
 var isScrolled = false;
-$(document).on("scrollstop", checkScroll);
+$(document).on("swipeleft, swiperight", function (e) {
+  $(document).off("scrollstop");
+  console.log('in swipe event');
+  isScrolled = true;
 
+  /* remove scrollstop event listener */
+  setTimeout(function() {
+
+    /* re-attach scrollstop */
+    $(document).on("scrollstop", checkScroll);
+    isScrolled = false;
+  }, 1000);
+
+});
+
+$(document).on("scrollstop", checkScroll);
 function checkScroll() {
   var activePage = $.mobile.activePage.attr("id");
-  if (activePage == 'listapp') {
+  if (activePage == 'listapp' || activePage == 'store') {
 
     /* window's scrollTop() */
-    scrolled = $('.app-content').scrollTop(),
+    scrolled = $(this).scrollTop(),
 
     /* viewport */
     screenHeight = $.mobile.getScreenHeight(),

@@ -81,10 +81,8 @@ function loadInvPage(data, resFlg) {
     inv_str += "<td>Date: </td><td>" + data.inv_dt + "</td></tr><tr>"; 
 
     // display correct photo based on whether user is buyer or seller
-    inv_str += "<td>From: </td><td class='v-align wdth50'>" + getPixiPic(data.seller.photo, pic_str)
-        + "</td><td>" + data.seller.name + "</td></tr>";
-    inv_str += "<tr><td>Bill To: </td><td class='v-align wdth50'>" + getPixiPic(data.buyer.photo, pic_str)
-        + "</td><td>" + data.buyer.name + "</td>";
+    inv_str += "<td>From: </td><td>" + showUserPhoto(data.seller.photo, data.seller.name, 'inv-descr') + "</td></tr>";
+    inv_str += "<tr><td>Bill To: </td><td>" + showUserPhoto(data.buyer.photo, data.buyer.name, 'inv-descr') + "<td>";
     inv_str += "</tr></table></div>";
 
     // set invoice details

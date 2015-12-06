@@ -101,6 +101,12 @@ function showPixiSuccess(data) {
   }
 }
 
+function showUserPhoto(pic, name, cls) {
+  var str = "<table><tr><td>" + getPixiPic(pic, 'height:45px; width:45px; border: 1px solid #ccc;') 
+    + '</td><td class="' + cls + '">' + name + '</td></tr></table>';
+  return str;
+}
+
 // open pixi page
 function showPixiPage(data) {
   var px_str = '', cstr='', detail_str = '';
@@ -127,9 +133,8 @@ function showPixiPage(data) {
   $('#list_title').append(tstr);
 
   // load seller
-  var seller_str = "<table><tr><td>" + getPixiPic(data.listing.seller_photo, 'height:45px; width:45px; border: 1px solid #ccc;') 
-    + '</td><td class="inv-descr">' + data.listing.seller_name + "<br />Pixis: " + data.listing.seller_pixi_count + "</td></tr></table>";
-  $('#seller-name').append(seller_str);
+  var seller_str = data.listing.seller_name + "<br />Pixis: " + data.listing.seller_pixi_count;
+  $('#seller-name').append(showUserPhoto(data.listing.seller_photo, seller_str, 'inv-descr'));
 
   // load post values
   $('#user_id').val(getUserID()); 
@@ -205,7 +210,6 @@ function pixi_details(item) {
   }
 
   if(item.status == 'active') {
-    console.log('in pixi_details active');
     str += "<table><tr><td>Qty:</td><td><select name='quantity' id='px_qty' class='width60' data-mini='true'></select></td></tr></table>";
     loadQty('#px_qty', 1, item.amt_left);
   }
@@ -220,6 +224,8 @@ function pixi_details(item) {
   str += add_vehicle_features(item);
   str += add_housing_features(item);
   str += add_event_features(item);
+  str += show_features('Size', item.item_size);
+  //str += show_features('Delivery Type', item.delivery_type);
   str += show_features('Amount Left', item.amt_left);
   str += "</div><br />";  
 
@@ -281,10 +287,14 @@ function add_event_features(item) {
   return str;
 }
 
+function check_null(item) {
+  return ((typeof item == "number") || (typeof item == "string")) ? true : false;
+}
+
 // add pixi features 
 function show_features(title, item) {
   var str = '';
-  if(item !== undefined && item != "") {
+  if(check_null(item) && item !== undefined && item != "") {
     str = show_arrow('') + "<span class='mleft10'>" + title + ': ' + item + "</span><br />";  
   }
   return str;

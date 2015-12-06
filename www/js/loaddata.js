@@ -211,7 +211,7 @@ function loadUserPage(data, resFlg) {
       var dt_arr = data.birth_date.split('-');
       dt = dt_arr[2]; month = dt_arr[1]; yr = dt_arr[0];
       gender = data.gender;
-      photo = getPixiPic(data.photo, 'height:60px; width:60px;', 'smallImage'); 
+      photo = getPixiPic(data.photo_url, 'height:60px; width:60px;', 'smallImage'); 
       name_str = "<span class='mleft10 pstr'>" + data.name + "</span><br />";
       popName = '#popupPix1';
       btn_name = 'Save';
@@ -319,19 +319,60 @@ function loadContactPage(data, resFlg) {
 }
 
 // load cover image
-function load_cover() {
-  var cover = window.localStorage['home_image'];
-  var px_str = '<div class="item-container" style="background: url(' + cover + ') no-repeat;"><div class="home-title-grp">'
-   + '<span class="mleft20 mtop small-title-white">' + window.localStorage['home_site_name'] + '</span></div></div>';
+function load_cover(flg) {
+  //cover = cover || '../img/gm_grey.jpg';
+  pgTitle = pgTitle || window.localStorage['home_site_name'];
+  console.log('cover = ' + cover);
+  var img = (!localPixFlg) ? cover : (cover == undefined) ? '../img/gm_grey.jpg' : url + '/' + cover;
+  var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'
+    + '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>';
   $('#board-top').append(px_str).trigger("create");
+}
+
+// load feature items
+function load_featured_items(data, slrFlg) {
+  load_cover(slrFlg);
+  var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
+  var px_str = '<div class="featured-container"><div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
+    + '</div></div><div class="featured mleft20">' + '</div></div>';
+  $('#board-top').append(px_str).trigger("create");
+  $('.featured').append(build_str(data, slrFlg)).bxSlider({ slideMargin: 5, autoControls: false, auto: false, pager: false, 
+    slideWidth: 100, mode: 'horizontal' });
+}
+
+function build_str(data, sFlg) {
+  var localUrl, cls, str='', title, pic;
+  $.each(data, function(index, item) {
+    title = (sFlg) ? item.name : item.title;
+    localUrl = (sFlg) ? 'data-url="' + item.url + '"' : 'data-pixi-id="' + item.pixi_id + '"';
+    cls = (sFlg) ? 'slrUrl' : 'pixi-cat';
+    pic = (sFlg) ? item.photo_url : item.pictures[0].photo_url;
+    str += '<div class="featured-item"><div class="center-wrapper">'
+      + '<a href="#" ' + localUrl + ' class="' + cls + '" data-ajax="false">'  
+      + getPixiPic(pic, 'height:100px; width:100px;') + '</a>'
+      + '<div class="sm-top profile-txt mbdescr truncate">' + title + '<br /><span class="mgdescr truncate">' + item.site_name + '</span></div>'
+      + '</div></div>';
+  });
+  return str;
 }
 
 // load board if resFlg else return not found
 function loadBoard(data, resFlg) {
   var $container = $('#px-container'); 
   var result = '', item_str = '';
+  console.log('in load board');
 
-  //load_cover();
+  // load featured items
+  if($.mobile.activePage.attr("id") == 'store') {
+    cover = data.sellers[0].cover_photo;
+    pgTitle = data.sellers[0].business_name;
+    load_featured_items(data.listings, false) 
+  }
+  else { 
+    cover = window.localStorage['home_image'];
+    pgTitle = window.localStorage['home_site_name'];
+    load_featured_items(data.sellers, true);
+  }
 
   if(resFlg) {
     result = load_board_items(data, item_str, resFlg);
@@ -364,7 +405,7 @@ function load_board_items(data, str, resFlg) {
   myPixiPage = 'active';
 
   // load pixis
-  $.each(data, function(index, item) {
+  $.each(data.listings, function(index, item) {
     var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + item.price : '$0';
     localUrl = 'data-pixi-id="' + item.pixi_id + '"';
 
@@ -380,8 +421,8 @@ function load_board_items(data, str, resFlg) {
   // attach to div
   $('#pxboard').append(str);
 
-    // initialize infinite scroll
-    load_masonry('#px-nav', '#px-nav a', '#pxboard .item', 1);
+  // initialize infinite scroll
+  load_masonry('#px-nav', '#px-nav a', '#pxboard .item', 1);
   return str;
 }
 

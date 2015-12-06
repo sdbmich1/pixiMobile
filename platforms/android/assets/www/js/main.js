@@ -180,6 +180,19 @@ $(document).on("click", ".pixi-cat", function(showElem){
   resetBoard(cid);
 });
 
+// reload masonry on ajax calls to swap data
+$(document).on("click", ".slrUrl", function(showElem){
+  var slrUrl = $(this).attr("data-url");
+  nextPg = 1;
+
+  // toggle value
+  homeUrl = url + '/biz/' + slrUrl + '.json' + token;
+  console.log('seller url = ' + homeUrl);
+
+  // process ajax call
+  goToUrl('../html/store.html');
+});
+
 // reload board
 function reload_board(element) {
   console.log('in reload board');
@@ -391,6 +404,7 @@ $(document).on("click", "#recent-link", function() {
 function resetBoard(cid) {
   var loc = $('#site_id').val(); // grab the selected location 
   cid = cid || $('#category_id').val(); // grab the selected category 
+  nextPg = 1;
 
   // set search form fields
   $('#cid').val(cid);
@@ -414,23 +428,23 @@ function resetBoard(cid) {
     }
   }
 
-  console.log('resetBoard url = ' + homeUrl);
-
   // refresh the page
+  refreshBoard(true);
+}
+
+// refresh board content
+function refreshBoard(flg) {
   $(".item").remove();
   $('#pxboard').html('');
 
-  // refresh board
-  nextPg = 1;
-  reload_items(renderBoard(homeUrl, nextPg, true));
-
-  // initialize infinite scroll
-  //resetScroll(newUrl);
-  //reload_board();
+  // reset featured band if needed
+  if(!flg) {
+    $('.featured').html(''); }
+  reload_items(renderBoard(homeUrl, nextPg, flg));
 }
 
+// Fix input element click problem
 $(function() {
-  // Fix input element click problem
   $('.dropdown input, .dropdown label, .dropdown-menu input, .dropdown-menu select').click(function(e) {
     e.stopPropagation();
   });

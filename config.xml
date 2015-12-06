@@ -10,9 +10,15 @@
     <feature name="http://api.phonegap.com/1.0/device" />
     <feature name="Geolocation">
         <param name="android-package" value="org.apache.cordova.GeoBroker" />
+	<param name="ios-package" value="CDVLocation" />
     </feature>
     <feature name="Notification">
         <param name="android-package" value="org.apache.cordova.Notification" />
+	<param name="ios-package" value="CDVNotification" />
+    </feature>
+    <feature name="Camera">
+        <param name="android-package" value="org.apache.cordova.CameraLauncher" />
+	<param name="ios-package" value="CDVCamera" />
     </feature>
     <preference name="phonegap-version" value="3.6.3" />
     <preference name="permissions" value="none" />

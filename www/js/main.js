@@ -180,6 +180,19 @@ $(document).on("click", ".pixi-cat", function(showElem){
   resetBoard(cid);
 });
 
+// reload masonry on ajax calls to swap data
+$(document).on("click", ".slrUrl", function(showElem){
+  var slrUrl = $(this).attr("data-url");
+  nextPg = 1;
+
+  // toggle value
+  homeUrl = url + '/biz/' + slrUrl + '.json' + token;
+  console.log('seller url = ' + homeUrl);
+
+  // process ajax call
+  goToUrl('../html/store.html');
+});
+
 // reload board
 function reload_board(element) {
   console.log('in reload board');
@@ -416,11 +429,18 @@ function resetBoard(cid) {
   }
 
   // refresh the page
+  refreshBoard(true);
+}
+
+// refresh board content
+function refreshBoard(flg) {
   $(".item").remove();
   $('#pxboard').html('');
 
-  // refresh board
-  reload_items(renderBoard(homeUrl, nextPg, true));
+  // reset featured band if needed
+  if(!flg) {
+    $('.featured').html(''); }
+  reload_items(renderBoard(homeUrl, nextPg, flg));
 }
 
 // Fix input element click problem
