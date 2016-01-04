@@ -217,8 +217,6 @@ function initScroll(cntr, nav, nxt, item) {
       animate: false,
       extraScrollPx: 150,
       bufferPx : 100,
-      localMode    : true,
-      debug: true,
       loading: {
         img:  'http://i.imgur.com/6RMhx.gif',
 	msgText: "<em>Loading...</em>"
@@ -461,7 +459,6 @@ $(document).on('click', '#home-link', function(e) {
   $('#category_id').val('').prop('selectedIndex',0);
   $('#search').val('');
   reset_top('#px-search', '#pixi-loc, #cat-top, #px-search');
-  console.log('in home-link reset');
 
   // reset board
   resetBoard();
@@ -564,4 +561,8 @@ function set_home_location(loc){
 
   // process ajax call
   loadData(newUrl, 'home');
+}
+
+function reload_ratings() {
+  $(".rateit").rateit();
 }

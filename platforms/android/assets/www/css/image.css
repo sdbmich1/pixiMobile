@@ -155,7 +155,7 @@ img.usr-med-photo {
 .item-container {
   background: url("../img/gm_grey.jpg") no-repeat;
   position: relative;
-  height: 120px;
+  height: 140px;
   width:100%!important; 
   background-size: 100% 100%;
   background-size: cover!important;
@@ -201,8 +201,8 @@ img.usr-med-photo {
 
 .usr-profile-photo img, .blk-profile-photo img {
   float: left;
-  height: 80g 2px!important;
-  width: 125px!important;
+  height: 80px!important;
+  width: 80px!important;
   border: 1px solid #FFF;
   border-radius: 4px;
 }

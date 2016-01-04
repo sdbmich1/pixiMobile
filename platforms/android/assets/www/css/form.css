@@ -63,7 +63,6 @@ $pixiBlue: #026FB7;
 
 form {margin-bottom: 5px!important;}
 
-.clear-all { clear:both }
 .clear-right { clear:right }
 .price { text-align: right }
 .order-total { font-weight: bolder; font-size: medium }
@@ -92,7 +91,7 @@ form {margin-bottom: 5px!important;}
   border: 1px solid #eaeaea; }
 
 .sm-bot { margin-bottom: 5px!important; }  
-.sm-top { margin-top: 8px!important; }  
+.sm-top { margin-top: 3px!important; }  
 .neg-top { margin-top: -10px!important; }  
 .big-neg-top { margin-top: -20px!important; }  
 .ng-top { margin-top: -5px!important; }  
@@ -114,10 +113,17 @@ form {margin-bottom: 5px!important;}
 .width60 { width: 60px; }
 .width120 { width: 120px; }
 
-.home-title-grp {
+.small-title-white, .home-title-grp {
   text-shadow: 1px 1px 1px #000;
   color: #ffffff;
   font-weight: bold;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
+}
+
+.white-text {
+  text-shadow: 1px 1px 1px #000;
+  color: #ffffff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 11px;
 }

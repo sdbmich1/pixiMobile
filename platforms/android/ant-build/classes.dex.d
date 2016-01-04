@@ -13,6 +13,9 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\piximobile\app\R$string.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\piximobile\app\R$xml.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\piximobile\app\R.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\org\apache\cordova\camera\CameraLauncher.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\org\apache\cordova\camera\ExifHelper.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\org\apache\cordova\camera\FileHelper.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\org\apache\cordova\device\Device.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\org\apache\cordova\dialogs\Notification$1.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\org\apache\cordova\dialogs\Notification$2$1.class \

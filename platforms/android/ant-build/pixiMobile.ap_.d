@@ -51,6 +51,7 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\jquery.mobile.structure-1.3.2.min.css \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\mobile.css \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\pixi-theme.min.css \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\rateit.css \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\images\ajax-loader.gif \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\images\icons-18-black.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\css\images\icons-18-white.png \
@@ -95,6 +96,10 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\logout.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\person_icon.jpg \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixichat_logo_hort.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_blank16.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_blank_white24.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_orange16.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_orange_white24.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_wings_blue.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\rsz_blue-white-globe.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\rsz_camera-icon_blue.png \
@@ -126,8 +131,10 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\jquery.infinitescroll.min.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\jquery.mobile-1.3.2.min.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\jquery.placeholder.min.js \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\jquery.rateit.min.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\jquery.timeago.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\jquery.ui.autocomplete.html.js \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\lazyload.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\loaddata.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\main.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\map.js \
@@ -138,8 +145,14 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\slider.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\transaction.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\txndata.js \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.camera \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.device \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.dialogs \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.camera\www \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.camera\www\Camera.js \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.camera\www\CameraConstants.js \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.camera\www\CameraPopoverHandle.js \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.camera\www\CameraPopoverOptions.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.device\www \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.device\www\device.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\plugins\org.apache.cordova.dialogs\www \

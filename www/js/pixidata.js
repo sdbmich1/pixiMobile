@@ -101,16 +101,16 @@ function showPixiSuccess(data) {
   }
 }
 
-function showUserPhoto(pic, name, cls) {
+function showUserPhoto(pic, name, cls, item) {
+  item = item || '';
   var str = "<table><tr><td>" + getPixiPic(pic, 'height:45px; width:45px; border: 1px solid #ccc;') 
-    + '</td><td class="' + cls + '">' + name + '</td></tr></table>';
+    + '</td><td class="' + cls + '">' + name + item + '</td></tr></table>';
   return str;
 }
 
 // open pixi page
 function showPixiPage(data) {
   var px_str = '', cstr='', detail_str = '';
-
   uiLoading(true);  // toggle spinner
 
   // check if pixi is in temp status - if not show navbar else hide post form 

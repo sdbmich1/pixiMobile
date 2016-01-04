@@ -319,25 +319,32 @@ function loadContactPage(data, resFlg) {
 }
 
 // load cover image
-function load_cover(flg) {
-  //cover = cover || '../img/gm_grey.jpg';
+function load_cover(flg, pic, sid, rating, descr) {
   pgTitle = pgTitle || window.localStorage['home_site_name'];
-  console.log('cover = ' + cover);
-  var img = (!localPixFlg) ? cover : (cover == undefined) ? '../img/gm_grey.jpg' : url + '/' + cover;
-  var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'
-    + '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>';
+  var img = (!localPixFlg) ? cover : (cover === null) ? '../img/gm_grey.jpg' : url + '/' + cover;
+  var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'; 
+  if (!flg && pic.length > 0) {
+    var amt = rating || 0;
+    descr = descr || '';
+    var item = '<br /><div class="sm-top rateit med-pixis" data-rateit-value=' + amt + ' data-rateit-ispreset="true" data-rateit-readonly="true"' +
+    ' data-rateit-starwidth=24 data-rateit-starheight=21></div><div class="clear-all"></div><div class="white-text">' + descr + 
+    '</div><div id="store-btn">' + showButton('data-seller_id', sid, 'Follow', 'd', 'follow-btn') + '</div>';
+    px_str += '<br /><div class="usr-profile-photo">' + showUserPhoto(pic, pgTitle, 'small-title-white', item) + '</div>'; 
+  }
+  else {
+    px_str += '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>'; }
   $('#board-top').append(px_str).trigger("create");
+  reload_ratings();
 }
 
 // load feature items
-function load_featured_items(data, slrFlg) {
-  load_cover(slrFlg);
+function load_featured_items(data, slrFlg, pic, sid, rating, descr) {
+  load_cover(slrFlg, pic, sid, rating, descr);
   var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
   var px_str = '<div class="featured-container"><div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
     + '</div></div><div class="featured mleft20">' + '</div></div>';
   $('#board-top').append(px_str).trigger("create");
-  $('.featured').append(build_str(data, slrFlg)).bxSlider({ slideMargin: 5, autoControls: false, auto: false, pager: false, 
-    slideWidth: 100, mode: 'horizontal' });
+  load_featured_slider(build_str(data, slrFlg));
 }
 
 function build_str(data, sFlg) {
@@ -345,11 +352,11 @@ function build_str(data, sFlg) {
   $.each(data, function(index, item) {
     title = (sFlg) ? item.name : item.title;
     localUrl = (sFlg) ? 'data-url="' + item.url + '"' : 'data-pixi-id="' + item.pixi_id + '"';
-    cls = (sFlg) ? 'slrUrl' : 'pixi-cat';
+    cls = (sFlg) ? 'slrUrl' : 'bd-item';
     pic = (sFlg) ? item.photo_url : item.pictures[0].photo_url;
     str += '<div class="featured-item"><div class="center-wrapper">'
       + '<a href="#" ' + localUrl + ' class="' + cls + '" data-ajax="false">'  
-      + getPixiPic(pic, 'height:100px; width:100px;') + '</a>'
+      + getPixiPic(pic, 'height:100px; width:100px;', '', 'lazy') + '</a>'
       + '<div class="sm-top profile-txt mbdescr truncate">' + title + '<br /><span class="mgdescr truncate">' + item.site_name + '</span></div>'
       + '</div></div>';
   });
@@ -364,9 +371,9 @@ function loadBoard(data, resFlg) {
 
   // load featured items
   if($.mobile.activePage.attr("id") == 'store') {
-    cover = data.sellers[0].cover_photo;
+    cover = data.sellers[0].cover_photo || '../img/gm_grey.jpg';
     pgTitle = data.sellers[0].business_name;
-    load_featured_items(data.listings, false) 
+    load_featured_items(data.listings, false, data.sellers[0].photo_url, data.sellers[0].id, data.sellers[0].rating, data.sellers[0].description); 
   }
   else { 
     cover = window.localStorage['home_image'];

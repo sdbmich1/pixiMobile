@@ -35,11 +35,7 @@ $(document).on('pageinit', '#myposts', function() {
 
 // load list page
 $(document).on('pageinit', '#mypixis, #myinv', function() {
-  if(myPixiPage == 'active') {
-    var dType = 'view'; }
-  else {
-    var dType = 'inv'; }
-
+  var dType = (myPixiPage == 'active') ? 'view' : 'inv'; 
   loadListPage(myPixiPage, dType); 
 });
 
@@ -50,6 +46,7 @@ $(document).on('click', '.nxt-pg', function(e) {
 
 // used to render main board
 function renderBoard(hUrl, pg, rFlg) {
+  uiLoading(true);
   rFlg = rFlg || false;
   nextPg++;  // increment page counter
   var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
@@ -76,11 +73,6 @@ $(document).on('pageinit', '#listapp', function() {
 
   // load main board
   renderBoard(homeUrl, nextPg);
-});
-
-// load initial board
-$(document).on('pageshow', '#listapp, #store', function(event, ui) {
-   //load_cover();
 });
 
 // load store page
@@ -166,9 +158,10 @@ function getUserID() {
 }
 
 // build image string to display pix 
-function getPixiPic(pic, style, fld) {
+function getPixiPic(pic, style, fld, cls) {
+  cls = cls || '';
   var pstr = (!localPixFlg) ? pic : url + '/' + pic;
-  var img_str = '<img style="' + style + '" src="' + pstr + '"';
+  var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
 
   fld = fld || '';  // set fld id
   if(fld.length > 0) {
@@ -259,6 +252,11 @@ function postData(postUrl, fdata, dType) {
 	break;
       case 'card':
         loadTxnPage(res, dFlg, 'invoice');
+	break;
+      case 'follow':
+        console.log('postData seller id= ' + fdata.seller_id);
+	var str = showButton('data-seller_id', fdata.seller_id, 'Unfollow', 'b', 'unfollow-btn')
+	$('#store-btn').html('').append(str).trigger("create");
 	break;
       default:
         return res;
@@ -588,6 +586,29 @@ $(document).on('click', "#contact-btn", function (e) {
   }
 });
 
+// add follower
+$(document).on('click', "#follow-btn", function (e) {
+  var sid = $(this).attr("data-seller_id");
+  console.log('sid = ' + sid);
+
+  if (sid.length > 0) {
+    uiLoading(true);
+    $(this).attr('disabled', 'disabled');
+
+    // store form data
+    var params = new Object();
+
+    // set params
+    params = { uid: getUserID(), seller_id: sid };
+
+    // set path
+    var pxUrl = url + '/favorite_sellers.json' + token;
+
+    // post data
+    postData(pxUrl, params, 'follow');
+  }
+});
+
 // reset pixi page after successful post
 function resetPost (resFlg) {
   $("#contact-btn").removeAttr("disabled");
@@ -640,7 +661,7 @@ $(document).on('click', "#reply-btn", function (e) {
     params.post = { content: txt, user_id: $('#user_id').val(), pixi_id: $('#pixi_id').val(), recipient_id: $('#recipient_id').val() };
 
     // set path
-    var pxUrl = url + '/posts/reply.json' + token;
+    var pxUrl = url + '/conversations/reply.json' + token;
 
     // post data
     postData(pxUrl, params, 'reply');
@@ -1246,4 +1267,11 @@ function addMore(page) {
     $(document).on("scrollstop", checkScroll);
     isScrolled = false;
   }, 500);
+}
+
+// default for rendering page buttons
+function showButton(tag, id, title, theme, btnID, cls) {
+  cls = cls || '';
+  var str= "<a href='#'" + tag + "=" + id + " data-role='button' data-theme='" + theme + "' id='" + btnID + "' class='" + cls + "'>" + title + "</a>";
+  return str;
 }

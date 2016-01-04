@@ -67,6 +67,7 @@ a.signup-btn {
 .ui-li-has-thumb .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li-has-thumb {padding-left: 75px!important;}
 .ui-btn-icon-right {padding-right: 5px;}
 /*.ui-btn-inner, .ui-li {width: 100%!important;} */
+.ui-btn {margin: 0.125em!important;}
 
 .cal-size { width: 75%!important; }
 .num-size { width: 25%!important; }
@@ -380,7 +381,6 @@ a.pixi-cat, .item-dt {font-size: 0.625em; line-height: 10px; vertical-align: mid
 
 .dtop {margin-top: 50px; }
 
-.clear-all { clear:both }
 .clear-right { clear:right }
 
 /* old slider markup */
@@ -416,7 +416,6 @@ a.pixi-cat, .item-dt {font-size: 0.625em; line-height: 10px; vertical-align: mid
 }
 
 h3 { margin-top: 0px; }
-.sm-top { margin-top: 3px!important }  
 .pixi-grey-bkgnd { background-color: #eaeaea; }
 
 .round {
@@ -451,6 +450,7 @@ a:hover, a:visited {
 .search_button {width: 24px; height: 24px; }
 
 .ui-bar-a { border: none; text-shadow: none; }
+.ui-button { margin: 0!important; }
 
 footer.mbl-footer { height: 1.5em; width: 100%; color:#0C6FCB; font-weight: normal; font-size: 0.75em;}
 #push { height: 1.5em; }
