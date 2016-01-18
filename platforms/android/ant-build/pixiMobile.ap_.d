@@ -97,8 +97,10 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\person_icon.jpg \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixichat_logo_hort.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_blank16.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_blank_blue24.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_blank_white24.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_orange16.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_orange_blue24.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_orange_white24.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\pixi_wings_blue.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\rsz_blue-white-globe.png \

@@ -37,6 +37,9 @@ input.fld .ui-input-text .ui-body-c {
 	background-color: #FFF!important;
 }
 
+div.ui-input-text input.ui-input-text, div.ui-input-text textarea.ui-input-text, .ui-input-search input.ui-input-text {
+  padding: 0.85em!important 0!important;}
+
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-bottom,
@@ -69,7 +72,7 @@ a.signup-btn {
 /*.ui-btn-inner, .ui-li {width: 100%!important;} */
 .ui-btn {margin: 0.125em!important;}
 
-.cal-size { width: 75%!important; }
+.cal-size { width: 85%!important; }
 .num-size { width: 25%!important; }
 #pixi_id { white-space:normal!important; }
 
@@ -747,7 +750,7 @@ a.close-btn, a.change-btn {
 .ui-mobile-viewport-transitioning .ui-footer-fixed { visibility: hidden; }
 
 .splash-top {
-	margin-top: 375px;
+	margin-top: 410px;
 }
 
 #reoccur-dt, #start-dt, #end-dt, #start-tm, #end-tm {

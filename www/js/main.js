@@ -120,18 +120,19 @@ function toggleLoading () {
 }
 
 // used to toggle spinner
-$(document).on("ajax:beforeSend", '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link', function () {
+var aStr = '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link, .bd-item, .slrUrl';
+$(document).on("ajax:beforeSend", aStr, function () {
     uiLoading(true);
 });	
 
-$(document).on("ajax:success", '.pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu', function () {
+$(document).on("ajax:success, ajax:complete", aStr,  function () {
   uiLoading(false);
 });	
-
+/*
 $(document).on("ajax:complete", '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link', function () {
   uiLoading(false);
 });	
-
+*/
 // handle 401 ajax error
 $(document).ajaxError( function(e, xhr, options){
   if(xhr.status == 401)
@@ -139,7 +140,6 @@ $(document).ajaxError( function(e, xhr, options){
 });	
 
 $(document).ready(function(){
-
   console.log('doc ready');
 
   // used to scroll up page
@@ -398,6 +398,26 @@ $(document).on("click", "#recent-link", function() {
   return false;
 });
 
+// process search btn
+$(document).on('click', "#search-btn", function (e) {
+  var txt =  $('#search_txt').val();
+  var loc = $('#site_id').val(); // grab the selected location 
+  var cid = $('#category_id').val() || ''; // grab the selected category 
+  var mUrl = '';
+  nextPg = 1;
+
+  if (txt.length > 0) {
+    console.log('in click search event');
+    $(this).attr('disabled', 'disabled');
+
+    // set path
+    homeUrl = url + '/searches.json' + token + '&loc=' + loc + '&cid=' + cid + '&search=' + txt + '&url=' + mUrl;
+
+    // refresh the page
+    refreshBoard(true);
+  }
+});
+
 // reset board pixi based on location
 function resetBoard(cid) {
   var loc = $('#site_id').val(); // grab the selected location 
@@ -565,4 +585,17 @@ function set_home_location(loc){
 
 function reload_ratings() {
   $(".rateit").rateit();
+}
+
+function fld_form(fid, sid, fld, txt, bname, btnID) {
+  var str = '<form id="' + fid + '" data-ajax="false"><div id="form_errors" style="display:none" class="error"></div>' +
+    '<div id="' + sid + '" class="clear-all mbot"><table><tr><td class="cal-size"><div data-role="fieldcontain" class="ui-hide-label">' +
+    '<input name="content" id="' + fld + '" class="slide-menu" placeholder="' + txt + '" data-theme="a" required /></div></td>' +
+    '<td><input type="submit" value="' + bname + '" data-theme="b" data-inline="true" id="' + btnID + '" data-mini="true"></td>' +
+    '</tr></table></div></form>';
+  return str;    
+}
+
+function isDefined(variable) {
+  return (variable !== null && variable !== undefined);
 }

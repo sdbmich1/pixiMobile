@@ -133,8 +133,15 @@ function showPixiPage(data) {
   $('#list_title').append(tstr);
 
   // load seller
-  var seller_str = data.listing.seller_name + "<br />Pixis: " + data.listing.seller_pixi_count;
-  $('#seller-name').append(showUserPhoto(data.listing.seller_photo, seller_str, 'inv-descr'));
+  var sname = data.listing.seller_name; 
+  var localUrl = 'data-url="' + data.listing.user.url + '"';
+  var str = '<a href="#" ' + localUrl + ' class="slrUrl" data-ajax="false">' + sname + '</a>';
+  var pic = data.listing.seller_photo;
+  var rating = data.listing.user.rating;
+  var item = load_rating('bmed-pixis', rating, 21, 24) + '<div class="inv-descr">Pixis: ' + data.listing.seller_pixi_count + '</div>';
+  var seller_str = '<div class="blk-profile-photo">' + showUserPhoto(pic, str, 'small-title', item) + '</div>';
+  $("#seller-name").append(seller_str).trigger("create");
+  reload_ratings();
 
   // load post values
   $('#user_id').val(getUserID()); 
@@ -151,6 +158,7 @@ function showPixiPage(data) {
 
   // load slider
   $('.bxslider').append(px_str).bxSlider({ controls: false, pager: cntl, mode: 'fade' });
+  //$( ".bx-wrapper" ).css( "max-width", '70%!important;' );
 
   // add details
   pixi_details(data.listing); 
@@ -201,7 +209,8 @@ function pixi_details(item) {
 
   if(item.price !== undefined) {
     var prc = parseFloat(item.price).toFixed(2);
-    str += "<br /><div class='mtop'><span class='pixi-str'>$" + prc + "</span><br /></div></div>";
+    str += "<br /><div class='mtop'><table><tr><td><span class='pixi-str'>$" + prc + "</span></td><td>" + 
+      showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn') + "</td></tr></table><br /></div></div>";
   } 
   else {
     if(item.compensation !== undefined) {
@@ -210,8 +219,8 @@ function pixi_details(item) {
   }
 
   if(item.status == 'active') {
-    str += "<table><tr><td>Qty:</td><td><select name='quantity' id='px_qty' class='width60' data-mini='true'></select></td></tr></table>";
-    loadQty('#px_qty', 1, item.amt_left);
+    str += "<table><tr><td>Qty:</td><td><select name='quantity' id='px_qty' class='width60' data-mini='true'></select></td>";
+    str += "<td>Delivery:</td><td><select name='delivery_type' id='ftype' data-mini='true'></select></td></tr></table>";
   }
 
   // load features
@@ -231,7 +240,20 @@ function pixi_details(item) {
 
   // load details
   str += "<span class='mtop'>Description</span><br /><hr><div class='inv-descr'>" + item.description + "</div><br />";
-  $('#pixi-details').append(str);
+
+  // build array
+  var arr = [], dval;
+  if (item.delivery_type == 'All') {
+    arr = [{ id: 'P', name_title: 'Pickup'}, {id: 'S', name_title: 'Ship'}];
+    dval = 'S';
+  }
+  else {
+    arr.push({id: item.fulfillment_type_code, name_title: item.delivery_type});
+    dval = item.fulfillment_type_code;
+  }
+  $('#pixi-details').append(str).trigger("create");
+  loadQty('#px_qty', 1, parseInt(item.amt_left));
+  loadList(arr, '#ftype', '', dval);
 }
 
 function build_order_form(item) {

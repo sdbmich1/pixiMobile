@@ -19,8 +19,7 @@ function loadData(listUrl, dType, params) {
     data: params,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      // set status flag
-      dFlg = (data == undefined) ? false : true;
+      dFlg = isDefined(data) ? true : false;  // set status flag
 
       // load data based on display type
       switch (dType) {
@@ -318,21 +317,31 @@ function loadContactPage(data, resFlg) {
   }
 }
 
+function load_rating(cls, amt, hgt, wd) {
+  var item = '<br /><div class="sm-top rateit ' + cls + '" data-rateit-value=' + amt + ' data-rateit-ispreset="true" data-rateit-readonly="true"' +
+    ' data-rateit-starwidth=' + wd + ' data-rateit-starheight=' + hgt + '></div><div class="clear-all"></div>'
+  return item;
+}
+
 // load cover image
 function load_cover(flg, pic, sid, rating, descr) {
   pgTitle = pgTitle || window.localStorage['home_site_name'];
   var img = (!localPixFlg) ? cover : (cover === null) ? '../img/gm_grey.jpg' : url + '/' + cover;
   var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'; 
+
   if (!flg && pic.length > 0) {
-    var amt = rating || 0;
+    rating = rating || 0;
     descr = descr || '';
-    var item = '<br /><div class="sm-top rateit med-pixis" data-rateit-value=' + amt + ' data-rateit-ispreset="true" data-rateit-readonly="true"' +
-    ' data-rateit-starwidth=24 data-rateit-starheight=21></div><div class="clear-all"></div><div class="white-text">' + descr + 
+    var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + 
     '</div><div id="store-btn">' + showButton('data-seller_id', sid, 'Follow', 'd', 'follow-btn') + '</div>';
     px_str += '<br /><div class="usr-profile-photo">' + showUserPhoto(pic, pgTitle, 'small-title-white', item) + '</div>'; 
   }
   else {
     px_str += '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>'; }
+
+  // add search form
+  var str = fld_form('search-doc', 'seller-search', 'content', 'Search item or store...', 'Search', 'search-btn');
+  $('#search_form').append(str).trigger("create");
   $('#board-top').append(px_str).trigger("create");
   reload_ratings();
 }
@@ -368,6 +377,7 @@ function loadBoard(data, resFlg) {
   var $container = $('#px-container'); 
   var result = '', item_str = '';
   console.log('in load board');
+  uiLoading(true);
 
   // load featured items
   if($.mobile.activePage.attr("id") == 'store') {
@@ -405,11 +415,14 @@ function loadBoard(data, resFlg) {
 
 // build board
 function load_board_items(data, str, resFlg) {
-  if (!resFlg) return '';
+  if (!resFlg) {
+     console.log('Error load_board_items: No data found.');
+     return '';
+  }
 
   var post_dt, localUrl;
-  usr = data.user;  // store user
   myPixiPage = 'active';
+
 
   // load pixis
   $.each(data.listings, function(index, item) {
@@ -662,9 +675,10 @@ function loadBankAcct(data, resFlg) {
 }
 
 // load dropdown list based on given url
-function loadList(list, fld, descr) {
-  var item_str = '<option value="">' + 'Select ' + descr + '</option>';
+function loadList(list, fld, descr, val) {
+  var item_str = '<option default value="">' + 'Select ' + descr + '</option>';
   var len = list.length;
+  val = val || '';
   console.log('loadList = ' + list[0].name_title);
 
   // load list as options for select
@@ -673,5 +687,6 @@ function loadList(list, fld, descr) {
   }  
 
   // update field
-  $(fld).append(item_str).selectmenu().selectmenu('refresh', true);
+  //$(fld).append(item_str).selectmenu().selectmenu('refresh', true);
+  setSelectMenu(fld, item_str, val);  // set option menu
 }

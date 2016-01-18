@@ -1,6 +1,7 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';
+var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';  //staging
+//var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -164,11 +165,7 @@ function getPixiPic(pic, style, fld, cls) {
   var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
 
   fld = fld || '';  // set fld id
-  if(fld.length > 0) {
-    img_str += ' id="' + fld + '">'; }
-  else {
-    img_str += '>'; }
-
+  img_str += (fld.length > 0) ? ' id="' + fld + '">' : '>';
   return img_str
 }
 

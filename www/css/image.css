@@ -199,10 +199,28 @@ img.usr-med-photo {
   text-overflow: ellipsis;
 }
 
-.usr-profile-photo img, .blk-profile-photo img {
+.usr-profile-photo img {
   float: left;
   height: 80px!important;
   width: 80px!important;
   border: 1px solid #FFF;
   border-radius: 4px;
+}
+
+.blk-profile-photo img {
+  float: left;
+  height: 60px!important;
+  width: 60px!important;
+  border: 1px solid #000;
+  border-radius: 4px;
+}
+
+.icon img {
+  height: 16px!important;
+  width: 16px!important;
+}
+
+.img.icon {
+  height: 16px!important;
+  width: 16px!important;
 }

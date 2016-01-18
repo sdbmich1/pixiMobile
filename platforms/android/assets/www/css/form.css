@@ -61,7 +61,7 @@ $pixiBlue: #026FB7;
   margin-bottom: 10px;
 }
 
-form {margin-bottom: 5px!important;}
+//form {margin-bottom: 5px!important;}
 
 .clear-right { clear:right }
 .price { text-align: right }
@@ -119,6 +119,12 @@ form {margin-bottom: 5px!important;}
   font-weight: bold;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
+}
+
+.small-title {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .white-text {
