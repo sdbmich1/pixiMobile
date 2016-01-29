@@ -226,8 +226,8 @@ function putData(putUrl, fdata, dType) {
 
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
-  console.log('in postData: ' + postUrl);
-  console.log('fdata: ' + JSON.stringify(fdata));
+  alert('in postData: ' + postUrl);
+  alert('fdata: ' + JSON.stringify(fdata));
   var dFlg, data;
 
   // turn on spinner
