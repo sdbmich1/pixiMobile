@@ -226,8 +226,8 @@ function putData(putUrl, fdata, dType) {
 
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
-  PGproxy.navigator.notification.alert('in postData: ' + postUrl);
-  PGproxy.navigator.notification.alert('fdata: ' + JSON.stringify(fdata));
+  console.log('in postData: ' + postUrl);
+  console.log('fdata: ' + JSON.stringify(fdata));
   var dFlg, data;
 
   // turn on spinner
@@ -653,7 +653,7 @@ $(document).on('click', "#reply-btn", function (e) {
     var pxUrl = url + '/conversations/reply.json' + token;
 
     // post data
-    postData(pxUrl, JSON.stringify(params), 'reply');
+    postData(pxUrl, JSON.stringify(params, 'reply');
   }
 });
 
@@ -838,7 +838,7 @@ $(document).on("submit", "#loginForm", function(e) {
 });
 
 function handleLogin() {
-  console.log('in handlelogin');
+  PGproxy.navigator.notification.alert('in handlelogin');
   uiLoading(true);
 
   //disable the button so we can't resubmit while we wait
