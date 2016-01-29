@@ -226,8 +226,8 @@ function putData(putUrl, fdata, dType) {
 
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
-  alert('in postData: ' + postUrl);
-  alert('fdata: ' + JSON.stringify(fdata));
+  PGproxy.navigator.notification.alert('in postData: ' + postUrl);
+  PGproxy.navigator.notification.alert('fdata: ' + JSON.stringify(fdata));
   var dFlg, data;
 
   // turn on spinner
