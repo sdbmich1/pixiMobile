@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+      <div id="listapp" data-role="page" data-iscroll="enable" data-theme="a" data-cache="never" class='pixiPg'>
+        <div data-role="panel" id="navpanel" data-theme="d" data-display="overlay" data-position="left">
+          <div data-role="controlgroup" data-corners="false">
+    	    <ul data-role='listview' data-icon="false" data-theme='e' class='mainMenu'></ul>
+          </div>
+        </div>    
+        <div data-role="header" data-theme="d" id="app-header">
+	  <div class="center-wrapper">
+	    <a href='#' id='home-link'><img class='' src='../img/sm_px_word_logo.png'></a>
+	  </div>
+	  <a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
+	  <a href='#' data-theme="app-loc" id='add-pixi-link'><img src='../img/rsz_camera-icon_blue.png'></a>
+
+          <div id='home-nav' data-role='navbar' data-theme='c'>
+  	    <ul>
+    	      <li><a href='#' data-mini='true' id='home-link'><img src='../img/home_button_blue.png' class='icon-img'></a></li>
+    	      <li><a href='#' data-mini='true' id='loc-nav'><img src='../img/blue-white-globe.png' class='icon-img'></a></li>
+    	      <li><a href='#' data-mini='true' id='cat-nav'><img src='../img/grid_categories.png' class='icon-img'></a></li>
+    	      <li><a href='#popupSearch' data-mini='true' data-rel="popup" data-position-to="window" data-transition="pop">
+	        <img src='../img/rsz_search_icon1_blue.png' class='icon-img'></a></li>
+  	    </ul>
+	  </div>
+	  <div id="board-top">
+	    <div id='pixi-loc' class='center-wrapper' style='display:none'>
+	      <div id='site_id'></div>
+	    </div>
+	    <div id='cat-top' class='center-wrapper' style='display:none'>
+	      <div data-role="fieldcontain">
+		  <select name="category_id" id="category_id" data-mini='true'></select>
+	      </div>
+	    </div>
+	  </div>
+        </div>    
+	<div class="app-content" data-theme="a" data-role="content">
+	  <div id="px-container">
+  	    <div id="pxboard" class='splash-top mleft10'></div> 
+
+  	    <nav id="px-nav">
+              <a href='../html/listings.html?page=2' class='nxt-pg' id=''>Next</a>
+            </nav>
+	  </div>
+        </div>    
+      </div>
+    </body>
+</html>
+

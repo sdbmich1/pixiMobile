@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  </head>
+  <body>
+    <div data-role="page" id="show_listing" data-cache="never" data-theme="a">
+      <div data-role="panel" id="navpanel" data-theme="d" data-display="overlay" data-position="left">
+        <div data-role="controlgroup" data-corners="false">
+    	    <ul data-role='listview' data-icon="false" data-theme='e' class='mainMenu'></ul>
+        </div>
+      </div>    
+      <div data-role="header" data-theme="d">
+        <div id='px-page-title' class='pg-title center-wrapper'>View Pixi</div>
+	<a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
+	<a href='#' data-theme="app-loc" id='add-pixi-link'><img src='../img/rsz_camera-icon_blue.png'></a>
+	<div id='show-list-hdr'></div>
+      </div>
+      <div class="app-content" data-theme="a" data-role="content">
+        <div id='list_title'></div>
+        <div id='seller-name'></div>
+	<div id="form_errors" style="display:none" class="error"></div>
+        <div id='px-pix' class='mtop mbot'>
+	  <div class="bxslider"></div>
+	</div>
+	<div class="mtop mbot" id='pixi-details'></div>
+	<div class="mtop mbot center-wrapper" id='edit-pixi-details'>
+	  <a href='#' id='edit-pixi-btn' data-role='button' data-inline='true' data-theme='b' data-mini='true' style='display:none'>Edit</a>
+	  <a href='#' id='cancel-pixi-btn' data-role='button' data-inline='true' data-theme='b' style='display:none'>Cancel</a>
+	  <a href='#' id='remove-pixi-btn' data-role='button' data-inline='true' data-theme='b' style='display:none'>Remove</a>
+	  <a href='#' id='submit-pixi-btn' data-role='button' data-inline='true' data-theme='d' style='display:none'>Done!</a>
+	</div>
+	<div class="mtop mbot" id='pixi-footer-details'></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -76,6 +76,7 @@ function loadInvForm(data, resFlg) {
 // process invoice page display
 function loadInvPage(data, resFlg) {
   if (resFlg) {
+    data = data.invoice;
     var pic_str = "height:45px; width:45px; border: 1px solid #ccc;";
     var inv_str = "<div class='mleft10'><table class='inv-descr'><tr><td>Invoice #: </td><td>" + data.id + "</td></tr><tr>"; 
     inv_str += "<td>Date: </td><td>" + data.inv_dt + "</td></tr><tr>"; 
@@ -127,7 +128,7 @@ function loadInvPage(data, resFlg) {
       }
     }
     inv_str += "</div></div>";
-    $('#inv_details').append(inv_str).trigger("create");
+    $('#inv_details').append(inv_str).trigger("refresh");
   }
   else {
     console.log('inv page load failed');

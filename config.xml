@@ -80,5 +80,7 @@
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
     <access uri="*" subdomains="true" />
     <access origin="*" />
+    <allow-navigation href="*" />
+    <allow-intent href="*" />
     <content src="index.html" />
 </widget>

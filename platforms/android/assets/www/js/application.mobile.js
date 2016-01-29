@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';
+var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -76,11 +76,6 @@ $(document).on('pageinit', '#listapp', function() {
 
   // load main board
   renderBoard(homeUrl, nextPg);
-});
-
-// load initial board
-$(document).on('pageshow', '#listapp, #store', function(event, ui) {
-   //load_cover();
 });
 
 // load store page
@@ -178,7 +173,6 @@ function getPixiPic(pic, style, fld) {
 
   return img_str
 }
-
 // put data based on given url & data type
 function putData(putUrl, fdata, dType) {
   console.log('in putData: ' + putUrl);
@@ -195,7 +189,7 @@ function putData(putUrl, fdata, dType) {
     data: fdata,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      console.log('putData success: ' + data);
+      console.log('putData success: ' + JSON.stringify(data));
 
       // load data based on display type
       switch (dType) {
@@ -209,6 +203,14 @@ function putData(putUrl, fdata, dType) {
           pxPath = tmpPath;
           goToUrl(listPage);
 	  break;
+        case 'conv':
+          var btn = $('#recv-post-btn').hasClass('ui-btn-active') ? '#recv-post-btn' : '#sent-post-btn'
+          $(btn).click();
+          break;
+        case 'post':
+          $('#post' + data.id).remove();
+          //loadConvPage(data, data !== undefined);
+          break;
         default:
           return data;
 	  break;
@@ -225,6 +227,7 @@ function putData(putUrl, fdata, dType) {
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
   console.log('in postData: ' + postUrl);
+  console.log('fdata: ' + JSON.stringify(fdata));
   var dFlg, data;
 
   // turn on spinner
@@ -255,7 +258,7 @@ function postData(postUrl, fdata, dType) {
         invFormType == 'new' ? loadInvForm(data, true) : loadBankPage(res, dFlg); 
 	break;
       case 'reply':
-        loadPosts(res, dFlg);
+        loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
         loadTxnPage(res, dFlg, 'invoice');
@@ -419,8 +422,9 @@ $(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
   // reset active class
   resetActiveClass($this);
 
-  // clear container
-  $('#pixi-list').html('').listview('refresh');
+  // remove buttons from individual conversation
+  $('#conv-top').empty();
+  $('#conv-bot').empty();
 
   // load post page
   loadListPage(postType, 'post');
@@ -626,8 +630,9 @@ $(document).on('click', "#comment-btn", function (e) {
 
 // process reply btn 
 $(document).on('click', "#reply-btn", function (e) {
+  e.preventDefault();
   var txt =  $('#reply_content').val();
-  var id = $(this).closest("li").attr('id');
+  var id = $(this).attr('data-conv-id');
   console.log('reply btn li = ' + id);
 
   if (txt.length > 0) {
@@ -637,13 +642,48 @@ $(document).on('click', "#reply-btn", function (e) {
     // store form data
     var params = new Object();
     params.id = id;
-    params.post = { content: txt, user_id: $('#user_id').val(), pixi_id: $('#pixi_id').val(), recipient_id: $('#recipient_id').val() };
+    params.post = {
+      content: txt,
+      user_id: $('#user_id').val(),
+      pixi_id: $('#pixi_id').val(),
+      recipient_id: $('#recipient_id').val()
+    };
 
     // set path
-    var pxUrl = url + '/posts/reply.json' + token;
+    var pxUrl = url + '/conversations/reply.json' + token;
 
     // post data
-    postData(pxUrl, params, 'reply');
+    postData(pxUrl, JSON.stringify(params), 'reply');
+  }
+});
+
+// process conversation delete btn 
+$(document).on('click', "#conv-del-btn", function (e) {
+  var id = $(this).attr('data-conv-id');
+  var params = { 'id': id };
+  var pxUrl = url + '/conversations/' + id + '/remove.json' + token;
+  putData(pxUrl, JSON.stringify(params), 'conv');
+});
+
+// process post delete btn 
+$(document).on('click', "#del-post-btn", function (e) {
+  var id = $(this).attr('data-post-id');
+  var params = { 'id': id };
+  var pxUrl = url + '/posts/' + id + '/remove.json' + token;
+  putData(pxUrl, JSON.stringify(params), 'post');
+});
+
+// process bill/pay btn 
+$(document).on('click', "#conv-inv-btn", function (e) {
+  pid = $(this).attr("data-inv-id");
+  if ($(this).text() == 'Bill') {
+    invFormType = 'new';
+    goToUrl('../html/invoice_form.html');
+    setInvForm();
+  } else {
+    goToUrl('../html/invoice.html');
+    var invUrl = url + '/invoices/' + pid + '.json' + token;
+    loadData(invUrl, 'invpg');
   }
 });
 
@@ -972,7 +1012,7 @@ $(document).on("pageinit", "#txn-form", function(event) {
   loadData(invUrl, 'txn'); 
 });
 
-// process click on invoice item
+// process click on conversation item
 $(document).on('click', ".conv-item", function(e) {
   e.preventDefault();
 
@@ -984,7 +1024,7 @@ $(document).on('click', ".conv-item", function(e) {
     $('#pixi-list').html('');
 
     var convUrl = url + '/conversations/' + pid + '.json' + token;
-    loadData(convUrl, 'conv'); 
+    loadData(convUrl, 'conv', { 'id': pid }); 
   }
 });
 
@@ -1111,10 +1151,11 @@ $(document).on("pagebeforeshow", function(event) {
           console.log('usr has no active pixis');
           continue;
 	}
-
+/*
         if (usr.bank_accounts.length < 1) {
 	  menu[i].href = '../html/accounts.html';
 	}
+*/
       }
 
       if(usr.unpaid_invoice_count < 1 && menu[i].id == 'pay-menu-btn') {
@@ -1181,13 +1222,37 @@ function curDate() {
 }
 
 // builds list page
-function build_list(cls, localUrl, pic, hdr, txt, cnt) {
+function build_list(cls, localUrl, pic, hdr, txt, cnt, tag) {
   cnt = cnt || "";
-  var str = "<li class='plist'>" + '<a href="#" ' + localUrl + ' class="pending_title ' + cls + '" data-ajax="false">'  
+  tag = tag || "li"
+  var str = "<" + tag + " class='plist'>" + '<a href="#" ' + localUrl + ' class="pending_title ' + cls + '" data-ajax="false">'  
     + pic + '<div class="pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
-    + cnt + '</li>';
+    + cnt + '</' + tag + '>';
   return str;
 }
+
+// build collapsible list item
+function buildCollapsibleList(pic, hdr, hdr2, preview, ftr, id) {
+  return '<div data-role="collapsible" data-collapsed="false" data-iconpos="right"'
+       +   ' data-inset="false" class="collapsible-item" id="post' + id + '">'
+       +   '<h3>' + pic
+       +     '<span class="pstr left-hdr">' + hdr + '</span>'
+       +     '<span class="pstr nav-right">' + hdr2 + '</span>'
+       +     '<span class="ui-li-desc ui-collapsible-preview">'
+       +        preview.substring(0, 40)
+       +     '</span>'
+       +   '</h3>'
+       +   "<p>" + ftr + "</p>"
+       + '</div>'
+}
+
+// hide preview when collapsible item is clicked
+$('.collapsible-item').on('click', function() {
+  if ($('.hidden-collapsible-preview')[0]) {
+    $('.hidden-collapsible-preview')[0].removeClass('hidden-collapsible-preview');
+  }
+  $(this).find('.ui-collapsible-preview').addClass('hidden-collapsible-preview');
+});
 
 var isScrolled = false;
 $(document).on("swipeleft, swiperight", function (e) {

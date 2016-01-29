@@ -105,7 +105,10 @@ a.signup-btn {
   padding:0px!important; /*make the buttons flush edge to edge*/
 }
 
-.ui-page-active.ui-page-panel { overflow-x: visible!important; }
+.ui-page-active.ui-page-panel {
+  overflow-x: visible!important;
+  overflow: visible!important;
+}
 
 .slide-menu .ui-controlgroup {
   margin:0; /*make the buttons flush to the top*/
@@ -304,7 +307,7 @@ label .ui-body-a, .ui-overlay-a { border: none; }
 .loc { font-weight: normal; font-size: 0.65em; margin: 0; }
 
 /*  session presenter list */
-.plist .ui-li-heading {margin: 0.1em 0 0.2em -0.2em!important; white-space: normal; font-size: 14px!important;}
+.plist .ui-li-heading, .ui-collapsible-heading .pstr {margin: 0.1em 0 0.2em -0.2em!important; white-space: normal; font-size: 14px!important;}
 
 li.plist { line-height: 14px!important; }
 
@@ -343,6 +346,30 @@ li.plist { line-height: 14px!important; }
 .ui-li-desc {text-overflow: normal; overflow: visible; margin: 0!important;
 			white-space: pre-wrap; font-size: 0.675em!important;}
 			
+.left-hdr {
+  position: relative;
+  top: -3.3em;
+}
+
+.ui-collapsible-preview {
+  position: relative;
+  left: 6.6em;
+  top: -3em;
+}
+
+.hidden-collapsible-preview {
+  display: none;
+}
+
+.ui-collapsible .ui-btn-inner {
+  display: unset;
+}
+
+.ui-collapsible .ui-icon {
+  position: relative!important;
+  left: 95%;
+  margin-top: -22%!important;
+}
 
 /* margin : .1em 0 .1em .2em */
 			

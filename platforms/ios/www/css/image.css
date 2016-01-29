@@ -1,0 +1,208 @@
+/* primary listing(pixi) image */
+.pic-item { border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; }
+.bot-descr { font-size: 0.675em; color: #555555; }
+.item-descr { color: #000; }
+
+.bdescr {
+  @extend .item-descr;
+  width: 120px!important; 
+  font-size: 0.75em; line-height: 16px!important; 
+}
+
+.mbdescr {
+  width: 100px!important; color: #000; 
+  font-size: 0.7em!important; line-height: 14px!important; 
+}
+
+.gdescr {
+  font-size: 0.675em; color: #555555; 
+}
+
+.mgdescr {
+  font-size: 0.675em; color: #555555; 
+}
+
+.item { 
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  float: left; 
+  margin: 5px; margin-left: 10px!important;
+  border-radius: 3px;
+}
+
+.featured-item {
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  float: left; 
+  margin-left: 5px!important;
+  width: 100px!important;
+  background: white;
+  box-shadow: none;
+  border-radius: 3px;
+}
+
+.pic-frame { 
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin-bottom: 10px; }
+
+.pixi-frame { 
+  display: block; float: left; 
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin: 0 10px 10px 0; 
+}
+
+.item-cat {
+  float:left;
+  padding-right:5px;
+}
+
+.item-dt {
+  float:right;
+  padding-left:5px;
+}
+
+/* listing image thumbnails */
+.thumb {
+  height: 100px;
+  width: 100px!important;
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin: 5px 10px 0 5px;
+}
+
+.pixi-photo img {
+  max-height: 125px!important;
+  width: 125px;
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin: 10px 5px 10px 0;
+}
+
+.inv-pic img {
+  height: 60px!important;
+  width: 60px!important;
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+}
+
+.sm-thumb {
+  height: 60px;
+  width: 60px!important;
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin: 5px 10px 0 5px;
+}
+
+/* user image thumbnails */
+.usr-photo {
+  height: 180px;
+  width: 180px;
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin: 10px 5px 10px 0;
+}
+
+.usr-sm-photo img {
+  height: 30px!important;
+  width: 30px!important;
+  vertical-align: middle;
+  margin-bottom: 4px;
+  margin-top: -4px;
+}
+
+.usr-med-photo img {
+  max-height: 80px!important;
+  width: 80px!important;
+  border: 1px solid #AAAAAA; box-shadow: 1px 1px 1px 1px #ccc; padding: 3px; 
+  margin: 10px 5px 10px 0;
+}
+
+img.tiny, img.usr-sm-photo {
+  height: 30px!important;
+  width: 30px!important;
+  vertical-align: middle;
+  margin-bottom: 4px;
+  margin-top: -4px;
+}
+
+img.usr-med-photo {
+  height: 100px!important;
+  width: 100px!important;
+  vertical-align: middle;
+  margin-bottom: 4px;
+  margin-top: -4px;
+}
+
+.no-left {
+  margin-left: 0!important;
+}
+
+.float-left {
+  float: left;
+}
+
+.grey-text { color: #ccc; }
+.mtop {margin-top: 20px;}
+.mbot {margin-bottom: 15px;}
+
+.img-valign {
+  vertical-align: middle!important;
+}
+
+.frame-container {
+  position: relative;
+  height: 25%;
+  width:100%!important; 
+  background-size: 100% 100%;
+  background-size: cover!important;
+  -moz-background-size: cover!important;
+  border-radius: 3px;
+}
+
+.item-container {
+  background: url("../img/gm_grey.jpg") no-repeat;
+  position: relative;
+  height: 120px;
+  width:100%!important; 
+  background-size: 100% 100%;
+  background-size: cover!important;
+  -moz-background-size: cover!important;
+}
+
+.featured-container {
+  background: url("../img/black.png") no-repeat;
+  height: 180px;
+  position: relative;
+  width:100%!important; 
+  background-size: 100% 100%;
+  background-size: cover!important;
+  -moz-background-size: cover!important;
+  border-radius: 3px;
+}
+
+.featured-container > .bx-wrapper {
+  max-width: 100%!important;
+}
+
+.featured-container > .bx-wrapper > .bx-viewport {
+    min-height: 180px;
+    border: none!important;
+    box-shadow: none!important;
+    background: transparent!important;
+  }
+
+#item-pix > .bx-wrapper {
+  .bx-viewport {
+    border: none!important;
+    box-shadow: none!important;
+    background: transparent!important;
+  }
+}
+
+.truncate {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usr-profile-photo img, .blk-profile-photo img {
+  float: left;
+  height: 80g 2px!important;
+  width: 125px!important;
+  border: 1px solid #FFF;
+  border-radius: 4px;
+}

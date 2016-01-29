@@ -79,7 +79,10 @@ function loadData(listUrl, dType, params) {
 	break;
       case 'txn':
         loadTxnForm(data, dFlg, 'invoice'); 
-	break;
+  break;
+      case 'conv':
+        loadConvPage(data, dFlg); 
+        break;
       default:
 	break;
       }
@@ -401,7 +404,6 @@ function load_board_items(data, str, resFlg) {
   if (!resFlg) return '';
 
   var post_dt, localUrl;
-  usr = data.user;  // store user
   myPixiPage = 'active';
 
   // load pixis
