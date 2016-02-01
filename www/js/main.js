@@ -238,7 +238,6 @@ function initScroll(cntr, nav, nxt, item) {
 
 // use masonry to layout landing page display
 function load_masonry(nav, nxt, item, sz){
-
   if( $('#px-container').length > 0 ) {
     var $container = $('#px-container');
  
@@ -400,6 +399,7 @@ $(document).on("click", "#recent-link", function() {
 
 // process search btn
 $(document).on('click', "#search-btn", function (e) {
+  console.log('in click search');
   var txt =  $('#search_txt').val();
   var loc = $('#site_id').val(); // grab the selected location 
   var cid = $('#category_id').val() || ''; // grab the selected category 
@@ -598,4 +598,17 @@ function fld_form(fid, sid, fld, txt, bname, btnID) {
 
 function isDefined(variable) {
   return (variable !== null && variable !== undefined);
+}
+
+function textFld(title, fnID, fld, cls) {
+  var str = "<label>" + title + "</label>" 
+    + "<input type='text' name='" + fnID + "' id='" + fnID + "' class='" + cls + "' placeholder='" + title + "' value='" + fld + "' />"; 
+  return str;
+}
+
+function numberFld(title, fnID, fld, cls, sz) {
+  var str = "<label>" + title + "</label>" 
+    + "<input type='number' name='" + fnID + "' id='" + fnID + "' class='" + cls + "' size=" + sz + " maxlength=" + sz 
+    + " placeholder='" + title + "' value='" + fld + "' />"; 
+  return str;
 }

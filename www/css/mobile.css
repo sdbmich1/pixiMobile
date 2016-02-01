@@ -73,6 +73,7 @@ a.signup-btn {
 .ui-btn {margin: 0.125em!important;}
 
 .cal-size { width: 85%!important; }
+.col-size { width: 52.5%!important; }
 .num-size { width: 25%!important; }
 #pixi_id { white-space:normal!important; }
 
@@ -664,7 +665,7 @@ table.items th.price, td.price {
 	width: 30px!important;
 }
 
-table#user-tbl td.fld { width: 240px!important; }
+//table#user-tbl td.fld { width: 240px!important; }
 table.items thead th { text-align:left; border-bottom-width:1px; border-top-width:1px; }
 table.items tr.row-item { border: 1px solid blue; }
 

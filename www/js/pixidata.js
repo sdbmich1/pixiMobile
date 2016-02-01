@@ -234,25 +234,27 @@ function pixi_details(item) {
   str += add_housing_features(item);
   str += add_event_features(item);
   str += show_features('Size', item.item_size);
-  //str += show_features('Delivery Type', item.delivery_type);
   str += show_features('Amount Left', item.amt_left);
   str += "</div><br />";  
-
-  // load details
   str += "<span class='mtop'>Description</span><br /><hr><div class='inv-descr'>" + item.description + "</div><br />";
 
-  // build array
+  // load details
+  $('#pixi-details').append(str).trigger("create");
+  loadQty('#px_qty', 1, parseInt(item.amt_left));
+  load_delivery_type(item);
+}
+
+// build array
+function load_delivery_type(item) {
   var arr = [], dval;
   if (item.delivery_type == 'All') {
-    arr = [{ id: 'P', name_title: 'Pickup'}, {id: 'S', name_title: 'Ship'}];
-    dval = 'S';
+    arr = [{ id: 'P', name_title: 'Pickup'}, {id: 'SHP', name_title: 'Ship'}];
+    dval = 'SHP';
   }
   else {
     arr.push({id: item.fulfillment_type_code, name_title: item.delivery_type});
     dval = item.fulfillment_type_code;
   }
-  $('#pixi-details').append(str).trigger("create");
-  loadQty('#px_qty', 1, parseInt(item.amt_left));
   loadList(arr, '#ftype', '', dval);
 }
 

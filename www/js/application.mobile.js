@@ -24,6 +24,11 @@ $(function(){
   });
 });
 
+$.event.special.swipe.scrollSupressionThreshold = 10; // More than this horizontal displacement, and we will suppress scrolling.
+$.event.special.swipe.horizontalDistanceThreshold = 30; // Swipe horizontal displacement must be more than this.
+$.event.special.swipe.durationThreshold = 500;  // More time than this, and it isn't a swipe.
+$.event.special.swipe.verticalDistanceThreshold = 75; // Swipe vertical displacement must be less than this
+
 // change page
 function goToUrl(pxUrl, rFlg) {
   $.mobile.changePage( pxUrl, { transition: "none", reverse: false, reloadPage: rFlg, changeHash: false });
@@ -199,6 +204,10 @@ function putData(putUrl, fdata, dType) {
           pxPath = tmpPath;
           goToUrl(listPage);
 	  break;
+        case 'unfollow':
+	  var str = toggle_follow_btn(fdata.seller_id, false);
+	  $('#store-btn').html('').append(str).trigger("create");
+	  break;
         default:
           return data;
 	  break;
@@ -250,9 +259,13 @@ function postData(postUrl, fdata, dType) {
       case 'card':
         loadTxnPage(res, dFlg, 'invoice');
 	break;
+      case 'buy':
+        var str = $.parseJSON(res.order);
+	pid = parseInt(str['invoice_id']);
+	goToUrl('../html/transaction.html');
+	break;
       case 'follow':
-        console.log('postData seller id= ' + fdata.seller_id);
-	var str = showButton('data-seller_id', fdata.seller_id, 'Unfollow', 'b', 'unfollow-btn')
+	var str = toggle_follow_btn(fdata.seller_id, true);
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
       default:
@@ -548,17 +561,13 @@ $(document).on('click', '#edit-txn-addr', function(e) {
   $('.user-tbl, .addr-tbl').toggle();
 });
 
-// toggle credit card info display
-$(document).on('click', '#edit-card-btn', function(e) {
-  $('.card-tbl, .card-dpl').toggle();
+$(document).on('click', '#edit-ship-addr', function(e) {
+  $('.rcpt-tbl, .ship-addr-tbl').toggle();
 });
 
 // toggle spinner
 function uiLoading(bool) {
-  if (bool)
-    $('body').addClass('ui-loading');
-  else
-    $('body').removeClass('ui-loading');
+  (bool) ? $('body').addClass('ui-loading') : $('body').removeClass('ui-loading');
 }
 
 // toggle contact buttons
@@ -603,6 +612,51 @@ $(document).on('click', "#follow-btn", function (e) {
 
     // post data
     postData(pxUrl, params, 'follow');
+  }
+});
+
+// buy now
+$(document).on('click', "#buy-btn", function (e) {
+  var xid = $(this).attr("data-pixi-id");
+
+  if (xid.length > 0) {
+    uiLoading(true);
+    $(this).attr('disabled', 'disabled');
+
+    // store form data
+    var params = new Object();
+
+    // set params
+    params = { id: xid, qty: $('#px_qty').val(), fulfillment_type_code: $('#ftype').val() };
+
+    // set path
+    var pxUrl = url + '/pixi_wants/buy_now.json' + token;
+
+    // post data
+    postData(pxUrl, params, 'buy');
+  }
+});
+
+// remove follower
+$(document).on('click', "#unfollow-btn", function (e) {
+  var sid = $(this).attr("data-seller_id");
+  console.log('sid = ' + sid);
+
+  if (sid.length > 0) {
+    uiLoading(true);
+    $(this).attr('disabled', 'disabled');
+
+    // store form data
+    var params = new Object();
+
+    // set params
+    params = { uid: getUserID(), seller_id: sid };
+
+    // set path
+    var pxUrl = url + '/favorite_sellers/1.json' + token;
+
+    // put data
+    putData(pxUrl, JSON.stringify(params), 'unfollow');
   }
 });
 
@@ -843,6 +897,7 @@ function processLogin(res, resFlg) {
       usr = res.user;
       console.log('user id = '+ usr.id);
       console.log('user pixi count = '+ usr.pixi_count);
+      console.log('user email = '+ email);
 
       //store credentials on device
       window.localStorage["email"] = email;
@@ -1208,19 +1263,14 @@ function build_list(cls, localUrl, pic, hdr, txt, cnt) {
 }
 
 var isScrolled = false;
-$(document).on("swipeleft, swiperight", function (e) {
-  $(document).off("scrollstop");
-  console.log('in swipe event');
-  isScrolled = true;
 
-  /* remove scrollstop event listener */
-  setTimeout(function() {
-
-    /* re-attach scrollstop */
-    $(document).on("scrollstop", checkScroll);
-    isScrolled = false;
-  }, 1000);
-
+$('.featured-container').on("swipeleft, swiperight", function (e) {
+  console.log('in listapp swipe event');
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    $(document).off("scrollstop");
+    isScrolled = true;
+  }
 });
 
 $(document).on("scrollstop", checkScroll);
@@ -1229,6 +1279,7 @@ function checkScroll() {
   if (activePage == 'listapp' || activePage == 'store') {
 
     /* window's scrollTop() */
+    console.log('in checkScroll');
     scrolled = $(this).scrollTop(),
 
     /* viewport */
@@ -1267,8 +1318,10 @@ function addMore(page) {
 }
 
 // default for rendering page buttons
-function showButton(tag, id, title, theme, btnID, cls) {
-  cls = cls || '';
-  var str= "<a href='#'" + tag + "=" + id + " data-role='button' data-theme='" + theme + "' id='" + btnID + "' class='" + cls + "'>" + title + "</a>";
+function showButton(tag, id, title, theme, btnID, cls, sz, tag2, id2) {
+  cls = cls || ''; tag2 = tag2 || ''; id2 = id2 || ''; sz = sz || 'false';
+  var id_str = (tag2 == '') ? tag + "='" + id + "'": tag + "=" + id + tag2 + "=" + id2; 
+  var str= "<a href='#' " + id_str + " data-mini='" + sz + "' data-role='button' data-theme='" + theme + "' id='" + btnID + "' class='" + cls + "'>" 
+    + title + "</a>";
   return str;
 }
