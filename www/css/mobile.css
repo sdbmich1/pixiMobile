@@ -37,6 +37,9 @@ input.fld .ui-input-text .ui-body-c {
 	background-color: #FFF!important;
 }
 
+div.ui-input-text input.ui-input-text, div.ui-input-text textarea.ui-input-text, .ui-input-search input.ui-input-text {
+  padding: 0.85em!important 0!important;}
+
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-bottom,
@@ -67,8 +70,10 @@ a.signup-btn {
 .ui-li-has-thumb .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li-has-thumb {padding-left: 75px!important;}
 .ui-btn-icon-right {padding-right: 5px;}
 /*.ui-btn-inner, .ui-li {width: 100%!important;} */
+.ui-btn {margin: 0.125em!important;}
 
-.cal-size { width: 75%!important; }
+.cal-size { width: 85%!important; }
+.col-size { width: 52.5%!important; }
 .num-size { width: 25%!important; }
 #pixi_id { white-space:normal!important; }
 
@@ -418,7 +423,6 @@ a.pixi-cat, .item-dt {font-size: 0.625em; line-height: 10px; vertical-align: mid
 
 .dtop {margin-top: 50px; }
 
-.clear-all { clear:both }
 .clear-right { clear:right }
 
 /* old slider markup */
@@ -454,7 +458,6 @@ a.pixi-cat, .item-dt {font-size: 0.625em; line-height: 10px; vertical-align: mid
 }
 
 h3 { margin-top: 0px; }
-.sm-top { margin-top: 3px!important }  
 .pixi-grey-bkgnd { background-color: #eaeaea; }
 
 .round {
@@ -489,6 +492,7 @@ a:hover, a:visited {
 .search_button {width: 24px; height: 24px; }
 
 .ui-bar-a { border: none; text-shadow: none; }
+.ui-button { margin: 0!important; }
 
 footer.mbl-footer { height: 1.5em; width: 100%; color:#0C6FCB; font-weight: normal; font-size: 0.75em;}
 #push { height: 1.5em; }
@@ -699,7 +703,7 @@ table.items th.price, td.price {
 	width: 30px!important;
 }
 
-table#user-tbl td.fld { width: 240px!important; }
+//table#user-tbl td.fld { width: 240px!important; }
 table.items thead th { text-align:left; border-bottom-width:1px; border-top-width:1px; }
 table.items tr.row-item { border: 1px solid blue; }
 
@@ -785,7 +789,7 @@ a.close-btn, a.change-btn {
 .ui-mobile-viewport-transitioning .ui-footer-fixed { visibility: hidden; }
 
 .splash-top {
-	margin-top: 375px;
+	margin-top: 410px;
 }
 
 #reoccur-dt, #start-dt, #end-dt, #start-tm, #end-tm {

@@ -76,27 +76,27 @@ function loadInvForm(data, resFlg) {
 // process invoice page display
 function loadInvPage(data, resFlg) {
   if (resFlg) {
-    data = data.invoice;
+    var item = data.invoice;
     var pic_str = "height:45px; width:45px; border: 1px solid #ccc;";
-    var inv_str = "<div class='mleft10'><table class='inv-descr'><tr><td>Invoice #: </td><td>" + data.id + "</td></tr><tr>"; 
-    inv_str += "<td>Date: </td><td>" + data.inv_dt + "</td></tr><tr>"; 
+    var inv_str = "<div class='mleft10'><table class='inv-descr'><tr><td>Invoice #: </td><td>" + item.id + "</td></tr><tr>"; 
+    inv_str += "<td>Date: </td><td>" + item.inv_dt + "</td></tr><tr>"; 
 
     // display correct photo based on whether user is buyer or seller
-    inv_str += "<td>From: </td><td>" + showUserPhoto(data.seller.photo, data.seller.name, 'inv-descr') + "</td></tr>";
-    inv_str += "<tr><td>Bill To: </td><td>" + showUserPhoto(data.buyer.photo, data.buyer.name, 'inv-descr') + "<td>";
+    inv_str += "<td>From: </td><td>" + showUserPhoto(item.seller.photo, item.seller.name, 'inv-descr') + "</td></tr>";
+    inv_str += "<tr><td>Bill To: </td><td>" + showUserPhoto(item.buyer.photo, item.buyer.name, 'inv-descr') + "<td>";
     inv_str += "</tr></table></div>";
 
     // set invoice details
-    var tax = (data.sales_tax != undefined) ? parseFloat(data.sales_tax).toFixed(2) : 0.0;
-    var ship = (data.ship_amt != undefined) ? parseFloat(data.ship_amt) : 0.0;
-    var tax_total = (data.tax_total != undefined) ? parseFloat(data.tax_total) : 0.0;
-    var fee = parseFloat(data.get_fee).toFixed(2);
-    var total = parseFloat(data.get_fee + data.amount).toFixed(2);
+    var tax = (item.sales_tax != undefined) ? parseFloat(item.sales_tax).toFixed(2) : 0.0;
+    var ship = (item.ship_amt != undefined) ? parseFloat(item.ship_amt) : 0.0;
+    var tax_total = (item.tax_total != undefined) ? parseFloat(item.tax_total) : 0.0;
+    var fee = parseFloat(item.get_fee).toFixed(2);
+    var total = parseFloat(item.get_fee + item.amount).toFixed(2);
 
     inv_str += "<div class='mleft10'><div class='control-group'><table class='mtop inv-tbl inv-descr'>"
       + "<th><div class='center-wrapper'>Qty</div></th><th><div class='center-wrapper'>Item</div></th>"
       + "<th><div class='center-wrapper'>Price</div></th><th><div class='center-wrapper'>Amount</div></th>"
-      + loadInvRow(data)
+      + loadInvRow(item)
       + "<tr class='sls-tax'><td></td><td><div class='nav-right'>Sales Tax</div></td>"
       + "<td class='width120'><div class='nav-right'>" + tax + "%</div></td>"
       + "<td class='width120'><div class='nav-right'>" + tax_total.toFixed(2) + "</div></td></tr>"
@@ -109,22 +109,21 @@ function loadInvPage(data, resFlg) {
       + "<tr><td></td><td><div class='nav-right'>Amount Due</div></td><td></td>"
       + "<td class='width120'><div class='order-total total-str nav-right'><h6>$" + total + "</h6></div></td></tr></table>";
 
-    if (data.comment !== undefined) {
-      inv_str += "<div class='mtop inv-descr control-label'>Comments: " + data.comment + "</div>";
+    if (item.comment !== undefined) {
+      inv_str += "<div class='mtop inv-descr control-label'>Comments: " + item.comment + "</div>";
     }
     inv_str += "</div><div class='nav-right'>"
      
     // if owned & unpaid display edit btns
-    if (data.seller_id == getUserID()) {
-      if (data.status == 'unpaid') {
-        inv_str += "<table><tr><td><a href='#' data-inv-id='" + data.id + "' data-role='button' id='edit-inv-btn'"
-          + " data-theme='b'>Edit</a></td><td><a href='#' data-role='button' data-inv-id='" + data.id 
-	  + "' id='remove-inv-btn'>Remove</a></td><tr></table>";
+    if (item.seller_id == getUserID()) {
+      if (item.status == 'unpaid') {
+        inv_str += "<table><tr><td>" + showButton('data-inv-id', item.id, 'Edit', 'b', 'edit-inv-btn') + "</td>"
+	  + "<td>" + showButton('data-inv-id', item.id, 'Remove', 'a', 'remove-inv-btn') + "</td><tr></table>";
       }
     }
     else {
-      if (data.status == 'unpaid') {
-        inv_str += "<a href='#' data-inv-id=" + data.id + " data-role='button' data-theme='d' id='pay-btn'>Pay</a>";
+      if (item.status == 'unpaid') {
+        inv_str += showButton('data-inv-id', item.id, 'Pay', 'd', 'pay-btn');
       }
     }
     inv_str += "</div></div>";
@@ -140,6 +139,7 @@ function loadInvRow(data) {
   var str = '';
   console.log('in loadInvRow');
   $.each(data.invoice_details, function(index, item) {
+    console.log('adding inv details');
     str += "<tr><td class='width120'><div class='nav-right'>" + item.quantity + "</div></td>";
     str += "<td class='cal-size'>" + item.pixi_title + "</td>";
     str += "<td class='width120'><div class='nav-right'>" + parseFloat(item.price).toFixed(2) + "</div></td>";
@@ -161,10 +161,7 @@ function loadInvList(data, resFlg) {
         var amt = parseFloat(item.amount + item.get_fee).toFixed(2);
 
 	// set invoice name
-	if(myPixiPage == 'received') {
-	  var inv_name = item.seller.name; }
-	else {
-	  var inv_name = item.buyer.name; }
+	var inv_name = (myPixiPage == 'received') ? item.seller.name : item.buyer.name; 
 
         // build pixi item string
 	localUrl = 'data-inv-id="' + item.id + '"';

@@ -31,32 +31,44 @@ function BalancedCard() {
   // disable form
   $('#payForm').attr('disabled', 'disabled');
 
-  var qty = $('#inv-item').data("qty");
-  var prc = $('#inv-item').data("prc");
-  var invID = $('#txn-prev-btn').data("inv-id");
-  console.log('inv item prc = ' + prc);
-  console.log('inv ID = ' + invID);
-
-  // store form data
-  var params = new Object();
-
-  // set params
-  params.id = $('#inv-item').data("pixi_id");
-  params.order = { cnt: 1, item1: $('#description').val(), quantity1: qty, price1: prc, invoice_id: invID };
-  params.transaction = { first_name: $('#first_name').val(), last_name: $('#last_name').val(), address: $('#address').val(), 
-    city: $('#city').val(), state: $('#state').val(), zip: $('#zip').val(), home_phone: $('#home_phone').val(), email: $('#email').val(), 
-    card_number: $('#card_number').val(), cvv: $('#card_code').val(), token: $('#token').val(), card_month: $('#card_month').val(),  
-    card_year: $('#card_year').val(), convenience_fee: $('#convenience_fee').val(), processing_fee: $('#processing_fee').val(),
-    description: $('#description').val(), promo_code: $('#promo_code').val(), amt: $('#amt').val(), transaction_type: $('#transaction_type').val() }; 
-
   // submit card data
-  submitData('card', params);
+  submitData('card', buildTxnParams());
 
   // prevent the form from submitting with the default action
   return false;
 }
 
-// create token if credit card info is valid
+function buildTxnParams() {
+  var qty = $('#inv-item').data("qty");
+  var prc = $('#inv-item').data("prc");
+  var invID = $('#txn-prev-btn').data("inv-id");
+  var pid = $('#pixi_id').val(); 
+  var payToken = $('#token').val(); 
+  console.log('inv item prc = ' + prc);
+  console.log('inv ID = ' + invID);
+  console.log('pixi ID = ' + pid);
+  console.log('payToken = ' + payToken);
+
+  // store form data
+  var params = new Object();
+
+  // set params
+  params.order = { cnt: 1, item1: $('#description').val(), quantity1: qty, price1: prc, invoice_id: invID, id1: pid };
+  params.transaction = { first_name: $('#first_name').val(), last_name: $('#last_name').val(), address: $('#address').val(), 
+    city: $('#city').val(), state: $('#state').val(), zip: $('#zip').val(), home_phone: $('#home_phone').val(), email: $('#email').val(), 
+    card_number: $('#card_number').val(), cvv: $('#card_code').val(), token: payToken, user_id: $('#user_id').val(), 
+    convenience_fee: $('#convenience_fee').val(), processing_fee: $('#processing_fee').val(),
+    seller_token: $('#seller_token').val(), seller_inv_amt: $('#seller_inv_amt').val(),  
+    recipient_first_name: $('#recipient_first_name').val(), recipient_last_name: $('#recipient_last_name').val(), 
+    recipient_address: $('#recipient_address').val(), recipient_city: $('#recipient_city').val(), recipient_state: $('#recipient_state').val(), 
+    recipient_zip: $('#recipient_zip').val(), recipient_home_phone: $('#recipient_home_phone').val(), 
+    recipient_email: $('#recipient_email').val(), description: $('#description').val(), promo_code: $('#promo_code').val(), 
+    amt: $('#amt').val(), transaction_type: $('#transaction_type').val() }; 
+
+  return params;
+}
+
+// create token if bank info is valid
 function processAcct() {
     $('#bank-acct-form').attr('disabled', true);
 	

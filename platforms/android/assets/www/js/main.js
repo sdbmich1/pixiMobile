@@ -120,18 +120,19 @@ function toggleLoading () {
 }
 
 // used to toggle spinner
-$(document).on("ajax:beforeSend", '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link', function () {
+var aStr = '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link, .bd-item, .slrUrl';
+$(document).on("ajax:beforeSend", aStr, function () {
     uiLoading(true);
 });	
 
-$(document).on("ajax:success", '.pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu', function () {
+$(document).on("ajax:success, ajax:complete", aStr,  function () {
   uiLoading(false);
 });	
-
+/*
 $(document).on("ajax:complete", '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link', function () {
   uiLoading(false);
 });	
-
+*/
 // handle 401 ajax error
 $(document).ajaxError( function(e, xhr, options){
   if(xhr.status == 401)
@@ -139,7 +140,6 @@ $(document).ajaxError( function(e, xhr, options){
 });	
 
 $(document).ready(function(){
-
   console.log('doc ready');
 
   // used to scroll up page
@@ -217,8 +217,6 @@ function initScroll(cntr, nav, nxt, item) {
       animate: false,
       extraScrollPx: 150,
       bufferPx : 100,
-      localMode    : true,
-      debug: true,
       loading: {
         img:  'http://i.imgur.com/6RMhx.gif',
 	msgText: "<em>Loading...</em>"
@@ -240,7 +238,6 @@ function initScroll(cntr, nav, nxt, item) {
 
 // use masonry to layout landing page display
 function load_masonry(nav, nxt, item, sz){
-
   if( $('#px-container').length > 0 ) {
     var $container = $('#px-container');
  
@@ -400,6 +397,27 @@ $(document).on("click", "#recent-link", function() {
   return false;
 });
 
+// process search btn
+$(document).on('click', "#search-btn", function (e) {
+  console.log('in click search');
+  var txt =  $('#search_txt').val();
+  var loc = $('#site_id').val(); // grab the selected location 
+  var cid = $('#category_id').val() || ''; // grab the selected category 
+  var mUrl = '';
+  nextPg = 1;
+
+  if (txt.length > 0) {
+    console.log('in click search event');
+    $(this).attr('disabled', 'disabled');
+
+    // set path
+    homeUrl = url + '/searches.json' + token + '&loc=' + loc + '&cid=' + cid + '&search=' + txt + '&url=' + mUrl;
+
+    // refresh the page
+    refreshBoard(true);
+  }
+});
+
 // reset board pixi based on location
 function resetBoard(cid) {
   var loc = $('#site_id').val(); // grab the selected location 
@@ -461,7 +479,6 @@ $(document).on('click', '#home-link', function(e) {
   $('#category_id').val('').prop('selectedIndex',0);
   $('#search').val('');
   reset_top('#px-search', '#pixi-loc, #cat-top, #px-search');
-  console.log('in home-link reset');
 
   // reset board
   resetBoard();
@@ -564,4 +581,34 @@ function set_home_location(loc){
 
   // process ajax call
   loadData(newUrl, 'home');
+}
+
+function reload_ratings() {
+  $(".rateit").rateit();
+}
+
+function fld_form(fid, sid, fld, txt, bname, btnID) {
+  var str = '<form id="' + fid + '" data-ajax="false"><div id="form_errors" style="display:none" class="error"></div>' +
+    '<div id="' + sid + '" class="clear-all mbot"><table><tr><td class="cal-size"><div data-role="fieldcontain" class="ui-hide-label">' +
+    '<input name="content" id="' + fld + '" class="slide-menu" placeholder="' + txt + '" data-theme="a" required /></div></td>' +
+    '<td><input type="submit" value="' + bname + '" data-theme="b" data-inline="true" id="' + btnID + '" data-mini="true"></td>' +
+    '</tr></table></div></form>';
+  return str;    
+}
+
+function isDefined(variable) {
+  return (variable !== null && variable !== undefined);
+}
+
+function textFld(title, fnID, fld, cls) {
+  var str = "<label>" + title + "</label>" 
+    + "<input type='text' name='" + fnID + "' id='" + fnID + "' class='" + cls + "' placeholder='" + title + "' value='" + fld + "' />"; 
+  return str;
+}
+
+function numberFld(title, fnID, fld, cls, sz) {
+  var str = "<label>" + title + "</label>" 
+    + "<input type='number' name='" + fnID + "' id='" + fnID + "' class='" + cls + "' size=" + sz + " maxlength=" + sz 
+    + " placeholder='" + title + "' value='" + fld + "' />"; 
+  return str;
 }

@@ -1,0 +1,211 @@
+.rateit {
+    display: -moz-inline-box;
+    display: inline-block;
+    position: relative;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.rateit .rateit-range
+{
+    position: relative;
+    display: -moz-inline-box;
+    display: inline-block;
+    background: url("../img/star.gif");
+    height: 16px;
+    outline: none;
+}
+
+.rateit .rateit-range * {
+    display:block;
+}
+
+/* for IE 6 */
+* html .rateit, * html .rateit .rateit-range
+{
+    display: inline;
+}
+
+/* for IE 7 */
+* + html .rateit, * + html .rateit .rateit-range
+{
+    display: inline;
+}
+
+.rateit .rateit-hover, .rateit .rateit-selected
+{
+    position: absolute;
+    left: 0px;
+}
+
+.rateit .rateit-hover-rtl, .rateit .rateit-selected-rtl
+{
+    left: auto;
+    right: 0px;
+}
+
+.rateit .rateit-hover
+{
+    background: url("../img/star.gif") left -32px;
+}
+
+.rateit .rateit-hover-rtl
+{
+    background-position: right -32px;
+}
+
+.rateit .rateit-selected
+{
+    background: url("../img/star.gif") left -16px;
+}
+
+.rateit .rateit-selected-rtl
+{
+    background-position: right -16px;
+}
+
+.rateit .rateit-preset
+{
+    background: url("../img/star.gif") left -48px;
+}
+
+.rateit .rateit-preset-rtl
+{
+    background: url("../img/star.gif") left -48px;
+}
+
+.rateit button.rateit-reset
+{
+    background: url("../img/delete.gif") 0 0;
+    width: 16px;
+    height: 16px;
+    display: -moz-inline-box;
+    display: inline-block;
+    float: left;
+    outline: none;
+    border:none;
+    padding: 0;
+}
+
+.rateit button.rateit-reset:hover, .rateit button.rateit-reset:focus
+{
+    background-position: 0 -16px;
+}
+
+div.bigpixis div.rateit-range
+{
+    background: url("../img/pixi_blank32.png");
+    height: 29px;
+}
+
+div.bigpixis div.rateit-hover
+{
+    background: url("../img/pixi_orange32.png");
+}
+
+div.bigpixis div.rateit-selected
+{
+    background: url("../img/pixi_orange32.png");
+}
+
+div.bigpixis div.rateit-reset
+{
+    background: url("../img/pixi_blank32.png");
+    width: 32px;
+    height: 29px;
+}
+
+div.bigpixis div.rateit-reset:hover
+{
+    background: url("../img/pixi_blank32.png");
+}
+
+div.smpixis div.rateit-range
+{
+    background: url("../img/pixi_blank16.png");
+    height: 16px;
+}
+
+div.smpixis div.rateit-hover
+{
+    background: url("../img/pixi_orange16.png");
+}
+
+div.smpixis div.rateit-selected
+{
+    background: url("../img/pixi_orange16.png");
+}
+
+div.smpixis div.rateit-reset
+{
+    background: url("../img/pixi_blank16.png");
+    width: 16px;
+    height: 16px;
+}
+
+div.smpixis div.rateit-reset:hover
+{
+    background: url("../img/pixi_blank16.png");
+}
+
+div.med-pixis div.rateit-range
+{
+    background: url("../img/pixi_blank_white24.png");
+    height: 24px;
+}
+
+div.med-pixis div.rateit-hover
+{
+    background: url("../img/pixi_orange_white24.png");
+}
+
+div.med-pixis div.rateit-selected
+{
+    background: url("../img/pixi_orange_white24.png");
+}
+
+div.med-pixis div.rateit-reset
+{
+    background: url("../img/pixi_blank_white24.png");
+    width: 24px;
+    height: 21px;
+}
+
+div.med-pixis div.rateit-reset:hover
+{
+    background: url("../img/pixi_blank_white24.png");
+}
+
+div.bmed-pixis div.rateit-range
+{
+    background: url("../img/pixi_blank_blue24.png");
+    height: 21px;
+}
+
+div.bmed-pixis div.rateit-hover
+{
+    background: url("../img/pixi_orange_blue24.png");
+}
+
+div.bmed-pixis div.rateit-selected
+{
+    background: url("../img/pixi_orange_blue24.png");
+}
+
+div.bmed-pixis div.rateit-reset
+{
+    background: url("../img/pixi_blank_blue24.png");
+    width: 24px;
+    height: 21px;
+}
+
+div.bmed-pixis div.rateit-reset:hover
+{
+    background: url("../img/pixi_blank_blue24.png");
+}
+
