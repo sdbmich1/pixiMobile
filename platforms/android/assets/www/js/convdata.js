@@ -26,7 +26,7 @@ function loadPosts(data, resFlg) {
         var pic = getPixiPic(img, 'height:60px; width:60px;');
         var hdr = item.pixi_title; 
 	var ftr = name + ' | Posted ' + post_dt;
-	var cnt = '<div class="ui-li-count">' + item.posts_count + '</div>';
+	var cnt = '<div class="ui-li-count">' + item.get_posts.length + '</div>';
 	item_str += build_list('conv-item', localUrl, pic, hdr, ftr, cnt); 
       });
     }
@@ -39,10 +39,11 @@ function loadPosts(data, resFlg) {
   }
 
   // render content
-  $container.append(item_str).listview('refresh');
+  $container.empty().append(item_str).listview('refresh');
 }
 
 function send_msg(data) {
+  var img = (getUserID() === data.user_id) ? data.user.photo : data.recipient.photo;
   return "<form id='post-frm' method='post' data-ajax='false'>" 
        + '<div id="notice" style="display:none"></div>'
        + '<div id="form_errors"></div>'
@@ -51,7 +52,7 @@ function send_msg(data) {
        + "<table>"
        +   "<tr>"
        +     "<td>"
-       +       getPixiPic(data.user.photo, 'height:60px; width:60px;')
+       +       getPixiPic(img, 'height:60px; width:60px;')
        +     "</td>"
        +     "<td class='cal-size'>"
        +       "<div data-role='fieldcontain' class='ui-hide-label'>"
@@ -102,12 +103,11 @@ function loadConvPage(data, resFlg) {
   // load listview
   var item_str = '<div data-role="collapsible-set" data-inset="false">';
   if (resFlg) {
-    $.each(data.active_posts, function(index, item) {
-      // display correct photo based on whether user is sender or recipient
-      var img = (isSender) ? data.recipient.photo : data.user.photo;
+    $.each(data.get_posts, function(index, item) {
+      var img = item.user.photo;
 
       // build conversation string
-      var pic = getPixiPic(img, 'height:60px; width:60px;')
+      var pic = getPixiPic(img, 'height:60px; width:60px;');
       var hdr = item.sender_name;
       var hdr2 = parseDate(item.created_at);
       var preview = item.content;

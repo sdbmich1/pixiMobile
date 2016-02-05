@@ -307,7 +307,7 @@ label .ui-body-a, .ui-overlay-a { border: none; }
 .loc { font-weight: normal; font-size: 0.65em; margin: 0; }
 
 /*  session presenter list */
-.plist .ui-li-heading, .ui-collapsible-heading .pstr {margin: 0.1em 0 0.2em -0.2em!important; white-space: normal; font-size: 14px!important;}
+.plist .ui-li-heading, .ui-collapsible-heading .pstr {margin: 0.1em 0 0.2em; white-space: normal; font-size: 14px!important;}
 
 li.plist { line-height: 14px!important; }
 

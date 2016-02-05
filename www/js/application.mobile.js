@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';
+var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -205,7 +205,7 @@ function putData(putUrl, fdata, dType) {
 	  break;
         case 'conv':
           var btn = $('#recv-post-btn').hasClass('ui-btn-active') ? '#recv-post-btn' : '#sent-post-btn'
-          $(btn).click();
+          showConversations($(btn));
           break;
         case 'post':
           $('#post' + data.id).remove();
@@ -227,7 +227,6 @@ function putData(putUrl, fdata, dType) {
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
   console.log('in postData: ' + postUrl);
-  console.log('fdata: ' + JSON.stringify(fdata));
   var dFlg, data;
 
   // turn on spinner
@@ -414,13 +413,12 @@ $(document).on('click', '#profile-nav-btn, #contact-nav-btn, #prefs-nav-btn', fu
   return false;
 });
 
-// process list btn click
-$(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
-  var $this = $(this);
-  postType = $this.attr('data-dtype'); 
+// show conversations
+function showConversations(currBtn) {
+  postType = currBtn.attr('data-dtype'); 
 
   // reset active class
-  resetActiveClass($this);
+  resetActiveClass(currBtn);
 
   // remove buttons from individual conversation
   $('#conv-top').empty();
@@ -428,6 +426,11 @@ $(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
 
   // load post page
   loadListPage(postType, 'post');
+}
+
+// process list btn click
+$(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
+  showConversations($(this));
   return false;
 });
 
@@ -653,7 +656,7 @@ $(document).on('click', "#reply-btn", function (e) {
     var pxUrl = url + '/conversations/reply.json' + token;
 
     // post data
-    postData(pxUrl, JSON.stringify(params, 'reply');
+    postData(pxUrl, params, 'reply');
   }
 });
 
@@ -838,7 +841,7 @@ $(document).on("submit", "#loginForm", function(e) {
 });
 
 function handleLogin() {
-  PGproxy.navigator.notification.alert('in handlelogin');
+  console.log('in handlelogin');
   uiLoading(true);
 
   //disable the button so we can't resubmit while we wait
@@ -1238,21 +1241,13 @@ function buildCollapsibleList(pic, hdr, hdr2, preview, ftr, id) {
        +   '<h3>' + pic
        +     '<span class="pstr left-hdr">' + hdr + '</span>'
        +     '<span class="pstr nav-right">' + hdr2 + '</span>'
-       +     '<span class="ui-li-desc ui-collapsible-preview">'
-       +        preview.substring(0, 40)
+       +     '<span class="ui-li-desc ui-collapsible-preview truncate">'
+       +        preview
        +     '</span>'
        +   '</h3>'
-       +   "<p>" + ftr + "</p>"
+       +   "<p class='inv-descr mleft5'>" + ftr + "</p>"
        + '</div>'
 }
-
-// hide preview when collapsible item is clicked
-$('.collapsible-item').on('click', function() {
-  if ($('.hidden-collapsible-preview')[0]) {
-    $('.hidden-collapsible-preview')[0].removeClass('hidden-collapsible-preview');
-  }
-  $(this).find('.ui-collapsible-preview').addClass('hidden-collapsible-preview');
-});
 
 var isScrolled = false;
 $(document).on("swipeleft, swiperight", function (e) {

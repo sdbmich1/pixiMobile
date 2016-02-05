@@ -194,8 +194,8 @@ img.usr-med-photo {
 
 .truncate {
   width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
+  white-space: nowrap!important;
+  overflow: hidden!important;
   text-overflow: ellipsis;
 }
 

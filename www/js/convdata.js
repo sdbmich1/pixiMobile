@@ -39,10 +39,11 @@ function loadPosts(data, resFlg) {
   }
 
   // render content
-  $container.append(item_str).listview('refresh');
+  $container.empty().append(item_str).listview('refresh');
 }
 
 function send_msg(data) {
+  var img = (getUserID() === data.user_id) ? data.user.photo : data.recipient.photo;
   return "<form id='post-frm' method='post' data-ajax='false'>" 
        + '<div id="notice" style="display:none"></div>'
        + '<div id="form_errors"></div>'
@@ -51,7 +52,7 @@ function send_msg(data) {
        + "<table>"
        +   "<tr>"
        +     "<td>"
-       +       getPixiPic(data.user.photo, 'height:60px; width:60px;')
+       +       getPixiPic(img, 'height:60px; width:60px; margin-left:-6px;')
        +     "</td>"
        +     "<td class='cal-size'>"
        +       "<div data-role='fieldcontain' class='ui-hide-label'>"
@@ -80,9 +81,9 @@ function loadConvPage(data, resFlg) {
   // set page headers
   var pic = getPixiPic(data.listing.photo_url, 'height:60px; width:60px;', 'smallImage');
   var isSender = getUserID() === data.sender_id;
-  var str = pic + "<span class='mleft10 pstr'>" + data.pixi_title + "</span><br /><div style='text-align:right;'>";
+  var str = '<table><tr><td>' + pic + "</td><td><span class='mleft10 pstr'>" + data.pixi_title + "</span></td></tr></table><div style='text-align:right;'>";
 
-  var button_str = "<a href='#' data-inv-id=" + data.invoice_id + " data-role='button'" + " data-theme='a' id='conv-inv-btn' data-inline='true'>";
+  var button_str = "<a href='#' data-inv-id=" + data.invoice_id + " data-role='button'" + " data-theme='a' id='conv-inv-btn' data-inline='true' data-mini='true'>";
   if (isSender) {
     if (data['sender_can_bill?'] || data['sender_due_invoice?']) {
       str += button_str + (data['sender_can_bill?'] ? 'Bill' : 'Pay') + "</a>";
@@ -94,25 +95,23 @@ function loadConvPage(data, resFlg) {
   }
 
   str += "<a href='#' data-conv-id=" + data.id + " data-role='button'" +
-           " data-theme='b' id='conv-del-btn' data-inline='true'>Delete</a></div>";
-  str += "<br><hr class='neg-top'>";
+           " data-theme='b' id='conv-del-btn' data-mini='true' data-inline='true'>Delete</a></div>";
 
   $('#conv-top').empty().append(str).trigger('create');
 
   // load listview
   var item_str = '<div data-role="collapsible-set" data-inset="false">';
   if (resFlg) {
-    $.each(data.active_posts, function(index, item) {
-      // display correct photo based on whether user is sender or recipient
-      var img = (isSender) ? data.recipient.photo : data.user.photo;
+    $.each(data.get_posts, function(index, item) {
+      var img = item.user.photo;
 
       // build conversation string
-      var pic = getPixiPic(img, 'height:60px; width:60px;')
+      var pic = getPixiPic(img, 'height:60px; width:60px;');
       var hdr = item.sender_name;
       var hdr2 = parseDate(item.created_at);
       var preview = item.content;
       var delbtn = "<a href='#' data-post-id=" + item.id
-                  + " data-role='button' data-theme='b' id='del-post-btn'"
+                  + " data-role='button' data-theme='b' id='del-post-btn' data-mini='true'"
                   + " data-inline='true' class='nav-right collapsible-header-link'>Delete</a>";
       var ftr = item.content + delbtn;
       item_str += buildCollapsibleList(pic, hdr, hdr2, preview, ftr, item.id);
