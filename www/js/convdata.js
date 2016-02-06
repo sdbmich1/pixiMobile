@@ -26,7 +26,7 @@ function loadPosts(data, resFlg) {
         var pic = getPixiPic(img, 'height:60px; width:60px;');
         var hdr = item.pixi_title; 
 	var ftr = name + ' | Posted ' + post_dt;
-	var cnt = '<div class="ui-li-count">' + item.posts_count + '</div>';
+	var cnt = '<div class="ui-li-count">' + item.active_posts_count + '</div>';
 	item_str += build_list('conv-item', localUrl, pic, hdr, ftr, cnt); 
       });
     }
