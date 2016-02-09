@@ -9,6 +9,7 @@ function loadTxnPage(data, resFlg, txnType) {
   if (resFlg) {
     if (data !== undefined) {
       var txn = data.transaction;
+      console.log('txn = ' + JSON.stringify(txn));
 
       // clear page
       $('#txn-frm').html('');
@@ -19,8 +20,7 @@ function loadTxnPage(data, resFlg, txnType) {
       var total = parseFloat(txn.amt).toFixed(2);
       var descr = txn.description + ((txnType == 'invoice') ? " from " + txn.seller_name : '');
 
-      var txn_str = "<table><tr><td>" + photo + "</td><td>" + name_str + "</td></tr></table>"
-        + "<table class='inv-descr'><tr><td class='cal-size'>Confirmation #:</td><td></td><td>" + txn.confirmation_no + "</td></tr>";
+      var txn_str = "<table class='inv-descr'><tr><td class='cal-size'>Confirmation #:</td><td></td><td>" + txn.confirmation_no + "</td></tr>";
 
       if (txn.amt > 0) {
         txn_str += "<tr><td class='width240'>Payment Type: </td><td></td><td>" + txn.payment_type + "</td></tr>"
@@ -33,7 +33,7 @@ function loadTxnPage(data, resFlg, txnType) {
 	+ "<tr><td class='width240'>Email: </td><td></td><td>" + txn.email + "<br></td></tr>" 
 	+ "<tr><td class='width240'>Description: </td><td></td><td>" + descr + "<br></td></tr></table>"
 	+ "<div class='clear-all'></div><div class='mtop center-wrapper'>" 
-	+ "<a href='#' data-role='button' data-inline='true' data-theme='d' id='done-btn'>Done</a></div>";
+	+ showButton('', '', 'Done', 'd', 'home-menu-btn') + "</div>";
 
       // build page
       $('#txn-frm').append(txn_str).trigger('create');
@@ -61,17 +61,23 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
   if (resFlg) {
     if (isDefined(data)) {
       inv = data.invoice;
-      var prc_fee = inv.get_processing_fee, conv_fee = inv.get_convenience_fee;
-      var qty = inv.invoice_details[0].quantity;
-      var prc = inv.invoice_details[0].price;
+      var invHash = setInvData(inv);
+      var qty = parseInt(inv.invoice_details[0].quantity);
+      var prc = parseFloat(inv.invoice_details[0].price).toFixed(2);
+
       var ftype = inv.invoice_details[0].fulfillment_type_code;
       var pid = inv.listings[0].pixi_id;
+      var fldHash = {fname: 'first_name', lname: 'last_name', addr: 'address', city: 'city', state: 'state', zip: 'zip', hphone: 'home_phone', 
+        email: 'email', ucol: 'user-tbl', acol: 'addr-tbl', btnID: 'edit-txn-addr', title: 'Buyer Information'};
+      var recHash = {fname: 'recipient_first_name', lname: 'recipient_last_name', addr: 'recipient_address', city: 'recipient_city', 
+        state: 'recipient_state', zip: 'recipient_zip', hphone: 'recipient_phone', email: 'recipient_email', 
+	ucol: 'rcpt-tbl', acol: 'ship-addr-tbl', btnID: 'edit-ship-addr', title: 'Shipping Information'};
 
       $('#txn-frm, #form_errors').html('');
 
       buyer = data.user;
       var addrHash = txnAddress(buyer);
-      var shipHash = showShipInfo(buyer, ftype, resFlg);
+      var shipHash = showShipInfo(buyer, ftype, resFlg, recHash);
 
       // check for user card info
       if(buyer.active_card_accounts.length > 0) {
@@ -80,38 +86,41 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
       }
 
       // set vars based on txn type
-      total = parseFloat(inv.get_fee + inv.amount).toFixed(2);
-
-      // set vars based on txn type
       if (txnType == 'invoice') {
 	var pixi_title = inv.pixi_title, idNum = inv.id, class_name = "inv-item width80";
 	id_str = "data-inv-id";
       }
       else {
-	var pixi_title = inv.title, idNum = pid, class_name = 'bd-item width80';
+	var pixi_title = inv.pixi_title, idNum = pid, class_name = 'bd-item width80';
 	id_str = "data-pixi-id";
       }
 
       // build form string
       var inv_str = "<div id='data_error' style='display:none' class='error'></div>"
-	+ "<form id='payment_form' data-ajax='false'><div class='div-border'>"
-	+ "<table><tr><td class='cal-size title-str'>Total Due</td><td class='price title-str'>$" + total + "</td></tr></table></div>" 
-	+ showBuyerInfo(buyer, resFlg, addrHash) + shipHash.str + showCard(buyer)
+	+ "<form id='payment_form' data-qty='" + qty + "' data-prc='" + prc + "' data-ajax='false'>" 
+	+ sectionHeader('Details') + showInvTable(prc, qty, invHash, false)
+	+ showBuyerInfo(buyer, resFlg, addrHash, fldHash, true) + shipHash.str + showCard(buyer)
 	+ "<input type='hidden' id='user_id' value='" + getUserID() + "' />"
+	+ "<input type='hidden' id='invoice_id' value='" + inv.id + "' />"
 	+ "<input type='hidden' id='first_name' value='" + buyer.first_name + "' />"
 	+ "<input type='hidden' id='last_name' value='" + buyer.last_name + "' />"
-	+ "<input type='hidden' name='transaction_type' id='transaction_type' value='" + txnType + "' />"
-	+ "<input type='hidden' name='amt' id='amt' value='" + total + "' />"
+	+ "<input type='hidden' name='transaction_type' id='transaction_type' value='invoice' />"
+	+ "<input type='hidden' name='amt' id='amt' value='" + invHash.total + "' />"
 	+ "<input type='hidden' name='pixi_id' id='pixi_id' value='" + pid + "' />"
 	+ "<input type='hidden' id='description' value='" + pixi_title + "' />"
 	+ "<input type='hidden' name='seller_token' id='seller_token' value='" + inv.seller.acct_token + "' />"
 	+ "<input type='hidden' name='seller_inv_amt' id='seller_inv_amt' value='" + inv.seller_amount + "' />"
-	+ "<input type='hidden' id='processing_fee' value='" + prc_fee + "' />"
-	+ "<input type='hidden' id='convenience_fee' value='" + conv_fee + "' />"
+	+ "<input type='hidden' id='processing_fee' value='" + invHash.prc_fee + "' />"
+	+ "<input type='hidden' id='convenience_fee' value='" + invHash.conv_fee + "' />"
         + "<input type='hidden' id='promo_code' value='" + promoCode + "' />"
-        + "<table><tr><td class='cal-size'>" + showButton(id_str, idNum, 'Back', '', 'txn-prev-btn', class_name) + "</td>"
+        + "<br><table><tr><td class='cal-size'>" + showButton(id_str, idNum, 'Back', '', 'txn-prev-btn', class_name) + "</td>"
         + "<td class='nav-right'><input type='submit' value='Done!' data-theme='d' data-inline='true' id='payForm'></td></tr></table>"
 	+ "</form>"; 
+
+      // show pixi info
+      showPixiTitle(inv.pixi_title);
+      var px_str = getPixiPic(inv.listings[0].photo_url, 'height:auto; width:100%!important;');
+      $('#px-pix').append(px_str);
 
       // build page
       $('#txn-frm').append(inv_str).trigger('create');
@@ -119,8 +128,6 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
       loadYear("#card_year", -15, 0, yr+1); // load year fld
       loadMonth("#card_month", month); // load month fld
       setState("#recipient_state", shipHash.state);  // load state dropdown
-      //$('#state option').clone().appendTo('#recipient_state');
-      //setSelectMenu('#recipient_state', options, shipHash.state);
     }
   }
   else {
@@ -129,16 +136,18 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
   }
 }
 
-function showBuyerInfo(buyer, resFlg, ahash) {
-  var fldHash = {addr: 'address', city: 'city', state: 'state', zip: 'zip', hphone: 'home_phone', email: 'email'};
-  var str = "<div class='div-border'><table class='inv-descr addr-tbl' style='" + ahash.style[0] + "'>"  
-    + "<tr><td class='cal-size'><strong>Buyer Information</strong><br>" + buyer.name + "<br>" + ahash.addr + "</td>"
+function showBuyerInfo(buyer, resFlg, ahash, fldHash, bFlg) {
+  var fname = (bFlg) ? buyer.first_name : buyer.recipient_first_name;
+  var lname = (bFlg) ? buyer.last_name : buyer.recipient_last_name;
+  var name = fname + ' ' + lname;
+  var str = sectionHeader(fldHash.title) + "<table class='inv-descr " + fldHash.acol + "' style='" + ahash.style[0] + "'>"  
+    + "<tr><td class='cal-size'>" + name + "<br>" + ahash.addr + "</td>"
     + "<td class='v-align price' style='" + ahash.style[0] + "'>" 
-    + showButton('data-id', 0, 'Change', '', 'edit-txn-addr', '', 'true') + "</td></tr></table>"
-    + "<table class='inv-descr user-tbl' style='" + ahash.style[1] + "'>" 
-    + "<tr><td class='col-size'>" + textFld('First Name*', 'first_name', buyer.first_name, 'profile-txt') + "</td><td></td>"
-    + "<td class='col-size'>" + textFld('Last Name*', 'last_name', buyer.last_name, 'profile-txt') + "</td></tr>"
-    + showAddress(buyer, resFlg, true, buyer.email, fldHash) + "</table></div>";
+    + showButton('data-id', 0, 'Change', '', fldHash.btnID, '', 'true') + "</td></tr></table>"
+    + "<table class='inv-descr " + fldHash.ucol + "' style='" + ahash.style[1] + "'>" 
+    + "<tr><td class='col-size'>" + textFld('First Name*', fldHash.fname,  fname, 'profile-txt') + "</td><td></td>"
+    + "<td class='col-size'>" + textFld('Last Name*', fldHash.lname, lname, 'profile-txt') + "</td></tr>"
+    + showAddress(buyer, resFlg, true, buyer.email, fldHash) + "</table>";
   return str;	
 }
 
@@ -156,35 +165,16 @@ function txnAddress(buyer) {
       style = ['display:none', ''];
   }
   var hash = { addr: home_addr, style: style, state: state };
-  console.log('txnAddress str = ' + hash.addr);
   return hash;
 }
 
-function showRecipientInfo(recipient, resFlg, ahash) {
-  var fldHash = {addr: 'recipient_address', city: 'recipient_city', state: 'recipient_state', zip: 'recipient_zip', 
-    hphone: 'recipient_home_phone', email: 'recipient_email'};
-  var name = recipient.first_name + ' ' + recipient.last_name;
-  var str = "<div class='div-border'><table class='inv-descr ship-addr-tbl' style='" + ahash.style[0] + "'>"  
-    + "<tr><td class='cal-size'><strong>Shipping Information</strong><br>" + name + "<br>" + ahash.addr + "</td>"
-    + "<td class='v-align price' style='" + ahash.style[0] + "'>" + showButton('data-id', 0, 'Change', '', 'edit-ship-addr', '', 'true') 
-    + "</td></tr></table>"
-    + "<table class='inv-descr rcpt-tbl' style='" + ahash.style[1] + "'>" 
-    + "<tr><td class='col-size'>" + textFld('First Name*', 'recipient_first_name', recipient.first_name, 'profile-txt') + "</td><td></td>"
-    + "<td class='col-size'>" + textFld('Last Name*', 'recipient_last_name', recipient.last_name, 'profile-txt') + "</td></tr>"
-    + showAddress(recipient, resFlg, true, recipient.email, fldHash) + "</table></div>";
-  return str;	
-}
-
-function showShipInfo(buyer, ftype, resFlg) {
-  var str='', recipient, addr_hash;
-  var ship_hash = { str: '', state: '' };
+function showShipInfo(buyer, ftype, resFlg, fldHash) {
+  var recipient, addr_hash, ship_hash = { str: '', state: '' };
   if(ftype == 'SHP') {
     recipient = (buyer.ship_addresses.length > 0) ? buyer.ship_addresses[0] : buyer;
     addr_hash = txnAddress(recipient);
-    str = showRecipientInfo(recipient, resFlg, addr_hash);
-    ship_hash = { str: str, state: addr_hash.state };
+    ship_hash = { str: showBuyerInfo(recipient, resFlg, addr_hash, fldHash, false), state: addr_hash.state };
   }
-  console.log('in showShipInfo str = ' + str);
   return ship_hash;
 }
 
@@ -203,9 +193,8 @@ function showCard(buyer) {
     card_show_style = 'display:none'; card_edit_style = '';
   }
 
-  var str = "<div class='div-border'><table class='inv-descr card-dpl' style='" + card_show_style + "'>"  
-    + "<tr><td class='cal-size'><strong>Payment Information</strong><br>" 
-    + card_type + "<br>************" + card_no + "<br>Exp: " + exp_dt + "</td>"
+  var str = sectionHeader('Payment Information') + "<table class='inv-descr card-dpl' style='" + card_show_style + "'>"  
+    + "<tr><td class='cal-size'>" + card_type + "<br>************" + card_no + "<br>Exp: " + exp_dt + "</td>"
     + "<td class='v-align price'>" + showButton('', 0, 'Change', '', 'edit-card-btn', '', 'true') + "</td></tr></table>"
     + "<table class='inv-descr card-tbl' style='" + card_edit_style + "'><tr><td class='cal-size'><label>Card #* </label>"
     + "<img src='../img/cc_logos.jpeg' class='cc-logo' />"
@@ -213,7 +202,7 @@ function showCard(buyer) {
     + "<table><tr><td><label>CVV*</label>"
     + "<input type='number' name='cvv' id='card_code' maxlength=4 size=4 class='card-code profile-txt' /></td>"
     + "<td></td><td><label class='mleft5'>Exp Mo</label><select name='card_month' id='card_month' data-mini='true'></select></td>"
-    + "<td><label>Exp Yr</label><select name='card_year' id='card_year' data-mini='true'></select></td></tr></table></td></tr></table></div>" 
+    + "<td><label>Exp Yr</label><select name='card_year' id='card_year' data-mini='true'></select></td></tr></table></td></tr></table>" 
     + "<input type='hidden' id='token' name='token' value='" + cust_token + "' />"
   return str;
 }

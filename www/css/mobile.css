@@ -661,11 +661,15 @@ table.items th.price, td.price {
   padding: 6px;
 }
 
+table.txn-tbl th, td {
+  padding: 0px!important;
+}
+
 .qty-col {
 	width: 30px!important;
 }
 
-//table#user-tbl td.fld { width: 240px!important; }
+table#user-tbl { width: 100%!important; }
 table.items thead th { text-align:left; border-bottom-width:1px; border-top-width:1px; }
 table.items tr.row-item { border: 1px solid blue; }
 

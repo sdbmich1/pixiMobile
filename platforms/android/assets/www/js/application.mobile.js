@@ -12,7 +12,7 @@ var catPath = pxPath + 'category.json' ;
 var locPath = pxPath + 'local.json';
 var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
 var nextPg = 1;
-var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType,
+var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
 
 // ajax setup
@@ -31,6 +31,7 @@ $.event.special.swipe.verticalDistanceThreshold = 75; // Swipe vertical displace
 
 // change page
 function goToUrl(pxUrl, rFlg) {
+  rFlg = rFlg || false;
   $.mobile.changePage( pxUrl, { transition: "none", reverse: false, reloadPage: rFlg, changeHash: false });
 }
 
@@ -41,7 +42,12 @@ $(document).on('pageinit', '#myposts', function() {
 
 // load list page
 $(document).on('pageinit', '#mypixis, #myinv', function() {
-  var dType = (myPixiPage == 'active') ? 'view' : 'inv'; 
+  if (myPixiPage == 'purchase') {
+    dType = 'view';
+    togglePath();
+  }
+  else
+    dType = 'inv';
   loadListPage(myPixiPage, dType); 
 });
 
@@ -64,11 +70,7 @@ function renderBoard(hUrl, pg, rFlg) {
 
 // load initial board
 $(document).on('pageinit', '#listapp', function() {
-  pxPath = listPath + '/';  // reset pxPath
   console.log('in listapp pageinit');
-
-  // set time ago format
-  $("time.timeago").timeago();
 
   // set token string for authentication
   token = '?auth_token=' + window.localStorage["token"];
@@ -76,21 +78,24 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
-
-  // load main board
-  renderBoard(homeUrl, nextPg);
+  loadDisplayPage();
 });
 
-// load store page
-$(document).on('pageinit', '#store', function() {
+function loadDisplayPage() {
   pxPath = listPath + '/';  // reset pxPath
-  console.log('in store pageinit');
+  loadSearch();
+  uiLoading(true);
 
   // set time ago format
   $("time.timeago").timeago();
 
   // load main board
   renderBoard(homeUrl, nextPg);
+}
+
+// load store page
+$(document).on('pageinit', '#store', function() {
+  loadDisplayPage();
 });
 
 // load pixi form data
@@ -120,7 +125,6 @@ $(document).on('pageinit', '#acct-form', function() {
 // set invoice form
 function setInvForm() {
   var data;
-
   if(invFormType == 'edit' && pid !== undefined) {
     var invUrl = url + '/invoices/' + pid + '.json' + token;
     loadData(invUrl, 'invedit');
@@ -262,7 +266,7 @@ function postData(postUrl, fdata, dType) {
       case 'buy':
         var str = $.parseJSON(res.order);
 	pid = parseInt(str['invoice_id']);
-	goToUrl('../html/transaction.html');
+        openTxnPage('pixi');
 	break;
       case 'follow':
 	var str = toggle_follow_btn(fdata.seller_id, true);
@@ -346,23 +350,21 @@ $(document).on('pagehide', 'div[data-role="page"]', function(event, ui) {
 
 // process active btn
 $(document).on('click', '#bill-menu-btn', function(e) {
-  if(usr !== undefined) { 
-    if(usr.bank_accounts.length > 0){
-      invFormType = 'inv';  // set var
-    }
-    else {
-      invFormType = 'bank';  // set var
-    }
-  }
-  else {
+  if(usr !== undefined)  
+    invFormType = (usr.bank_accounts.length > 0) ? 'inv' : 'bank';
+  else 
     invFormType = 'new';  // set var
-  }
   console.log('invFormType = ' + invFormType);
 });
 
+function openTxnPage(ttype) {
+  txnType = ttype;
+  goToUrl('../html/transaction.html');
+}
+
 // process pay btn
 $(document).on('click', '#pay-btn', function(e) {
-  goToUrl('../html/transaction.html');
+  openTxnPage('invoice');
   return false;
 });
 
@@ -374,7 +376,7 @@ $(document).on('click', '#inv-menu-btn', function(e) {
 
 // process menu btn
 $(document).on('click', '#pixis-menu-btn', function(e) {
-  myPixiPage = 'active';  // set var
+  myPixiPage = 'purchase';  // set var
   togglePath();
   return false;
 });
@@ -567,10 +569,7 @@ $(document).on('click', '#edit-ship-addr', function(e) {
 
 // toggle spinner
 function uiLoading(bool) {
-  if (bool)
-    $('body').addClass('ui-loading');
-  else
-    $('body').removeClass('ui-loading');
+  (bool) ? $('body').addClass('ui-loading') : $('body').removeClass('ui-loading');
 }
 
 // toggle contact buttons
@@ -1004,12 +1003,7 @@ $(document).on('click', ".ac-item", function(e) {
 
 // toggle pixi path
 function togglePath() {
-  if (myPixiPage == 'draft') {
-    pxPath = tmpPath + '/';
-  }
-  else {
-    pxPath = listPath + '/';
-  }
+  pxPath = (myPixiPage == 'draft') ? tmpPath + '/' : listPath + '/';
 }
 
 // process click on board pix
@@ -1041,11 +1035,12 @@ $(document).on('click', ".inv-item", function(e) {
 });
 
 // set data for txn form page
-$(document).on("pageinit", "#txn-form", function(event) {
+$(document).on("pageinit", "#txn-form", function(event, ui) {
   var invUrl = url + '/invoices/' + pid + '.json' + token;
-  
+
   // load inv data
-  loadData(invUrl, 'txn'); 
+  loadData(invUrl, 'txn', txnType); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
 });
 
 // process click on invoice item

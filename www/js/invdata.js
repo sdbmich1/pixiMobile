@@ -22,7 +22,7 @@ function loadInvForm(data, resFlg) {
       sales_tax = parseFloat(data.sales_tax).toFixed(2) || 0.0;
       tax_total = parseFloat(data.tax_total).toFixed(2) || 0.0;
       amount = parseFloat(data.amount).toFixed(2);
-      comment = data.comment;
+      comment = data.comment || '';
       title_str = "<span>Invoice #" + data.id + "</span>"; 
       sub_str = "<input type='submit' value='Send' data-theme='d' data-inline='true' id='add-inv-btn' data-inv-id='" + data.id + "' >";
     }
@@ -73,43 +73,65 @@ function loadInvForm(data, resFlg) {
   uiLoading(false);
 }
 
+function showInvTable(prc, qty, invHash, flg) {
+  var popStr = "<td><a href='#popupInfo' data-rel='popup' data-role='button' class='ui-icon-alt' data-inline='true' "
+    + "data-transition='pop' data-icon='info' data-theme='a' data-iconpos='notext'>Learn more</a></td>";
+  var str = "<table class='txn-tbl inv-descr'>" 
+    + "<tr><td class='cal-size'>Quantity</td><td class='price'>" + qty + "</td><td class='price'>$" + prc + "</td></tr>"
+    + "<tr><td>Sales Tax</td><td class='price'>" + invHash.tax + "%</td><td class='price'>$" + invHash.tax_total + "</td></tr>"
+    + "<tr><td>Shipping</td><td class='price'></td><td class='price'>$" + invHash.ship_amt + "</td></tr>"
+    + "<tr><td>Convenience Fee</td>";
+  str += (flg) ? popStr : "<td class='price'></td>";
+  str += "<td class='price'>$" + invHash.fee + "</td></tr>"
+    + "<tr><td class='cal-size title-str'>Total Due</td><td></td><td class='price title-str'>$" + invHash.total + "</td></tr></table>";
+  return str;
+}
+
+function setInvData(inv) {
+  var tax = (isDefined(inv.sales_tax)) ? parseFloat(inv.sales_tax).toFixed(2) : 0.0;
+  var ship_amt = (isDefined(inv.ship_amt)) ? parseFloat(inv.ship_amt).toFixed(2) : 0.0;
+  var tax_total = (isDefined(inv.tax_total)) ? parseFloat(inv.tax_total).toFixed(2) : 0.0;
+  var prc_fee = parseFloat(inv.get_processing_fee).toFixed(2);
+  var conv_fee = parseFloat(inv.get_convenience_fee).toFixed(2);
+  var fee = parseFloat(inv.get_fee).toFixed(2);
+  var total = parseFloat(inv.get_fee + inv.amount).toFixed(2);
+  return {tax: tax, ship_amt: ship_amt, tax_total: tax_total, prc_fee: prc_fee, conv_fee: conv_fee, fee: fee, total: total};
+}
+
 // process invoice page display
 function loadInvPage(data, resFlg) {
   if (resFlg) {
     var item = data.invoice;
     var pic_str = "height:45px; width:45px; border: 1px solid #ccc;";
     var inv_str = "<div class='mleft10'><table class='inv-descr'><tr><td>Invoice #: </td><td>" + item.id + "</td></tr><tr>"; 
-    inv_str += "<td>Date: </td><td>" + item.inv_dt + "</td></tr><tr>"; 
+    inv_str += "<td>Date: </td><td>" + item.inv_dt + "</td></tr>"; 
 
     // display correct photo based on whether user is buyer or seller
-    inv_str += "<td>From: </td><td>" + showUserPhoto(item.seller.photo, item.seller.name, 'inv-descr') + "</td></tr>";
-    inv_str += "<tr><td>Bill To: </td><td>" + showUserPhoto(item.buyer.photo, item.buyer.name, 'inv-descr') + "<td>";
-    inv_str += "</tr></table></div>";
+    if(item.seller_id == getUserID()) 
+      inv_str += "<tr><td>Bill To: </td><td>" + showUserPhoto(item.buyer.photo, item.buyer.name, 'inv-descr') + "<td></tr>";
+    else
+      inv_str += "<tr><td>From: </td><td>" + showUserPhoto(item.seller.photo, item.seller.name, 'inv-descr') + "</td></tr>";
+    inv_str += "</table></div>";
 
     // set invoice details
-    var tax = (item.sales_tax != undefined) ? parseFloat(item.sales_tax).toFixed(2) : 0.0;
-    var ship = (item.ship_amt != undefined) ? parseFloat(item.ship_amt) : 0.0;
-    var tax_total = (item.tax_total != undefined) ? parseFloat(item.tax_total) : 0.0;
-    var fee = parseFloat(item.get_fee).toFixed(2);
-    var total = parseFloat(item.get_fee + item.amount).toFixed(2);
-
+    var invHash = setInvData(item);
     inv_str += "<div class='mleft10'><div class='control-group'><table class='mtop inv-tbl inv-descr'>"
       + "<th><div class='center-wrapper'>Qty</div></th><th><div class='center-wrapper'>Item</div></th>"
       + "<th><div class='center-wrapper'>Price</div></th><th><div class='center-wrapper'>Amount</div></th>"
       + loadInvRow(item)
       + "<tr class='sls-tax'><td></td><td><div class='nav-right'>Sales Tax</div></td>"
-      + "<td class='width120'><div class='nav-right'>" + tax + "%</div></td>"
-      + "<td class='width120'><div class='nav-right'>" + tax_total.toFixed(2) + "</div></td></tr>"
+      + "<td class='width120'><div class='nav-right'>" + invHash.tax + "%</div></td>"
+      + "<td class='width120'><div class='nav-right'>" + invHash.tax_total + "</div></td></tr>"
       + "<tr class='sls-tax'><td></td><td><div class='nav-right'>Shipping</div></td>"
-      + "<td></td><td class='width120'><div class='nav-right'>" + ship.toFixed(2) + "</div></td></tr>"
+      + "<td></td><td class='width120'><div class='nav-right'>" + invHash.ship_amt + "</div></td></tr>"
       + "<tr class='v-align'><td></td><td class='img-valign mtop nav-right'>Fee</td>"
       + "<td><a href='#popupInfo' data-rel='popup' data-role='button' class='ui-icon-alt' data-inline='true' "
       + "data-transition='pop' data-icon='info' data-theme='a' data-iconpos='notext'>Learn more</a></td>"
-      + "<td class='img-valign mtop nav-right'>" + fee + "</td></tr>"
+      + "<td class='img-valign mtop nav-right'>" + invHash.fee + "</td></tr>"
       + "<tr><td></td><td><div class='nav-right'>Amount Due</div></td><td></td>"
-      + "<td class='width120'><div class='order-total total-str nav-right'><h6>$" + total + "</h6></div></td></tr></table>";
+      + "<td class='width120'><div class='order-total total-str nav-right'><h6>$" + invHash.total + "</h6></div></td></tr></table>";
 
-    if (item.comment !== undefined) {
+    if (isDefined(item.comment)) {
       inv_str += "<div class='mtop inv-descr control-label'>Comments: " + item.comment + "</div>";
     }
     inv_str += "</div><div class='nav-right'>"
@@ -123,7 +145,7 @@ function loadInvPage(data, resFlg) {
     }
     else {
       if (item.status == 'unpaid') {
-        inv_str += showButton('data-inv-id', item.id, 'Pay', 'd', 'pay-btn');
+        inv_str += "<br />" + showButton('data-inv-id', item.id, 'Pay', 'd', 'pay-btn');
       }
     }
     inv_str += "</div></div>";

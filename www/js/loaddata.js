@@ -77,7 +77,7 @@ function loadData(listUrl, dType, params) {
         setPrice(data, dFlg);
 	break;
       case 'txn':
-        loadTxnForm(data, dFlg, 'invoice'); 
+        loadTxnForm(data, dFlg, params); 
 	break;
       default:
 	break;
@@ -121,7 +121,7 @@ function loadListPage(pgType, viewType) {
     var pixiUrl = tmpPath + '/unposted.json' + token;
     break;
   case 'purchase':
-    var pixiUrl = pxPath + '/purchased.json' + token + "&status=purchased";
+    var pixiUrl = pxPath + 'purchased.json' + token + "&status=purchased";
     break;
   case 'sold':
     var pixiUrl = pxPath + 'seller.json' + token + "&status=sold";
@@ -336,11 +336,14 @@ function load_cover(flg, pic, sid, rating, descr, flwFlg) {
   else {
     px_str += '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>'; }
 
-  // add search form
-  var str = fld_form('search-doc', 'seller-search', 'search_txt', 'Search item or store...', 'Search', 'search-btn');
-  $('#search_form').append(str).trigger("create");
   $('#board-top').append(px_str).trigger("create");
   reload_ratings();
+}
+
+// add search form
+function loadSearch() {
+  var str = fld_form('search-doc', 'seller-search', 'search_txt', 'Search item or store...', 'Search', 'search-btn');
+  $('#search_form').append(str).trigger("create");
 }
 
 // toggle button based on flg
@@ -468,13 +471,12 @@ function load_board_items(data, str, resFlg) {
 
 // build masonry blocks for board
 function reload_items(str) {
-  
   var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 }); 
-    var $elem = $(str).css({ opacity: 0 });
-    $container.imagesLoaded(function(){
-      $elem.animate({ opacity: 1 });
-      $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
-    });
+  var $elem = $(str).css({ opacity: 0 });
+  $container.imagesLoaded(function(){
+    $elem.animate({ opacity: 1 });
+    $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
+  });
 }
 
 // load year dropdown

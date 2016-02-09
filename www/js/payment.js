@@ -39,9 +39,9 @@ function BalancedCard() {
 }
 
 function buildTxnParams() {
-  var qty = $('#inv-item').data("qty");
-  var prc = $('#inv-item').data("prc");
-  var invID = $('#txn-prev-btn').data("inv-id");
+  var qty = $('#payment_form').data("qty");
+  var prc = $('#payment_form').data("prc");
+  var invID = $('#invoice_id').val();
   var pid = $('#pixi_id').val(); 
   var payToken = $('#token').val(); 
   console.log('inv item prc = ' + prc);
@@ -61,7 +61,7 @@ function buildTxnParams() {
     seller_token: $('#seller_token').val(), seller_inv_amt: $('#seller_inv_amt').val(),  
     recipient_first_name: $('#recipient_first_name').val(), recipient_last_name: $('#recipient_last_name').val(), 
     ship_address: $('#recipient_address').val(), ship_city: $('#recipient_city').val(), ship_state: $('#recipient_state').val(), 
-    ship_zip: $('#recipient_zip').val(), recipient_phone: $('#recipient_home_phone').val(), 
+    ship_zip: $('#recipient_zip').val(), recipient_phone: $('#recipient_phone').val(), 
     recipient_email: $('#recipient_email').val(), description: $('#description').val(), promo_code: $('#promo_code').val(), 
     amt: $('#amt').val(), transaction_type: $('#transaction_type').val() }; 
 

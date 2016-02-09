@@ -41,7 +41,7 @@ function StripeCard() {
 
   // disable form
   $('#payForm').attr('disabled', 'disabled');
-  //$btnID.attr('disabled', true);
+    $btnID.attr('disabled', true);
   
   if (payToken.length > 0)  {
     console.log('StripeCard payToken = ' + payToken);

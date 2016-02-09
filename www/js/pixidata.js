@@ -77,7 +77,7 @@ function showPixiSuccess(data) {
   console.log('in pixi success page');
   if (data !== undefined) {
     var txt = "Your pixi <span class='pstr'>" + data.med_title + "</span> has been submitted.</div>"
-    var detail_str = "<div class='mtop inv-descr'>Subject to approval, your pixi will be posted within the next hour. Thank you for your business.</div>"
+    var detail_str = "<div class='mtop inv-descr'>Subject to approval, your pixi will be posted shortly. Thank you for your business.</div>"
       + "<div class='mtop center-wrapper'><a href='#' id='px-done-btn' data-mini='true' data-role='button' data-inline='true'"
       + " data-theme='d'>Done</a></div>";
         
@@ -129,8 +129,7 @@ function showPixiPage(data) {
   }
 
   // load title
-  var tstr = "<h4 class='mbot major_evnt'>" + data.listing.title + "</h4><hr class='neg-top'>";
-  $('#list_title').append(tstr);
+  showPixiTitle(data.listing.title);
 
   // load seller
   var sname = data.listing.seller_name; 
@@ -174,6 +173,12 @@ function showPixiPage(data) {
   uiLoading(false);  // toggle spinner
 }
 
+// load title
+function showPixiTitle(title) {
+  var tstr = "<h4 class='mbot major_evnt'>" + title + "</h4><hr class='sm-top'>";
+  $('#list_title').append(tstr);
+}
+
 // check if listing owner to display edit buttons
 function edit_pixi_buttons(data, cstr) {
   console.log('in edit pixi buttons');
@@ -182,17 +187,14 @@ function edit_pixi_buttons(data, cstr) {
     $('#edit-pixi-details').append(stat_str);
 
     $('#post_form').hide();  // hide post form
-    //$('#edit-pixi-btn').toggle();
+    $('#edit-pixi-btn').toggle();
       
     if(pxPath.indexOf("temp_listing") > 0) {
       $('#submit-pixi-btn').toggle();
     }
 
-    if(data.listing.status == 'edit') {
-      $('#cancel-pixi-btn').toggle();
-    } else {
-      $('#remove-pixi-btn').toggle();
-    }
+    // render buttons
+    (data.listing.status == 'edit') ? $('#cancel-pixi-btn').toggle() : $('#remove-pixi-btn').toggle();
   }
   else {
     $('#show-list-hdr').append(cstr).trigger("create");
@@ -208,9 +210,10 @@ function pixi_details(item) {
   var str = '';
 
   if(item.price !== undefined) {
+    var btn_str = (myPixiPage != 'purchase') ? showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn') : '';
     var prc = parseFloat(item.price).toFixed(2);
-    str += "<br /><div class='mtop'><table><tr><td><span class='pixi-str'>$" + prc + "</span></td><td>" + 
-      showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn') + "</td></tr></table><br /></div></div>";
+    str += "<br /><div class='mtop'><table><tr><td><span class='pixi-str'>$" + prc + "</span></td><td class='width60'></td><td>"  
+      + btn_str + "</td></tr></table><br /></div></div>";
   } 
   else {
     if(item.compensation !== undefined) {
@@ -225,7 +228,7 @@ function pixi_details(item) {
 
   // load features
   var code_str = (item.category_name == 'Automotive') ? 'VIN #' : 'Product Code';
-  str += "<div class='mtop'>Features</div><hr>";
+  str += sectionHeader('Features');
   str += "<div class='inv-descr'>";
   str += show_features('Condition', item.condition);
   str += show_features('Color', item.color);
@@ -236,12 +239,16 @@ function pixi_details(item) {
   str += show_features('Size', item.item_size);
   str += show_features('Amount Left', item.amt_left);
   str += "</div><br />";  
-  str += "<span class='mtop'>Description</span><br /><hr><div class='inv-descr'>" + item.description + "</div><br />";
+  str += sectionHeader('Description') + "<div class='inv-descr'>" + item.description + "</div><br />";
 
   // load details
   $('#pixi-details').append(str).trigger("create");
   loadQty('#px_qty', 1, parseInt(item.amt_left));
   load_delivery_type(item);
+}
+
+function sectionHeader(title) {
+  return "<div class='mtop'>" + title + "</div><hr class='sm-top'>";
 }
 
 // build array
