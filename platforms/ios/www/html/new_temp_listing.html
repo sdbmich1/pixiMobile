@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+      <div id="formapp" data-role="page" data-cache="never" data-theme='a' class='home-pg'>
+        <div data-role="panel" id="navpanel" data-theme="d" data-display="overlay" data-position="left">
+          <div data-role="controlgroup" data-corners="false">
+    	    <ul data-role='listview' data-icon="false" data-theme='e' class='mainMenu'></ul>
+          </div>
+        </div>    
+	<div data-role="popup" id="popupPix" data-theme="a" data-overlay-theme='d'></div>
+        <div data-role="header" data-theme="d">
+          <div class='pg-title center-wrapper'>Build Your Pixi</div>
+	  <a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
+	  <a href='#' data-theme="app-loc" id='add-pixi-link'><img src='../img/rsz_camera-icon_blue.png'></a>
+	</div>  
+        <div class="app-content" data-role="content" data-theme='a' class='listpg'>
+          <div id="buyTxtForm">
+	    <div id="form_errors" style="display:none" class="error"></div>
+	    <form id="pixi-form" enctype="multipart/form-data" data-ajax="false">
+	      <table class='mleft10'>
+	        <tr><td id='add-pixi-photo'>
+	            <div id="picture"><img style="width:80px;height:80px;" id="smallImage" src="../img/rsz_photo-camera.png" /></div></td>
+		    <td><a href='#popupPix' class='mleft10 upload-btn' data-mini='true' data-role='button' data-inline='true' data-theme='b'
+		        data-rel="popup" data-position-to="window" data-transition="pop">Upload</a>
+		    </td>
+		</tr>
+	      </table>
+		<div data-role="fieldcontain" class="sm-top ui-hide-label">
+	          <input type="text" name="title" id="title" placeholder="Pixi Title" data-theme='a' />
+		</div>
+		<div data-role="fieldcontain" class="sm-top ui-hide-label">
+	          <input type="text" name="site_name" id="site_name" placeholder="Pixi Location" data-theme='a' />
+		</div>
+		<ul class="suggestions" data-role="listview" data-inset="true" data-icon="false"></ul>
+	        <div class='sm-top sm-bot'><div data-role="fieldcontain"> 
+		  <select name="category_id" id="category_id"></select>
+	        </div></div>
+		<table class="sm-top sm-bot"><tr><td class='width50'>
+		  <div data-role="fieldcontain" class="ui-hide-label" id="price-fld">
+	            <input type="number" name="price" id="price" placeholder="Price" data-theme='a' />
+		  </div></td><td>
+		  <div data-role="fieldcontain" class="ui-hide-label" id="yr-fld" style="display:none">
+		    <select name="year_built" id="yr_built"></select> 
+		  </div></td>
+		</tr></table>
+		<div data-role="fieldcontain" class="sm-top ui-hide-label" id="comp-fld" style="display:none">
+	          <input type="text" name="compensation" id="salary" placeholder="Salary" data-theme='a' />
+		</div>
+		<table id='event-fields' style="display:none">
+		  <tr><td><label for="event_start_date" class='med-top'>Start Date</label> 
+		          <input type="date" name="event_start_date" id="start-date" /></td><td></td>
+		      <td><label for="event_end_date" class='med-top'>End Date</label> 
+		          <input type="date" name="event_end_date" id="end-date" /></td></tr>
+		  <tr><td><label for="event_start_time" class='med-top'>Start Time</label> 
+		          <input type="time" name="event_start_time" id="start-time" /></td><td></td>
+		      <td><label for="event_end_time" class='med-top'>End Time</label> 
+		          <input type="time" name="event_end_time" id="end-time" /></td></tr>
+		</table>
+		<div data-role="fieldcontain" class="sm-top ui-hide-label">
+	          <textarea name="description" id="description" cols="40" rows="8" placeholder="Describe Your Pixi" data-theme='a' ></textarea>
+		</div>
+	        <input type="hidden" name="site_id" id="site_id" />
+	      </div>
+	      <table><tr>
+	      <td class='cal-size'><a href='#' id='px-cancel' data-role='button' data-inline='true' />Cancel</a></td>
+	      <td class='nav-right'>
+	        <input type="submit" value="Next" data-theme="d" data-inline="true" id="add-pixi-btn">
+	      </td></tr>
+	      </table>
+	    </form>
+          </div>
+        </div>
+      </div>
+    </body>
+</html>
+

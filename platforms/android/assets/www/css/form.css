@@ -68,6 +68,10 @@ $pixiBlue: #026FB7;
 .order-total { font-weight: bolder; font-size: medium }
 .v-align { vertical-align: middle }
 
+.mleft5 {
+  margin-left: 5px!important;
+}
+
 .mleft10 {
   margin-left: 10px!important;
 }

@@ -73,6 +73,7 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\pixis.html \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\posts.html \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\register.html \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\show_conv.html \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\show_listing.html \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\signup.html \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\html\store.html \

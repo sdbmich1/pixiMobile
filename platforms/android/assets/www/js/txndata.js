@@ -9,7 +9,6 @@ function loadTxnPage(data, resFlg, txnType) {
   if (resFlg) {
     if (data !== undefined) {
       var txn = data.transaction;
-      console.log('txn = ' + JSON.stringify(txn));
 
       // clear page
       $('#txn-frm').html('');
@@ -19,7 +18,6 @@ function loadTxnPage(data, resFlg, txnType) {
       var name_str = "<span class='mleft10 pstr'>" + txn.buyer_name + "</span><br />";
       var total = parseFloat(txn.amt).toFixed(2);
       var descr = txn.description + ((txnType == 'invoice') ? " from " + txn.seller_name : '');
-
       var txn_str = "<table class='inv-descr'><tr><td class='cal-size'>Confirmation #:</td><td></td><td>" + txn.confirmation_no + "</td></tr>";
 
       if (txn.amt > 0) {
@@ -33,7 +31,7 @@ function loadTxnPage(data, resFlg, txnType) {
 	+ "<tr><td class='width240'>Email: </td><td></td><td>" + txn.email + "<br></td></tr>" 
 	+ "<tr><td class='width240'>Description: </td><td></td><td>" + descr + "<br></td></tr></table>"
 	+ "<div class='clear-all'></div><div class='mtop center-wrapper'>" 
-	+ showButton('', '', 'Done', 'd', 'home-menu-btn') + "</div>";
+	+ showButton('', '', 'Done', 'd', 'home-menu-btn', 'width120') + "</div>";
 
       // build page
       $('#txn-frm').append(txn_str).trigger('create');

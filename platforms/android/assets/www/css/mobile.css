@@ -110,7 +110,10 @@ a.signup-btn {
   padding:0px!important; /*make the buttons flush edge to edge*/
 }
 
-.ui-page-active.ui-page-panel { overflow-x: visible!important; }
+.ui-page-active.ui-page-panel {
+  overflow-x: visible!important;
+  overflow: visible!important;
+}
 
 .slide-menu .ui-controlgroup {
   margin:0; /*make the buttons flush to the top*/
@@ -309,7 +312,7 @@ label .ui-body-a, .ui-overlay-a { border: none; }
 .loc { font-weight: normal; font-size: 0.65em; margin: 0; }
 
 /*  session presenter list */
-.plist .ui-li-heading {margin: 0.1em 0 0.2em -0.2em!important; white-space: normal; font-size: 14px!important;}
+.plist .ui-li-heading, .ui-collapsible-heading .pstr {margin: 0.1em 0 0.2em; white-space: normal; font-size: 14px!important;}
 
 li.plist { line-height: 14px!important; }
 
@@ -348,6 +351,41 @@ li.plist { line-height: 14px!important; }
 .ui-li-desc {text-overflow: normal; overflow: visible; margin: 0!important;
 			white-space: pre-wrap; font-size: 0.675em!important;}
 			
+.left-hdr {
+  position: relative;
+  top: -3.3em;
+  left: 1em;
+}
+
+.ui-collapsible-preview {
+  position: relative;
+  left: 8em;
+  top: -3em;
+  width: 65%;
+}
+
+.hidden-collapsible-preview {
+  display: none;
+}
+
+.ui-collapsible .ui-btn-inner {
+  display: unset;
+}
+
+#del-post-btn {
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+}
+
+.ui-collapsible .ui-icon {
+  position: relative!important;
+  left: 95%;
+  margin-top: -22%!important;
+}
+
+.ui-collapsible-content p {
+  padding-bottom: 10px;
+}
 
 /* margin : .1em 0 .1em .2em */
 			

@@ -79,6 +79,9 @@ function loadData(listUrl, dType, params) {
       case 'txn':
         loadTxnForm(data, dFlg, params); 
 	break;
+      case 'conv':
+        loadConvPage(data, dFlg); 
+        break;
       default:
 	break;
       }

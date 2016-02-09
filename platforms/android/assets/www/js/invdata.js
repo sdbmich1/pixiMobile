@@ -149,7 +149,7 @@ function loadInvPage(data, resFlg) {
       }
     }
     inv_str += "</div></div>";
-    $('#inv_details').append(inv_str).trigger("create");
+    $('#inv_details').append(inv_str).trigger("refresh");
   }
   else {
     console.log('inv page load failed');
