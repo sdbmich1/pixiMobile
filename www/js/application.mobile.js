@@ -1305,7 +1305,7 @@ function build_list(cls, localUrl, pic, hdr, txt, cnt, tag) {
   cnt = cnt || "";
   tag = tag || "li"
   var str = "<" + tag + " class='plist'>" + '<a href="#" ' + localUrl + ' class="pending_title ' + cls + '" data-ajax="false">'  
-    + pic + '<div class="pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
+    + pic + '<div class="neg-mleft5 pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
     + cnt + '</' + tag + '>';
   return str;
 }

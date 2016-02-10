@@ -162,7 +162,7 @@ textarea { width: 99%!important; height: 32px!important; }
 #postMenu .ui-li-count { right: 10px!important; margin-top: -1.25em!important; }
 
 .ui-br { border-bottom-style:none; }
-.ui-collapsible-content {padding: 0px 10px!important;}
+.ui-collapsible-content {padding: 3px 10px!important 3px;}
 .ui-collapsible-set {margin-top: 0!important; }
 .ui-page-footer-fixed {padding-top: 4.5em;}
 
@@ -371,6 +371,19 @@ li.plist { line-height: 14px!important; }
 .ui-collapsible .ui-btn-inner {
   display: unset;
 }
+
+.ui-collapsible-heading, .ui-collapsible-heading > .ui-btn {
+  padding-bottom: 5.5px;
+}
+
+.ui-collapsible-set .ui-collapsible {
+  margin: 0 0 -11px;
+}
+
+#conv-top, #conv-bot {
+  margin-left: -13px;
+}
+
 
 #del-post-btn {
   padding-top: 5px!important;

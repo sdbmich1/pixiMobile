@@ -26,7 +26,7 @@ function loadPosts(data, resFlg) {
         var pic = getPixiPic(img, 'height:60px; width:60px;');
         var hdr = item.pixi_title; 
 	var ftr = name + ' | Posted ' + post_dt;
-	var cnt = '<div class="ui-li-count">' + item.active_posts_count + '</div>';
+	var cnt = '<div class="ui-li-count">' + data.length + '</div>';
 	item_str += build_list('conv-item', localUrl, pic, hdr, ftr, cnt); 
       });
     }
@@ -52,7 +52,7 @@ function send_msg(data) {
        + "<table>"
        +   "<tr>"
        +     "<td>"
-       +       getPixiPic(img, 'height:60px; width:60px; margin-left:-6px;')
+       +       getPixiPic(img, 'height:60px; width:60px; margin-left:-3px;')
        +     "</td>"
        +     "<td class='cal-size'>"
        +       "<div data-role='fieldcontain' class='ui-hide-label'>"
@@ -65,12 +65,9 @@ function send_msg(data) {
        + "<div class='nav-right'><input type='submit' value='Send' data-theme='d'"
        + " data-inline='true' id='reply-btn' class='nav-right' data-mini='true'"
        + " data-conv-id=" + data.id + "></div>"
-       + "<input type='hidden' name='user_id' id='user_id' value='"
-       +   data.user_id + "' />"
-       + "<input type='hidden' name='pixi_id' id='pixi_id' value='"
-       +   data.pixi_id + "' />"
-       + "<input type='hidden' name='recipient_id' id='recipient_id' value='"
-       +   data.recipient_id + "' />"
+       + "<input type='hidden' name='user_id' id='user_id' value='" + data.recipient_id + "' />"
+       + "<input type='hidden' name='pixi_id' id='pixi_id' value='" + data.pixi_id + "' />"
+       + "<input type='hidden' name='recipient_id' id='recipient_id' value='" + data.user_id + "' />"
        + "</form>"
 }
 
@@ -81,9 +78,11 @@ function loadConvPage(data, resFlg) {
   // set page headers
   var pic = getPixiPic(data.listing.photo_url, 'height:60px; width:60px;', 'smallImage');
   var isSender = getUserID() === data.sender_id;
-  var str = '<table><tr><td>' + pic + "</td><td><span class='mleft10 pstr'>" + data.pixi_title + "</span></td></tr></table><div style='text-align:right;'>";
+  var str = '<table><tr><td>' + pic + "</td><td><p class='mleft10 pstr'>" + data.pixi_title + "</p></td></tr></table><div style='text-align:right;'>";
 
-  var button_str = "<a href='#' data-inv-id=" + data.invoice_id + " data-role='button'" + " data-theme='a' id='conv-inv-btn' data-inline='true' data-mini='true'>";
+  var button_str = "<a href='#' data-inv-id=" + data.invoice_id + 
+    " data-role='button'" + " data-theme='a' id='conv-inv-btn' data-inline='true' data-mini='true'>";
+
   if (isSender) {
     if (data['sender_can_bill?'] || data['sender_due_invoice?']) {
       str += button_str + (data['sender_can_bill?'] ? 'Bill' : 'Pay') + "</a>";
