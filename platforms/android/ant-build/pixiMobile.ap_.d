@@ -121,6 +121,7 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\rsz_search_icon1_blue.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\sm_pixipay.png \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\img\sm_px_word_logo.png \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\addclear.min.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\application.mobile.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\camera.js \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\assets\www\js\convdata.js \
