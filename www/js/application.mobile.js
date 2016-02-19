@@ -53,19 +53,31 @@ $(document).on('pageinit', '#mypixis, #myinv', function() {
 
 // process next page
 $(document).on('click', '.nxt-pg', function(e) {
+  console.log('in click nxt pg' + nextPg);
   renderBoard(homeUrl, nextPg);
 });
 
 // used to render main board
 function renderBoard(hUrl, pg, rFlg) {
+  var result;
   uiLoading(true);
   rFlg = rFlg || false;
+
   nextPg++;  // increment page counter
   var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
   console.log('in render board' + pgName);
   $('a.nxt-pg').attr('href', pgName);
+
   var str = (pg == 1 && !rFlg) ? 'board' : 'reload';
-  return loadData(hUrl + "&page=" + pg, str);
+
+  if (hUrl.match(/searches/i)) {
+    params = loadSearchParams(pg);
+    result = postData(hUrl, params, 'search');
+  } else {
+    result = loadData(hUrl + "&page=" + pg, str);
+  }
+  
+  return result;
 }
 
 // load initial board
@@ -83,7 +95,6 @@ $(document).on('pageinit', '#listapp', function() {
 
 function loadDisplayPage() {
   pxPath = listPath + '/';  // reset pxPath
-  loadSearch();
   uiLoading(true);
 
   // set time ago format
@@ -235,7 +246,7 @@ function putData(putUrl, fdata, dType) {
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
   console.log('in postData: ' + postUrl);
-  var dFlg, data;
+  var dFlg, result, data;
 
   // turn on spinner
   uiLoading(true);
@@ -279,6 +290,11 @@ function postData(postUrl, fdata, dType) {
 	var str = toggle_follow_btn(fdata.seller_id, true);
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
+      case 'search':
+        //console.log('search res = ' + JSON.stringify(res));
+	$('#search-btn').prop('disabled', false);
+	result = processReload(res, dFlg);
+	break;
       default:
         return res;
 	break;
@@ -288,6 +304,7 @@ function postData(postUrl, fdata, dType) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Post Data', 'Done');
         console.log(a.responseText + ' | ' + b + ' | ' + c);
   });
+  return result;
 }
 
 // delete server data
@@ -330,6 +347,7 @@ function processPix(pixArr, style) {
 function getName(cid, token) {
   var cat_name; 
 
+  console.log('in getName');
   $.getJSON(catPath + cid + '.json' + token, function(res) {
     $.each(res.results, function(index, item) {
       cat_name = res_name;
@@ -968,6 +986,7 @@ function processLogin(res, resFlg) {
       window.localStorage["pixi_count"] = usr.pixi_count;
 
       // go to main board
+      console.log('open listings');
       goToUrl("./html/listings.html", false);
     }
     else {
@@ -1230,7 +1249,7 @@ var menu = [
 ];
 
 // show menu
-$(document).on("pagebeforeshow", function(event) {
+$(document).on("pageshow", function(event) {
   var items = '', // menu items list
     ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processed
   
@@ -1362,7 +1381,7 @@ function checkScroll() {
   if (activePage == 'listapp' || activePage == 'store') {
 
     /* window's scrollTop() */
-    console.log('in checkScroll');
+    //console.log('in checkScroll');
     scrolled = $(this).scrollTop(),
 
     /* viewport */
@@ -1377,8 +1396,8 @@ function checkScroll() {
 
     /* total height to scroll */
     scrollEnd = contentHeight - screenHeight + header + footer;
-    console.log('scrolled = ' + scrolled);
-    console.log('scrollEnd = ' + scrollEnd);
+    //console.log('scrolled = ' + scrolled);
+    //console.log('scrollEnd = ' + scrollEnd);
     
     if (scrolled >= scrollEnd && !isScrolled) {
       addMore(activePage);
@@ -1392,7 +1411,7 @@ function addMore(page) {
   $(document).off("scrollstop");
 
   setTimeout(function() {
-    renderBoard(homeUrl, nextPg);
+    //renderBoard(homeUrl, nextPg);
 
     /* re-attach scrollstop */
     $(document).on("scrollstop", checkScroll);

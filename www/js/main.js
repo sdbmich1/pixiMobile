@@ -121,18 +121,16 @@ function toggleLoading () {
 
 // used to toggle spinner
 var aStr = '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link, .bd-item, .slrUrl';
-$(document).on("ajax:beforeSend", aStr, function () {
+$(document).on("ajax:beforeSend, ajax:success, ajax:complete", aStr, function () {
     uiLoading(true);
 });	
 
+/*
 $(document).on("ajax:success, ajax:complete", aStr,  function () {
   uiLoading(false);
 });	
-/*
-$(document).on("ajax:complete", '#mark-posts, #post-frm, #comment-doc, #site_id, .pixi-cat, #purchase_btn, #search_btn, .uform, .back-btn, #pixi-form, .submenu, #cat-link', function () {
-  uiLoading(false);
-});	
 */
+
 // handle 401 ajax error
 $(document).ajaxError( function(e, xhr, options){
   if(xhr.status == 401)
@@ -140,10 +138,11 @@ $(document).ajaxError( function(e, xhr, options){
 });	
 
 $(document).ready(function(){
-  console.log('doc ready');
+  console.log('doc ready - main.js');
 
   // used to scroll up page
   $(window).scroll(function(){
+    console.log('scroll - main.js');
     if ($(this).scrollTop() > 100) {
       $('.scrollup').fadeIn();
     } 
@@ -195,7 +194,7 @@ $(document).on("click", ".slrUrl", function(showElem){
 
 // reload board
 function reload_board(element) {
-  console.log('in reload board');
+  console.log('in reload board - main.js');
   var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 });
 
   $container.imagesLoaded( function(){
@@ -399,24 +398,30 @@ $(document).on("click", "#recent-link", function() {
 
 // process search btn
 $(document).on('click', "#search-btn", function (e) {
+  uiLoading(true);
   console.log('in click search');
-  var txt =  $('#search_txt').val();
-  var loc = $('#site_id').val(); // grab the selected location 
-  var cid = $('#category_id').val() || ''; // grab the selected category 
-  var mUrl = '';
-  nextPg = 1;
 
-  if (txt.length > 0) {
-    console.log('in click search event');
+  if ($('#search_txt').val().length > 0) {
     $(this).attr('disabled', 'disabled');
+    nextPg = 1;
 
     // set path
-    homeUrl = url + '/searches.json' + token + '&loc=' + loc + '&cid=' + cid + '&search=' + txt + '&url=' + mUrl;
-
-    // refresh the page
-    refreshBoard(true);
+    homeUrl = url + '/searches/locate.json' + token;
+    refreshBoard(isDefined($('#site_url').val()));
   }
 });
+
+function loadSearchParams(pg) {
+  console.log('in loadSearchParams...');
+  var txt =  $('#search_txt').val();
+  var loc = $('#site_id').val() || window.localStorage['home_site_id'];
+  var cid = $('#category_id').val() || ''; // grab the selected category 
+  var mUrl = $('#site_url').val() || '';
+  var params = new Object();
+  params.locate = { loc: loc, cid: cid, search: txt, url: mUrl, page: pg };
+
+  return params;
+}
 
 // reset board pixi based on location
 function resetBoard(cid) {
@@ -447,7 +452,7 @@ function resetBoard(cid) {
   }
 
   // refresh the page
-  refreshBoard(true);
+  refreshBoard(false);
 }
 
 // refresh board content
@@ -457,7 +462,8 @@ function refreshBoard(flg) {
 
   // reset featured band if needed
   if(!flg) {
-    $('.featured').html(''); }
+    $('#board-top, .featured').html(''); 
+  }
   reload_items(renderBoard(homeUrl, nextPg, flg));
 }
 
@@ -550,6 +556,7 @@ $(window).scroll(function(e) {
 
   if ($('#px-container').length > 0) {
     var url = $('a.nxt-pg').attr('href');
+    console.log('in window scroll');
 
     if (url.length > 0 && !processFlg && $(window).scrollTop() > ($(document).height() - $(window).height() - 50)) {
       processFlg = true;
@@ -589,7 +596,7 @@ function reload_ratings() {
 
 function fld_form(fid, sid, fld, txt, bname, btnID) {
   var str = '<form id="' + fid + '" data-ajax="false"><div id="form_errors" style="display:none" class="error"></div>' +
-    '<div id="' + sid + '" class="clear-all mbot"><table><tr><td class="cal-size"><div data-role="fieldcontain" class="ui-hide-label">' +
+    '<div id="' + sid + '" class="clear-all sm-bot"><table><tr><td class="cal-size"><div data-role="fieldcontain" class="ui-hide-label">' +
     '<input name="content" id="' + fld + '" class="slide-menu" placeholder="' + txt + '" data-theme="a" required /></div></td>' +
     '<td><input type="submit" value="' + bname + '" data-theme="b" data-inline="true" id="' + btnID + '" data-mini="true"></td>' +
     '</tr></table></div></form>';

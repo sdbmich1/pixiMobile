@@ -1,4 +1,14 @@
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes.dex : \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$attr.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$color.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$dimen.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$drawable.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$id.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$layout.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$string.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$style.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$styleable.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\BuildConfig.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\pixiMobile.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\R$attr.class \

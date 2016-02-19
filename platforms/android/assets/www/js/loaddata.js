@@ -30,8 +30,7 @@ function loadData(listUrl, dType, params) {
         loadBoard(data, dFlg); 
 	break;
       case 'reload':
-        result = load_board_items(data, '', dFlg); 
-	reload_items(result);
+        result = processReload(data, dFlg);
 	break;
       case 'list':
 	result = data;
@@ -333,6 +332,7 @@ function load_cover(flg, pic, sid, rating, descr, flwFlg) {
   var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'; 
 
   if (!flg && pic.length > 0) {
+    loadSearch('Search item or brand...');
     rating = rating || 0;
     descr = descr || '';
     var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + '</div>'
@@ -347,16 +347,18 @@ function load_cover(flg, pic, sid, rating, descr, flwFlg) {
 }
 
 // add search form
-function loadSearch() {
-  var str = fld_form('search-doc', 'seller-search', 'search_txt', 'Search item or store...', 'Search', 'search-btn');
+function loadSearch(txt) {
+  var str = fld_form('search-doc', 'seller-search', 'search_txt', txt, 'Search', 'search-btn');
+  $("#search_txt").addClear();
   $('#search_form').append(str).trigger("create");
 }
 
 // toggle button based on flg
 function toggle_follow_btn(sid, flg) {
   var skey = 'data-seller_id';
-  var str = (flg) ? showButton(skey, sid, 'Unfollow', 'b', 'unfollow-btn','','true') : showButton(skey, sid, 'Follow', 'd', 'follow-btn', '', 'true');
-  return str;
+  var btn = showButton(skey, sid, 'Unfollow', 'b', 'unfollow-btn','width120','true'); 
+  var fbtn =  showButton(skey, sid, 'Follow', 'd', 'follow-btn', 'width120', 'true');
+  return (flg) ? btn : fbtn;
 }
 
 // loop to check if seller exists in followed list
@@ -378,11 +380,16 @@ function isFollowed(data, sid) {
 function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
   var flwFlg = (!slrFlg) ? isFollowed(user, sid) : false;
   load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
-  var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
-  var px_str = '<div class="featured-container"><div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
-    + '</div></div><div class="featured mleft20">' + '</div></div>';
-  $('#board-top').append(px_str).trigger("create");
-  load_featured_slider(build_str(data, slrFlg));
+  if(data.length > 3) {
+    var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
+    var px_str = '<div class="featured-container"><div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
+      + '</div></div><div class="featured mleft20">' + '</div></div>';
+    $('#board-top').append(px_str).trigger("create");
+    $("#pxboard").addClass('splash-top').removeClass('sm-splash-top');
+    load_featured_slider(build_str(data, slrFlg));
+  }
+  else
+    $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
 }
 
 function build_str(data, sFlg) {
@@ -412,10 +419,10 @@ function loadBoard(data, resFlg) {
   if($.mobile.activePage.attr("id") == 'store') {
     cover = data.sellers[0].cover_photo || '../img/gm_grey.jpg';
     pgTitle = data.sellers[0].business_name;
-    load_featured_items(data.listings, false, data.user, data.sellers[0].photo_url, data.sellers[0].id, data.sellers[0].rating, 
-      data.sellers[0].description); 
+    load_seller_header(data);
   }
   else { 
+    loadSearch('Search item, store or brand...');
     cover = window.localStorage['home_image'];
     pgTitle = window.localStorage['home_site_name'];
     load_featured_items(data.sellers, true, '');
@@ -441,6 +448,24 @@ function loadBoard(data, resFlg) {
   // turn off spinner
   uiLoading(false);
   return result;
+}
+
+function load_seller_header(data) {
+  var sid = data.sellers[0].id;
+  var rating = data.sellers[0].rating; 
+  var descr = data.sellers[0].description;
+  var pic = data.sellers[0].photo_url;
+
+  // set seller url 
+  $('#site_url').val(data.sellers[0].url);
+
+  if(data.listings.length > 10) {
+    load_featured_items(data.listings, false, data.user, pic, sid, rating, descr);
+  }
+  else {
+    $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+    load_cover(false, pic, sid, rating, descr, isFollowed(data.user, sid));
+  }
 }
 
 // build board
@@ -477,12 +502,16 @@ function load_board_items(data, str, resFlg) {
 
 // build masonry blocks for board
 function reload_items(str) {
-  var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 }); 
-  var $elem = $(str).css({ opacity: 0 });
-  $container.imagesLoaded(function(){
-    $elem.animate({ opacity: 1 });
-    $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
-  });
+  var $container = $('#px-container');
+  if(isDefined($('#site_url').val())) 
+    $container.masonry('reloadItems');
+  else {
+    var $elem = $(str).css({ opacity: 0 });
+    $container.imagesLoaded(function(){
+      $elem.animate({ opacity: 1 });
+      $container.masonry('reloadItems');
+    });
+  }
 }
 
 // load year dropdown
@@ -718,4 +747,18 @@ function loadList(list, fld, descr, val) {
   // update field
   //$(fld).append(item_str).selectmenu().selectmenu('refresh', true);
   setSelectMenu(fld, item_str, val);  // set option menu
+}
+
+function processReload(res, dFlg) {
+  var result = '';
+  if (!$.isEmptyObject(res)) {
+    console.log('in process reload');
+
+    if(!isDefined($('#site_url').val())) {
+      load_featured_items(res.sellers, true, '');
+    }
+    result = load_board_items(res, '', dFlg);
+    reload_items(result);
+  }
+  return result;
 }
