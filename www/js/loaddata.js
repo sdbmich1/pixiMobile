@@ -82,6 +82,9 @@ function loadData(listUrl, dType, params) {
       case 'conv':
         loadConvPage(data, dFlg); 
         break;
+      case 'stores':
+        loadStoreList(data, dFlg); 
+        break;
       default:
 	break;
       }

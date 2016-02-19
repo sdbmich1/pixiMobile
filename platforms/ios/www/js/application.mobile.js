@@ -1,6 +1,7 @@
-  // initialize var
+// initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';
+var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
+//var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
 var tmpPath = url + '/temp_listings';
@@ -11,7 +12,7 @@ var catPath = pxPath + 'category.json' ;
 var locPath = pxPath + 'local.json';
 var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
 var nextPg = 1;
-var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType,
+var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
 
 // ajax setup
@@ -23,8 +24,14 @@ $(function(){
   });
 });
 
+$.event.special.swipe.scrollSupressionThreshold = 10; // More than this horizontal displacement, and we will suppress scrolling.
+$.event.special.swipe.horizontalDistanceThreshold = 30; // Swipe horizontal displacement must be more than this.
+$.event.special.swipe.durationThreshold = 500;  // More time than this, and it isn't a swipe.
+$.event.special.swipe.verticalDistanceThreshold = 75; // Swipe vertical displacement must be less than this
+
 // change page
 function goToUrl(pxUrl, rFlg) {
+  rFlg = rFlg || false;
   $.mobile.changePage( pxUrl, { transition: "none", reverse: false, reloadPage: rFlg, changeHash: false });
 }
 
@@ -35,11 +42,12 @@ $(document).on('pageinit', '#myposts', function() {
 
 // load list page
 $(document).on('pageinit', '#mypixis, #myinv', function() {
-  if(myPixiPage == 'active') {
-    var dType = 'view'; }
-  else {
-    var dType = 'inv'; }
-
+  if (myPixiPage == 'purchase') {
+    dType = 'view';
+    togglePath();
+  }
+  else
+    dType = 'inv';
   loadListPage(myPixiPage, dType); 
 });
 
@@ -50,6 +58,7 @@ $(document).on('click', '.nxt-pg', function(e) {
 
 // used to render main board
 function renderBoard(hUrl, pg, rFlg) {
+  uiLoading(true);
   rFlg = rFlg || false;
   nextPg++;  // increment page counter
   var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
@@ -61,11 +70,7 @@ function renderBoard(hUrl, pg, rFlg) {
 
 // load initial board
 $(document).on('pageinit', '#listapp', function() {
-  pxPath = listPath + '/';  // reset pxPath
   console.log('in listapp pageinit');
-
-  // set time ago format
-  $("time.timeago").timeago();
 
   // set token string for authentication
   token = '?auth_token=' + window.localStorage["token"];
@@ -73,21 +78,24 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
-
-  // load main board
-  renderBoard(homeUrl, nextPg);
+  loadDisplayPage();
 });
 
-// load store page
-$(document).on('pageinit', '#store', function() {
+function loadDisplayPage() {
   pxPath = listPath + '/';  // reset pxPath
-  console.log('in store pageinit');
+  loadSearch();
+  uiLoading(true);
 
   // set time ago format
   $("time.timeago").timeago();
 
   // load main board
   renderBoard(homeUrl, nextPg);
+}
+
+// load store page
+$(document).on('pageinit', '#store', function() {
+  loadDisplayPage();
 });
 
 // load pixi form data
@@ -117,7 +125,6 @@ $(document).on('pageinit', '#acct-form', function() {
 // set invoice form
 function setInvForm() {
   var data;
-
   if(invFormType == 'edit' && pid !== undefined) {
     var invUrl = url + '/invoices/' + pid + '.json' + token;
     loadData(invUrl, 'invedit');
@@ -161,16 +168,13 @@ function getUserID() {
 }
 
 // build image string to display pix 
-function getPixiPic(pic, style, fld) {
+function getPixiPic(pic, style, fld, cls) {
+  cls = cls || '';
   var pstr = (!localPixFlg) ? pic : url + '/' + pic;
-  var img_str = '<img style="' + style + '" src="' + pstr + '"';
+  var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
 
   fld = fld || '';  // set fld id
-  if(fld.length > 0) {
-    img_str += ' id="' + fld + '">'; }
-  else {
-    img_str += '>'; }
-
+  img_str += (fld.length > 0) ? ' id="' + fld + '">' : '>';
   return img_str
 }
 // put data based on given url & data type
@@ -210,6 +214,10 @@ function putData(putUrl, fdata, dType) {
         case 'post':
           $('#post' + data.id).remove();
           //loadConvPage(data, data !== undefined);
+          break;
+        case 'unfollow':
+          var str = toggle_follow_btn(fdata.seller_id, false);
+          $('#store-btn').html('').append(str).trigger("create");
           break;
         default:
           return data;
@@ -261,6 +269,15 @@ function postData(postUrl, fdata, dType) {
 	break;
       case 'card':
         loadTxnPage(res, dFlg, 'invoice');
+	break;
+      case 'buy':
+        var str = $.parseJSON(res.order);
+	pid = parseInt(str['invoice_id']);
+        openTxnPage('pixi');
+	break;
+      case 'follow':
+	var str = toggle_follow_btn(fdata.seller_id, true);
+	$('#store-btn').html('').append(str).trigger("create");
 	break;
       default:
         return res;
@@ -340,23 +357,21 @@ $(document).on('pagehide', 'div[data-role="page"]', function(event, ui) {
 
 // process active btn
 $(document).on('click', '#bill-menu-btn', function(e) {
-  if(usr !== undefined) { 
-    if(usr.bank_accounts.length > 0){
-      invFormType = 'inv';  // set var
-    }
-    else {
-      invFormType = 'bank';  // set var
-    }
-  }
-  else {
+  if(usr !== undefined)  
+    invFormType = (usr.bank_accounts.length > 0) ? 'inv' : 'bank';
+  else 
     invFormType = 'new';  // set var
-  }
   console.log('invFormType = ' + invFormType);
 });
 
+function openTxnPage(ttype) {
+  txnType = ttype;
+  goToUrl('../html/transaction.html');
+}
+
 // process pay btn
 $(document).on('click', '#pay-btn', function(e) {
-  goToUrl('../html/transaction.html');
+  openTxnPage('invoice');
   return false;
 });
 
@@ -368,7 +383,7 @@ $(document).on('click', '#inv-menu-btn', function(e) {
 
 // process menu btn
 $(document).on('click', '#pixis-menu-btn', function(e) {
-  myPixiPage = 'active';  // set var
+  myPixiPage = 'purchase';  // set var
   togglePath();
   return false;
 });
@@ -560,17 +575,13 @@ $(document).on('click', '#edit-txn-addr', function(e) {
   $('.user-tbl, .addr-tbl').toggle();
 });
 
-// toggle credit card info display
-$(document).on('click', '#edit-card-btn', function(e) {
-  $('.card-tbl, .card-dpl').toggle();
+$(document).on('click', '#edit-ship-addr', function(e) {
+  $('.rcpt-tbl, .ship-addr-tbl').toggle();
 });
 
 // toggle spinner
 function uiLoading(bool) {
-  if (bool)
-    $('body').addClass('ui-loading');
-  else
-    $('body').removeClass('ui-loading');
+  (bool) ? $('body').addClass('ui-loading') : $('body').removeClass('ui-loading');
 }
 
 // toggle contact buttons
@@ -592,6 +603,74 @@ $(document).on('click', "#contact-btn", function (e) {
 
     // post data
     postData(pxUrl, params, 'post');
+  }
+});
+
+// add follower
+$(document).on('click', "#follow-btn", function (e) {
+  var sid = $(this).attr("data-seller_id");
+  console.log('sid = ' + sid);
+
+  if (sid.length > 0) {
+    uiLoading(true);
+    $(this).attr('disabled', 'disabled');
+
+    // store form data
+    var params = new Object();
+
+    // set params
+    params = { uid: getUserID(), seller_id: sid };
+
+    // set path
+    var pxUrl = url + '/favorite_sellers.json' + token;
+
+    // post data
+    postData(pxUrl, params, 'follow');
+  }
+});
+
+// buy now
+$(document).on('click', "#buy-btn", function (e) {
+  var xid = $(this).attr("data-pixi-id");
+
+  if (xid.length > 0) {
+    uiLoading(true);
+    $(this).attr('disabled', 'disabled');
+
+    // store form data
+    var params = new Object();
+
+    // set params
+    params = { id: xid, qty: $('#px_qty').val(), fulfillment_type_code: $('#ftype').val() };
+
+    // set path
+    var pxUrl = url + '/pixi_wants/buy_now.json' + token;
+
+    // post data
+    postData(pxUrl, params, 'buy');
+  }
+});
+
+// remove follower
+$(document).on('click', "#unfollow-btn", function (e) {
+  var sid = $(this).attr("data-seller_id");
+  console.log('sid = ' + sid);
+
+  if (sid.length > 0) {
+    uiLoading(true);
+    $(this).attr('disabled', 'disabled');
+
+    // store form data
+    var params = new Object();
+
+    // set params
+    params = { uid: getUserID(), seller_id: sid };
+
+    // set path
+    var pxUrl = url + '/favorite_sellers/1.json' + token;
+
+    // put data
+    putData(pxUrl, JSON.stringify(params), 'unfollow');
   }
 });
 
@@ -688,6 +767,17 @@ $(document).on('click', "#conv-inv-btn", function (e) {
     var invUrl = url + '/invoices/' + pid + '.json' + token;
     loadData(invUrl, 'invpg');
   }
+});
+
+// hide preview when collapsible is expanded
+$(document).bind('expand collapse', function () {
+  $(this).find('.ui-collapsible').each(function(index, element) {
+    if ($(element).hasClass('ui-collapsible-collapsed')) {
+      $(element).find('.ui-collapsible-preview').show();
+    } else {
+      $(element).find('.ui-collapsible-preview').hide();
+    }
+  });
 });
 
 // user signup form
@@ -868,6 +958,7 @@ function processLogin(res, resFlg) {
       usr = res.user;
       console.log('user id = '+ usr.id);
       console.log('user pixi count = '+ usr.pixi_count);
+      console.log('user email = '+ email);
 
       //store credentials on device
       window.localStorage["email"] = email;
@@ -971,12 +1062,7 @@ $(document).on('click', ".ac-item", function(e) {
 
 // toggle pixi path
 function togglePath() {
-  if (myPixiPage == 'draft') {
-    pxPath = tmpPath + '/';
-  }
-  else {
-    pxPath = listPath + '/';
-  }
+  pxPath = (myPixiPage == 'draft') ? tmpPath + '/' : listPath + '/';
 }
 
 // process click on board pix
@@ -1008,11 +1094,20 @@ $(document).on('click', ".inv-item", function(e) {
 });
 
 // set data for txn form page
-$(document).on("pageinit", "#txn-form", function(event) {
+$(document).on("pageinit", "#txn-form", function(event, ui) {
   var invUrl = url + '/invoices/' + pid + '.json' + token;
+
+  // load inv data
+  loadData(invUrl, 'txn', txnType); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+});
+
+// set data for 'My Stores' page
+$(document).on("pageinit", "#storeList", function(event) {
+  var storeUrl = url + '/favorite_sellers.json' + token + '&ftype=buyer&status=active';
   
   // load inv data
-  loadData(invUrl, 'txn'); 
+  loadData(storeUrl, 'stores'); 
 });
 
 // process click on conversation item
@@ -1130,6 +1225,7 @@ var menu = [
   { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Settings', href: '../html/user_form.html', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
+  { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
   { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 
@@ -1229,7 +1325,7 @@ function build_list(cls, localUrl, pic, hdr, txt, cnt, tag) {
   cnt = cnt || "";
   tag = tag || "li"
   var str = "<" + tag + " class='plist'>" + '<a href="#" ' + localUrl + ' class="pending_title ' + cls + '" data-ajax="false">'  
-    + pic + '<div class="pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
+    + pic + '<div class="neg-mleft5 pstr"><h6>' + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div></a>'
     + cnt + '</' + tag + '>';
   return str;
 }
@@ -1241,36 +1337,23 @@ function buildCollapsibleList(pic, hdr, hdr2, preview, ftr, id) {
        +   '<h3>' + pic
        +     '<span class="pstr left-hdr">' + hdr + '</span>'
        +     '<span class="pstr nav-right">' + hdr2 + '</span>'
-       +     '<span class="ui-li-desc ui-collapsible-preview">'
-       +        preview.substring(0, 40)
+       +     '<span class="ui-li-desc ui-collapsible-preview truncate">'
+       +        preview
        +     '</span>'
        +   '</h3>'
-       +   "<p>" + ftr + "</p>"
+       +   "<p class='inv-descr mleft5'>" + ftr + "</p>"
        + '</div>'
 }
 
-// hide preview when collapsible item is clicked
-$('.collapsible-item').on('click', function() {
-  if ($('.hidden-collapsible-preview')[0]) {
-    $('.hidden-collapsible-preview')[0].removeClass('hidden-collapsible-preview');
-  }
-  $(this).find('.ui-collapsible-preview').addClass('hidden-collapsible-preview');
-});
-
 var isScrolled = false;
-$(document).on("swipeleft, swiperight", function (e) {
-  $(document).off("scrollstop");
-  console.log('in swipe event');
-  isScrolled = true;
 
-  /* remove scrollstop event listener */
-  setTimeout(function() {
-
-    /* re-attach scrollstop */
-    $(document).on("scrollstop", checkScroll);
-    isScrolled = false;
-  }, 1000);
-
+$('.featured-container').on("swipeleft, swiperight", function (e) {
+  console.log('in listapp swipe event');
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    $(document).off("scrollstop");
+    isScrolled = true;
+  }
 });
 
 $(document).on("scrollstop", checkScroll);
@@ -1279,6 +1362,7 @@ function checkScroll() {
   if (activePage == 'listapp' || activePage == 'store') {
 
     /* window's scrollTop() */
+    console.log('in checkScroll');
     scrolled = $(this).scrollTop(),
 
     /* viewport */
@@ -1314,4 +1398,13 @@ function addMore(page) {
     $(document).on("scrollstop", checkScroll);
     isScrolled = false;
   }, 500);
+}
+
+// default for rendering page buttons
+function showButton(tag, id, title, theme, btnID, cls, sz, tag2, id2) {
+  cls = cls || ''; tag2 = tag2 || ''; id2 = id2 || ''; sz = sz || 'false';
+  var id_str = (tag2 == '') ? tag + "='" + id + "'": tag + "=" + id + tag2 + "=" + id2; 
+  var str= "<a href='#' " + id_str + " data-mini='" + sz + "' data-role='button' data-theme='" + theme + "' id='" + btnID + "' class='" + cls + "'>" 
+    + title + "</a>";
+  return str;
 }

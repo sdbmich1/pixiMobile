@@ -26,7 +26,7 @@ function loadPosts(data, resFlg) {
         var pic = getPixiPic(img, 'height:60px; width:60px;');
         var hdr = item.pixi_title; 
 	var ftr = name + ' | Posted ' + post_dt;
-	var cnt = '<div class="ui-li-count">' + item.get_posts.length + '</div>';
+	var cnt = '<div class="ui-li-count">' + item.active_posts_count + '</div>';
 	item_str += build_list('conv-item', localUrl, pic, hdr, ftr, cnt); 
       });
     }
@@ -52,7 +52,7 @@ function send_msg(data) {
        + "<table>"
        +   "<tr>"
        +     "<td>"
-       +       getPixiPic(img, 'height:60px; width:60px;')
+       +       getPixiPic(img, 'height:60px; width:60px; margin-left:-3px;')
        +     "</td>"
        +     "<td class='cal-size'>"
        +       "<div data-role='fieldcontain' class='ui-hide-label'>"
@@ -65,12 +65,9 @@ function send_msg(data) {
        + "<div class='nav-right'><input type='submit' value='Send' data-theme='d'"
        + " data-inline='true' id='reply-btn' class='nav-right' data-mini='true'"
        + " data-conv-id=" + data.id + "></div>"
-       + "<input type='hidden' name='user_id' id='user_id' value='"
-       +   data.user_id + "' />"
-       + "<input type='hidden' name='pixi_id' id='pixi_id' value='"
-       +   data.pixi_id + "' />"
-       + "<input type='hidden' name='recipient_id' id='recipient_id' value='"
-       +   data.recipient_id + "' />"
+       + "<input type='hidden' name='user_id' id='user_id' value='" + data.recipient_id + "' />"
+       + "<input type='hidden' name='pixi_id' id='pixi_id' value='" + data.pixi_id + "' />"
+       + "<input type='hidden' name='recipient_id' id='recipient_id' value='" + data.user_id + "' />"
        + "</form>"
 }
 
@@ -81,9 +78,11 @@ function loadConvPage(data, resFlg) {
   // set page headers
   var pic = getPixiPic(data.listing.photo_url, 'height:60px; width:60px;', 'smallImage');
   var isSender = getUserID() === data.sender_id;
-  var str = pic + "<span class='mleft10 pstr'>" + data.pixi_title + "</span><br /><div style='text-align:right;'>";
+  var str = '<table><tr><td>' + pic + "</td><td><p class='mleft10 pstr'>" + data.pixi_title + "</p></td></tr></table><div style='text-align:right;'>";
 
-  var button_str = "<a href='#' data-inv-id=" + data.invoice_id + " data-role='button'" + " data-theme='a' id='conv-inv-btn' data-inline='true'>";
+  var button_str = "<a href='#' data-inv-id=" + data.invoice_id + 
+    " data-role='button'" + " data-theme='a' id='conv-inv-btn' data-inline='true' data-mini='true'>";
+
   if (isSender) {
     if (data['sender_can_bill?'] || data['sender_due_invoice?']) {
       str += button_str + (data['sender_can_bill?'] ? 'Bill' : 'Pay') + "</a>";
@@ -95,13 +94,12 @@ function loadConvPage(data, resFlg) {
   }
 
   str += "<a href='#' data-conv-id=" + data.id + " data-role='button'" +
-           " data-theme='b' id='conv-del-btn' data-inline='true'>Delete</a></div>";
-  str += "<br><hr class='neg-top'>";
+           " data-theme='b' id='conv-del-btn' data-mini='true' data-inline='true'>Delete</a></div>";
 
   $('#conv-top').empty().append(str).trigger('create');
 
   // load listview
-  var item_str = '<div data-role="collapsible-set" data-inset="false">';
+  var item_str = '<div data-role="collapsible-set" data-inset="false" id="collapsible-list">';
   if (resFlg) {
     $.each(data.get_posts, function(index, item) {
       var img = item.user.photo;
@@ -112,7 +110,7 @@ function loadConvPage(data, resFlg) {
       var hdr2 = parseDate(item.created_at);
       var preview = item.content;
       var delbtn = "<a href='#' data-post-id=" + item.id
-                  + " data-role='button' data-theme='b' id='del-post-btn'"
+                  + " data-role='button' data-theme='b' id='del-post-btn' data-mini='true'"
                   + " data-inline='true' class='nav-right collapsible-header-link'>Delete</a>";
       var ftr = item.content + delbtn;
       item_str += buildCollapsibleList(pic, hdr, hdr2, preview, ftr, item.id);
@@ -128,7 +126,16 @@ function loadConvPage(data, resFlg) {
   uiLoading(false);
 }
 
-function parseDate(date) {
-  var yearMonthDay = date.split('T')[0].split('-');
-  return parseInt(yearMonthDay[1], 10) + '/' + parseInt(yearMonthDay[2], 10) + '/' + yearMonthDay[0].substring(2, 4);
+function parseDate(dateString) {
+  var date = new Date(dateString);
+  // display time if date is today's date
+  if (date.toDateString() === (new Date()).toDateString()) {
+    if (date.getHours() >= 12) {
+      return ((date.getHours() - 12) || 12) + ':' + date.getMinutes() + ' PM'
+    } else {
+      return date.getHours() + ':' + date.getMinutes() + ' AM'
+    }
+  } else {
+    return (date.getMonth() + 1) + '/' + date.getDate() + '/' + (date.getFullYear() % 100);
+  }
 }

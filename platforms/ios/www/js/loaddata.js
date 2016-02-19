@@ -19,8 +19,7 @@ function loadData(listUrl, dType, params) {
     data: params,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      // set status flag
-      dFlg = (data == undefined) ? false : true;
+      dFlg = isDefined(data) ? true : false;  // set status flag
 
       // load data based on display type
       switch (dType) {
@@ -41,8 +40,8 @@ function loadData(listUrl, dType, params) {
         loadResults(data, dFlg);
 	break;
       case 'state':
-        result = loadStates(data, dFlg);
-        setSelectMenu('#state', result, params);  // set option menu
+        result = loadStates(data, dFlg, params.fld);
+        setSelectMenu(params.fld, result, params.val);  // set option menu
 	break;
       case 'pixi':
         loadPixiPage(data, dFlg);
@@ -78,10 +77,13 @@ function loadData(listUrl, dType, params) {
         setPrice(data, dFlg);
 	break;
       case 'txn':
-        loadTxnForm(data, dFlg, 'invoice'); 
-  break;
+        loadTxnForm(data, dFlg, params); 
+	break;
       case 'conv':
         loadConvPage(data, dFlg); 
+        break;
+      case 'stores':
+        loadStoreList(data, dFlg); 
         break;
       default:
 	break;
@@ -125,7 +127,7 @@ function loadListPage(pgType, viewType) {
     var pixiUrl = tmpPath + '/unposted.json' + token;
     break;
   case 'purchase':
-    var pixiUrl = pxPath + '/purchased.json' + token + "&status=purchased";
+    var pixiUrl = pxPath + 'purchased.json' + token + "&status=purchased";
     break;
   case 'sold':
     var pixiUrl = pxPath + 'seller.json' + token + "&status=sold";
@@ -264,55 +266,51 @@ function loadUserPage(data, resFlg) {
 }
 
 // set address
-function showAddress(data, resFlg, eFlg) {
-  var addr, city, state, zip, hphone, mphone;
+function showAddress(data, resFlg, eFlg, email, ahash) {
+  var addr='', city='', state, zip='', hphone='', mphone;
+  email = email || usr.email;
+  ahash = ahash || {};
+  console.log('in show address');
 
-  if (data !== undefined && data.contacts.length > 0) {
-    addr = data.contacts[0].address || '';
-    city = data.contacts[0].city || '';
-    state = data.contacts[0].state || '';
-    zip = data.contacts[0].zip || '';
-    hphone = data.contacts[0].home_phone || '';
-    mphone = data.contacts[0].mobile_phone || '';
+  if (data.contacts.length > 0) {
+    var item = data.contacts[0];
+    addr = item.address || '';
+    city = item.city || '';
+    state = item.state || '';
+    zip = item.zip || '';
+    hphone = item.home_phone || '';
+    mphone = item.mobile_phone || '';
   }
 
-  var addr_str = "<tr><td><label>Address*</label><input type='text' name='address' id='address' value='"
-    + addr + "' placeholder='Street' data-theme='a' class='profile-txt' /></td>"
-    + "<td></td><td><label>City*</label><input type='text' name='city' id='city' value='"
-    + city + "' placeholder='City' data-theme='a' class='profile-txt' /></td></tr>"
-    + "<tr><td><label>State/Province*</label><select name='state' id='state' data-mini='true'></select>"
-    + "</td><td></td><td><label>Zip* </label><input type='text' name='zip' id='zip' value='"
-    + zip + "' placeholder='Zip' data-theme='a' class='profile-txt' /></td></tr>"
-    + "<tr><td><label>Home Phone </label><input type='text' name='home_phone' id='home_phone' value='"
-    + hphone + "' placeholder='Home Phone' data-theme='a' class='profile-txt' /></td>";
+  var addr_str = "<tr><td>" + textFld('Street*', ahash.addr, addr, 'profile-txt') + "</td>"
+    + "<td></td><td>" + textFld('City*', ahash.city, city, 'profile-txt') + "</td></tr>"
+    + "<tr><td><label>State/Province*</label><select name='" + ahash.state + "' id='" + ahash.state + "' data-mini='true'></select>"
+    + "</td><td></td><td>" + numberFld('Zip*', ahash.zip, zip, 'profile-txt', 5) + "</td></tr>"
+    + "<tr><td>" + numberFld('Home Phone*', ahash.hphone, hphone, 'profile-txt', 10) + "</td>";
 
-    if(eFlg) {
-      addr_str += "<td></td><td><label>Email* </label><input type='text' name='email' id='email' value='"
-        + usr.email + "' placeholder='Email' data-theme='a' class='profile-txt' /></td></tr>";
-    }
-    else {
-      addr_str += "<td></td><td><label>Mobile Phone </label><input type='text' name='mobile_phone' id='mobile_phone' value='"
-        + mphone + "' placeholder='Mobile Phone' data-theme='a' class='profile-txt' /></td></tr>";
-    }
-
+  if(eFlg) 
+    addr_str += "<td></td><td>" + textFld('Email*', ahash.email, email, 'profile-txt') + "</td></tr>";
+  else 
+    addr_str += "<td></td><td>" + numberFld('Mobile Phone*', 'mobile_phone', mphone, 'profile-txt', 10) + "</td></tr>";
   return addr_str;
 }
 
 // process user contact page display
 function loadContactPage(data, resFlg) {
-  var state='';
+  var state='', email='';
 
   if (resFlg) {
     if (data !== undefined && data.contacts.length > 0) {
       state = data.contacts[0].state || '';
+      email = data.contacts[0].email || '';
     }
 
-    var user_str = "<table class='inv-descr'>" + showAddress(data, resFlg, false) + "</table><div class='sm-top center-wrapper'>" 
+    var fldHash = {addr: 'address', city: 'city', state: 'state', zip: 'zip', hphone: 'home_phone', email: 'email'};
+    var user_str = "<table class='inv-descr'>" + showAddress(data, resFlg, false, email, fldHash) + "</table><div class='sm-top center-wrapper'>" 
       + '<input type="submit" value="Save" data-theme="d" data-inline="true" id="edit-usr-btn"></div>';
 
     $('#usr-prof').append(user_str).trigger('create');
     setState("#state", state);  // load state dropdown
-    $('#state').val(state);
   }
   else {
     $('#usr-prof').append('No contact info found').trigger('create');
@@ -321,26 +319,70 @@ function loadContactPage(data, resFlg) {
   }
 }
 
+function load_rating(cls, amt, hgt, wd) {
+  var item = '<br /><div class="sm-top rateit ' + cls + '" data-rateit-value=' + amt + ' data-rateit-ispreset="true" data-rateit-readonly="true"' +
+    ' data-rateit-starwidth=' + wd + ' data-rateit-starheight=' + hgt + '></div><div class="clear-all"></div>'
+  return item;
+}
+
 // load cover image
-function load_cover(flg) {
-  //cover = cover || '../img/gm_grey.jpg';
+function load_cover(flg, pic, sid, rating, descr, flwFlg) {
   pgTitle = pgTitle || window.localStorage['home_site_name'];
-  console.log('cover = ' + cover);
-  var img = (!localPixFlg) ? cover : (cover == undefined) ? '../img/gm_grey.jpg' : url + '/' + cover;
-  var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'
-    + '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>';
+  flwFlg = flwFlg || false;
+  var img = (!localPixFlg) ? cover : (cover === null) ? '../img/gm_grey.jpg' : url + '/' + cover;
+  var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'; 
+
+  if (!flg && pic.length > 0) {
+    rating = rating || 0;
+    descr = descr || '';
+    var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + '</div>'
+      + '<div id="store-btn">' + toggle_follow_btn(sid, flwFlg) + '</div>';
+    px_str += '<br /><div class="usr-profile-photo">' + showUserPhoto(pic, pgTitle, 'small-title-white', item) + '</div>'; 
+  }
+  else {
+    px_str += '<div class="home-title-grp"><span class="mleft20 mtop small-title-white">' + pgTitle + '</span></div></div>'; }
+
   $('#board-top').append(px_str).trigger("create");
+  reload_ratings();
+}
+
+// add search form
+function loadSearch() {
+  var str = fld_form('search-doc', 'seller-search', 'search_txt', 'Search item or store...', 'Search', 'search-btn');
+  $('#search_form').append(str).trigger("create");
+}
+
+// toggle button based on flg
+function toggle_follow_btn(sid, flg) {
+  var skey = 'data-seller_id';
+  var str = (flg) ? showButton(skey, sid, 'Unfollow', 'b', 'unfollow-btn','','true') : showButton(skey, sid, 'Follow', 'd', 'follow-btn', '', 'true');
+  return str;
+}
+
+// loop to check if seller exists in followed list
+function isFollowed(data, sid) {
+  if(data == '') return false;
+  var flg = false;
+  if(data !== '' && isDefined(data.sellers) && data.sellers.length > 0) {
+    $.each(data.sellers, function(index, item) {
+      if(item.id == sid) {
+        flg = true;
+	return false;
+      }
+    });
+  }
+  return flg;
 }
 
 // load feature items
-function load_featured_items(data, slrFlg) {
-  load_cover(slrFlg);
+function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
+  var flwFlg = (!slrFlg) ? isFollowed(user, sid) : false;
+  load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
   var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
   var px_str = '<div class="featured-container"><div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
     + '</div></div><div class="featured mleft20">' + '</div></div>';
   $('#board-top').append(px_str).trigger("create");
-  $('.featured').append(build_str(data, slrFlg)).bxSlider({ slideMargin: 5, autoControls: false, auto: false, pager: false, 
-    slideWidth: 100, mode: 'horizontal' });
+  load_featured_slider(build_str(data, slrFlg));
 }
 
 function build_str(data, sFlg) {
@@ -348,11 +390,11 @@ function build_str(data, sFlg) {
   $.each(data, function(index, item) {
     title = (sFlg) ? item.name : item.title;
     localUrl = (sFlg) ? 'data-url="' + item.url + '"' : 'data-pixi-id="' + item.pixi_id + '"';
-    cls = (sFlg) ? 'slrUrl' : 'pixi-cat';
+    cls = (sFlg) ? 'slrUrl' : 'bd-item';
     pic = (sFlg) ? item.photo_url : item.pictures[0].photo_url;
     str += '<div class="featured-item"><div class="center-wrapper">'
       + '<a href="#" ' + localUrl + ' class="' + cls + '" data-ajax="false">'  
-      + getPixiPic(pic, 'height:100px; width:100px;') + '</a>'
+      + getPixiPic(pic, 'height:100px; width:100px;', '', 'lazy') + '</a>'
       + '<div class="sm-top profile-txt mbdescr truncate">' + title + '<br /><span class="mgdescr truncate">' + item.site_name + '</span></div>'
       + '</div></div>';
   });
@@ -364,17 +406,19 @@ function loadBoard(data, resFlg) {
   var $container = $('#px-container'); 
   var result = '', item_str = '';
   console.log('in load board');
+  uiLoading(true);
 
   // load featured items
   if($.mobile.activePage.attr("id") == 'store') {
-    cover = data.sellers[0].cover_photo;
+    cover = data.sellers[0].cover_photo || '../img/gm_grey.jpg';
     pgTitle = data.sellers[0].business_name;
-    load_featured_items(data.listings, false) 
+    load_featured_items(data.listings, false, data.user, data.sellers[0].photo_url, data.sellers[0].id, data.sellers[0].rating, 
+      data.sellers[0].description); 
   }
   else { 
     cover = window.localStorage['home_image'];
     pgTitle = window.localStorage['home_site_name'];
-    load_featured_items(data.sellers, true);
+    load_featured_items(data.sellers, true, '');
   }
 
   if(resFlg) {
@@ -401,7 +445,10 @@ function loadBoard(data, resFlg) {
 
 // build board
 function load_board_items(data, str, resFlg) {
-  if (!resFlg) return '';
+  if (!resFlg) {
+     console.log('Error load_board_items: No data found.');
+     return '';
+  }
 
   var post_dt, localUrl;
   myPixiPage = 'active';
@@ -430,13 +477,12 @@ function load_board_items(data, str, resFlg) {
 
 // build masonry blocks for board
 function reload_items(str) {
-  
   var $container = $('#px-container').masonry({ itemSelector : '.item', gutter : 1, isFitWidth: true, columnWidth : 1 }); 
-    var $elem = $(str).css({ opacity: 0 });
-    $container.imagesLoaded(function(){
-      $elem.animate({ opacity: 1 });
-      $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
-    });
+  var $elem = $(str).css({ opacity: 0 });
+  $container.imagesLoaded(function(){
+    $elem.animate({ opacity: 1 });
+    $container.append($elem).masonry('appended', $elem, true).masonry('reloadItems');
+  });
 }
 
 // load year dropdown
@@ -505,7 +551,8 @@ function loadAcctType(fld, val) {
 // set state
 function setState(fld, val) {
   var pixiUrl = url + '/states.json' + token;
-  loadData(pixiUrl, 'state', val);
+  var sHash = {fld: fld, val: val};
+  loadData(pixiUrl, 'state', sHash);
 }
 
 // load active pixi dropdown menu for invoices
@@ -522,15 +569,15 @@ function setPixiList(res, fld, val) {
 }
 
 // load states dropdown menu
-function loadStates(res, dFlg) {
-  var val = $('#state').val();
+function loadStates(res, dFlg, fld) {
+  var val = $(fld).val();
 
   if (res !== undefined) {
     states_str = '<option value="">State</option>';
-    for(var i=0, len=res.length; i<len; i++) {
+    for(var i=0, len=res.length-1; i<len; i++) {
 	states_str += "<option value='" + res[i].code + "'>" + res[i].state_name + "</option>";
     }
-    setSelectMenu('#state', states_str, val);  // set option menu
+    setSelectMenu(fld, states_str, val);  // set option menu
   } 
   return states_str;
 }
@@ -657,9 +704,10 @@ function loadBankAcct(data, resFlg) {
 }
 
 // load dropdown list based on given url
-function loadList(list, fld, descr) {
-  var item_str = '<option value="">' + 'Select ' + descr + '</option>';
+function loadList(list, fld, descr, val) {
+  var item_str = '<option default value="">' + 'Select ' + descr + '</option>';
   var len = list.length;
+  val = val || '';
   console.log('loadList = ' + list[0].name_title);
 
   // load list as options for select
@@ -668,5 +716,6 @@ function loadList(list, fld, descr) {
   }  
 
   // update field
-  $(fld).append(item_str).selectmenu().selectmenu('refresh', true);
+  //$(fld).append(item_str).selectmenu().selectmenu('refresh', true);
+  setSelectMenu(fld, item_str, val);  // set option menu
 }

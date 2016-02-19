@@ -352,9 +352,12 @@ li.plist { line-height: 14px!important; }
 			white-space: pre-wrap; font-size: 0.675em!important;}
 			
 .left-hdr {
-  position: relative;
-  top: -3.3em;
-  left: 1em;
+  position: fixed;
+  left: 5.3em;
+}
+
+.collapsible-item {
+  min-height: 77px;
 }
 
 .ui-collapsible-preview {
@@ -374,6 +377,7 @@ li.plist { line-height: 14px!important; }
 
 .ui-collapsible-heading, .ui-collapsible-heading > .ui-btn {
   padding-bottom: 5.5px;
+  min-height: 71px;
 }
 
 .ui-collapsible-set .ui-collapsible {
@@ -384,7 +388,6 @@ li.plist { line-height: 14px!important; }
   margin-left: -13px;
 }
 
-
 #del-post-btn {
   padding-top: 5px!important;
   padding-bottom: 5px!important;
@@ -393,7 +396,14 @@ li.plist { line-height: 14px!important; }
 .ui-collapsible .ui-icon {
   position: relative!important;
   left: 95%;
-  margin-top: -22%!important;
+}
+
+.ui-collapsible .ui-icon-plus {
+  margin-top: -4em!important;
+}
+
+.ui-collapsible .ui-icon-minus {
+  margin-top: -2em!important;
 }
 
 .ui-collapsible-content p {
