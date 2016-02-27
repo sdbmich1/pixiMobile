@@ -787,6 +787,17 @@ $(document).on('click', "#conv-inv-btn", function (e) {
   }
 });
 
+// hide preview when collapsible is expanded
+$(document).bind('expand collapse', function () {
+  $(this).find('.ui-collapsible').each(function(index, element) {
+    if ($(element).hasClass('ui-collapsible-collapsed')) {
+      $(element).find('.ui-collapsible-preview').show();
+    } else {
+      $(element).find('.ui-collapsible-preview').hide();
+    }
+  });
+});
+
 // user signup form
 $(document).on("click", "#signup-btn", function(e) {
   console.log('in user signup form');
@@ -1110,6 +1121,14 @@ $(document).on("pageinit", "#txn-form", function(event, ui) {
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
 });
 
+// set data for 'My Stores' page
+$(document).on("pageinit", "#storeList", function(event) {
+  var storeUrl = url + '/favorite_sellers.json' + token + '&ftype=buyer&status=active';
+  
+  // load inv data
+  loadData(storeUrl, 'stores'); 
+});
+
 // process click on conversation item
 $(document).on('click', ".conv-item", function(e) {
   e.preventDefault();
@@ -1225,6 +1244,7 @@ var menu = [
   { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Settings', href: '../html/user_form.html', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
+  { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
   { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 

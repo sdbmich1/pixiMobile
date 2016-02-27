@@ -24,30 +24,21 @@ function load_slider(cntl) {
 }
 
 // load featured band carousel
-function load_featured_slider() {
+function load_featured_slider(str) {
   var val = set_banner_slides();
-  if($('.featured').length > 0) {
-    feature_slider = $('.featured').bxSlider({
-      minSlides: 2,
-      maxSlides: val,
-      slideWidth: 180,
-      slideMargin: 20,
+  $('.featured').append(str).bxSlider({
+      slideWidth: 100,
+      slideMargin: 5,
       auto: false,
-      pager: true,
-      pagerCustom: '.bx-pager',
+      pager: false,
       autoControls: false,
-      mode: 'horizontal',
-      onSlideAfter: function() {
-        // trigger lazy to load new in-slided images
-        setTimeout(function() { $(window).trigger("scroll"); }, 100);
-      }
+      mode: 'horizontal'
     });
-    scrollEverySecond();
+    //scrollEverySecond();
 
     $('.lazy').lazyload({
       effect: 'fadeIn'
     });
-  }
 }
 
 // load status band carousel

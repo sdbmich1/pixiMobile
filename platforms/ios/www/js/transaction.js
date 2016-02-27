@@ -1,16 +1,17 @@
 // checks ticket order form quantity fields to ensure selections are made prior to submission 
 var $formID, $btnID, formError, formTxtForm, pmtForm, payForm, api_type; 
+var api_key = "pk_test_t9yZPwXwlRx7NoOB7DtVhKF8";
+var api_type = 'stripe';
 
 // toggle credit card edit view
 $(document).on('click', '#edit-card-btn', function(e) {
-  $('#pay_token').val('');
+  $('#token').val('');
   $('.card-tbl, .card-dpl').toggle();
 });
  
 // process Stripe payment form for credit card payments
 $(document).on('click', '#payForm, #cardForm', function () {
   var clickedBtnID = $(this).attr('id');
-  var api_type = $('meta[name="credit-card-api"]').attr('content');  // get api type
   $formID = clickedBtnID.match(/pay/i) ? $('#payment_form') : $('#card-acct-form');
   $btnID = clickedBtnID.match(/pay/i) ? $('#payForm') : $('#cardForm');
 	
@@ -34,15 +35,17 @@ $(document).on('click', '#payForm, #cardForm', function () {
 
 // create token if credit card info is valid
 function StripeCard() {
-  token = $('#pay_token').val(); 
-  Stripe.setPublishableKey($('meta[name="stripe-key"]').attr('content'));  // get stripe key		
+  uiLoading(true);
+  var payToken = $('#token').val(); 
+  Stripe.setPublishableKey(api_key);
 
   // disable form
-  $btnID.attr('disabled', true);
+  $('#payForm').attr('disabled', 'disabled');
+    $btnID.attr('disabled', true);
   
-  if (token.length > 0)  {
-    console.log('StripeCard token = ' + token);
-    $formID.trigger("submit.rails");    	  
+  if (payToken.length > 0)  {
+    console.log('StripeCard payToken = ' + payToken);
+    submitData('card', buildTxnParams());
   }
   else {
     // create token	
@@ -80,6 +83,7 @@ $(document).on('click', '#bank-btn', function () {
 
 // create token if bank account info is valid
 function processStripeAcct() {
+    uiLoading(true);
     $('#bank-acct-form').attr('disabled', true);
 	
       Stripe.bankAccount.createToken({
@@ -133,8 +137,8 @@ function printIt(printThis)
 // insert the token into the form so it gets submitted to the server
 function set_token(response) {
   console.log('in set_token');
-  $('#pay_token').val(response.id);
-  $formID.trigger("submit.rails");
+  $('#token').val(response.id);
+  submitData('card', buildTxnParams());
 }
 
 // handle credit card response
@@ -142,7 +146,7 @@ function stripeResponseHandler(status, response) {
   var stripeError = $('#data_error'); 
       
   if(status == 200) {
-    toggleLoading();
+    uiLoading(true);
     stripeError.hide(300);
 	  
     // insert the token
@@ -162,6 +166,7 @@ function stripeResponseHandler(status, response) {
 
       // scroll to top of page
       $('html, body').animate({scrollTop:0}, 100); 
+      uiLoading(false);
     }
   }
     

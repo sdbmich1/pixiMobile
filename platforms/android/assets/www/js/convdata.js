@@ -26,7 +26,7 @@ function loadPosts(data, resFlg) {
         var pic = getPixiPic(img, 'height:60px; width:60px;');
         var hdr = item.pixi_title; 
 	var ftr = name + ' | Posted ' + post_dt;
-	var cnt = '<div class="ui-li-count">' + data.length + '</div>';
+	var cnt = '<div class="ui-li-count">' + item.active_posts_count + '</div>';
 	item_str += build_list('conv-item', localUrl, pic, hdr, ftr, cnt); 
       });
     }
@@ -99,7 +99,7 @@ function loadConvPage(data, resFlg) {
   $('#conv-top').empty().append(str).trigger('create');
 
   // load listview
-  var item_str = '<div data-role="collapsible-set" data-inset="false">';
+  var item_str = '<div data-role="collapsible-set" data-inset="false" id="collapsible-list">';
   if (resFlg) {
     $.each(data.get_posts, function(index, item) {
       var img = item.user.photo;
@@ -126,7 +126,16 @@ function loadConvPage(data, resFlg) {
   uiLoading(false);
 }
 
-function parseDate(date) {
-  var yearMonthDay = date.split('T')[0].split('-');
-  return parseInt(yearMonthDay[1], 10) + '/' + parseInt(yearMonthDay[2], 10) + '/' + yearMonthDay[0].substring(2, 4);
+function parseDate(dateString) {
+  var date = new Date(dateString);
+  // display time if date is today's date
+  if (date.toDateString() === (new Date()).toDateString()) {
+    if (date.getHours() >= 12) {
+      return ((date.getHours() - 12) || 12) + ':' + date.getMinutes() + ' PM'
+    } else {
+      return date.getHours() + ':' + date.getMinutes() + ' AM'
+    }
+  } else {
+    return (date.getMonth() + 1) + '/' + date.getDate() + '/' + (date.getFullYear() % 100);
+  }
 }

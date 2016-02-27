@@ -18,9 +18,7 @@ function loadTxnPage(data, resFlg, txnType) {
       var name_str = "<span class='mleft10 pstr'>" + txn.buyer_name + "</span><br />";
       var total = parseFloat(txn.amt).toFixed(2);
       var descr = txn.description + ((txnType == 'invoice') ? " from " + txn.seller_name : '');
-
-      var txn_str = "<table><tr><td>" + photo + "</td><td>" + name_str + "</td></tr></table>"
-        + "<table class='inv-descr'><tr><td class='cal-size'>Confirmation #:</td><td></td><td>" + txn.confirmation_no + "</td></tr>";
+      var txn_str = "<table class='inv-descr'><tr><td class='cal-size'>Confirmation #:</td><td></td><td>" + txn.confirmation_no + "</td></tr>";
 
       if (txn.amt > 0) {
         txn_str += "<tr><td class='width240'>Payment Type: </td><td></td><td>" + txn.payment_type + "</td></tr>"
@@ -33,7 +31,7 @@ function loadTxnPage(data, resFlg, txnType) {
 	+ "<tr><td class='width240'>Email: </td><td></td><td>" + txn.email + "<br></td></tr>" 
 	+ "<tr><td class='width240'>Description: </td><td></td><td>" + descr + "<br></td></tr></table>"
 	+ "<div class='clear-all'></div><div class='mtop center-wrapper'>" 
-	+ "<a href='#' data-role='button' data-inline='true' data-theme='d' id='done-btn'>Done</a></div>";
+	+ showButton('', '', 'Done', 'd', 'home-menu-btn', 'width120') + "</div>";
 
       // build page
       $('#txn-frm').append(txn_str).trigger('create');
@@ -48,104 +46,162 @@ function loadTxnPage(data, resFlg, txnType) {
 
 // load transaction form
 function loadTxnForm(data, resFlg, txnType, promoCode) {
-  var style = '', city='', state='', zip='', street='', total, alt_style, id_str, acct;
-  var card_no, card_type, exp_dt, token='';
+  var total, id_str, acct;
+  var card_no, card_type, exp_dt, cust_token='';
   var d = new Date();
   var month = d.getMonth()+1;
   var yr = d.getFullYear();
+  var exp_yr='', exp_mo='';
+  var inv, buyer;
 
   promoCode = promoCode || '';
 
   if (resFlg) {
-    if (data !== undefined) {
-      var prc_fee = data.get_processing_fee, conv_fee = data.get_convenience_fee;
+    if (isDefined(data)) {
+      inv = data.invoice;
+      var invHash = setInvData(inv);
+      var qty = parseInt(inv.invoice_details[0].quantity);
+      var prc = parseFloat(inv.invoice_details[0].price).toFixed(2);
 
-      $('#txn-frm').html('');
-      $('#form_errors').html('');
+      var ftype = inv.invoice_details[0].fulfillment_type_code;
+      var pid = inv.listings[0].pixi_id;
+      var fldHash = {fname: 'first_name', lname: 'last_name', addr: 'address', city: 'city', state: 'state', zip: 'zip', hphone: 'home_phone', 
+        email: 'email', ucol: 'user-tbl', acol: 'addr-tbl', btnID: 'edit-txn-addr', title: 'Buyer Information'};
+      var recHash = {fname: 'recipient_first_name', lname: 'recipient_last_name', addr: 'recipient_address', city: 'recipient_city', 
+        state: 'recipient_state', zip: 'recipient_zip', hphone: 'recipient_phone', email: 'recipient_email', 
+	ucol: 'rcpt-tbl', acol: 'ship-addr-tbl', btnID: 'edit-ship-addr', title: 'Shipping Information'};
 
-      // set account
-      if(data.user.card_accounts.length > 0) {
-        acct = data.user.card_accounts[0];
-	card_no = acct.card_no; exp_dt = acct.expiration_month + '/' + acct.expiration_year; card_type = acct.card_type, token = acct.token;
-	card_edit_style = 'display:none'; card_show_style = '';
-      }
-      else {
-	card_show_style = 'display:none'; card_edit_style = '';
-      }
+      $('#txn-frm, #form_errors').html('');
 
-      // check for user address
-      if(data.user.contacts.length > 0) {
-        addr = data.user.contacts[0];
-	state = addr.state; zip = addr.zip; city = addr.city; street = addr.address;
+      buyer = data.user;
+      var addrHash = txnAddress(buyer);
+      var shipHash = showShipInfo(buyer, ftype, resFlg, recHash);
 
-        if(addr.address !== undefined && addr.city !== undefined && addr.state !== undefined && addr.zip !== undefined) {
-	  alt_style = 'display:none'; style = '';
-	} 
-	else {
-	  style = 'display:none'; alt_style = '';
-	}
+      // check for user card info
+      if(buyer.active_card_accounts.length > 0) {
+        exp_yr = buyer.active_card_accounts[0].expiration_year 
+        exp_mo = buyer.active_card_accounts[0].expiration_month 
       }
 
       // set vars based on txn type
       if (txnType == 'invoice') {
-        total = parseFloat(data.get_fee + data.amount).toFixed(2);
-	var pixi_title = data.pixi_title, idNum = data.id, class_name = "inv-item";
-	id_str = "data-inv-id='";
+	var pixi_title = inv.pixi_title, idNum = inv.id, class_name = "inv-item width80";
+	id_str = "data-inv-id";
       }
       else {
-        total = parseFloat(data.get_fee + data.amount).toFixed(2);
-	var pixi_title = data.title, idNum = data.pixi_id, class_name = 'bd-item';
-	id_str = "data-pixi-id='";
+	var pixi_title = inv.pixi_title, idNum = pid, class_name = 'bd-item width80';
+	id_str = "data-pixi-id";
       }
 
       // build form string
       var inv_str = "<div id='data_error' style='display:none' class='error'></div>"
-        + "<div id='inv-item' class='mleft10' data-qty='" + data.quantity + "' data-prc='" + data.price + "' data-pixi_id='"
-	+ data.pixi_id + "'><form id='payment_form' data-ajax='false'>"
-        + "<div class='div-border'><table><tr><td class='cal-size title-str'>Total Due</td><td class='price title-str'>$"
-	+ total + "</td></tr></table></div><div class='div-border'><table class='inv-descr addr-tbl' style='" + style + "'>"  
-	+ "<tr><td class='cal-size'><strong>" + data.user.name + "</strong><br>" + street + "<br>" + city + ", " + state + " " + zip + "</td>"
-	+ "<td class='v-align price'><a href='#' id='edit-txn-addr' data-role='button' data-inline='true' data-mini='true' data-theme='b'>"
-	+ "Change</a></td></tr></table><center><table class='inv-descr user-tbl' style='" + alt_style + "'>" 
-	+ "<tr><td><label>First Name* </label><input type='text' name='first_name' id='first_name' class='profile-txt' placeholder='First Name' "
-	+ "value='" + data.user.first_name + "' /></td><td></td>"
-	+ "<td><label>Last Name* </label><input type='text' name='last_name' id='last_name' class='profile-txt' placeholder='Last Name' value='" 
-	+ data.user.last_name + "' /></td></tr>" + showAddress(data.user, resFlg, true) + "</table></center>"
-	+ "<table class='mtop inv-descr card-dpl' style='" + card_show_style + "'>"  
-	+ "<tr><td class='cal-size mbot'>Card Info:<br>" + card_type + "<br>************" + card_no + "<br>Exp: " + exp_dt + "</td>"
-	+ "<td class='v-align price'><a href='#' id='edit-card-btn' data-role='button' data-inline='true' data-mini='true' data-theme='b'>"
-	+ "Change</a></td></tr></table>"
-	+ "<table class='mtop inv-descr card-tbl' style='" + card_edit_style + "'><tr><td class='cal-size'><label>Card #* </label>"
-	+ "<img src='../img/cc_logos.jpeg' class='cc-logo' />"
-        + "<input type='number' name='card_number' id='card_number' size=16 class='profile-txt' /></td></tr><tr><td><table><tr><td><label>CVV*"
-        + "</label><input type='number' name='cvv' id='card_code' maxlength=4 size=4 class='card-code profile-txt' /></td>"
-	+ "<td></td><td><label>Exp Mo</label><select name='card_month' id='card_month' data-mini='true'></select></td>"
-        + "<td><label>Exp Yr</label><select name='card_year' id='card_year' data-mini='true'></select></td></tr></table></td></tr></table>"
-	+ "<input type='hidden' id='user_id' value='" + usr.id + "' />"
-	+ "<input type='hidden' id='token' name='token' value='" + token + "' />"
-	+ "<input type='hidden' id='first_name' value='" + data.user.first_name + "' /><input type='hidden' id='last_name' value='" 
-	+ data.user.last_name + "' /><input type='hidden' name='transaction_type' id='transaction_type' value='" + txnType + "' />"
-	+ "<input type='hidden' name='amt' id='amt' value='" 
-	+ data.amount + "' /><input type='hidden' id='description' value='" + pixi_title + "' />"
-	+ "<input type='hidden' id='processing_fee' value='" + prc_fee + "' />"
-	+ "<input type='hidden' id='convenience_fee' value='" + conv_fee + "' />"
+	+ "<form id='payment_form' data-qty='" + qty + "' data-prc='" + prc + "' data-ajax='false'>" 
+	+ sectionHeader('Details') + showInvTable(prc, qty, invHash, false)
+	+ showBuyerInfo(buyer, resFlg, addrHash, fldHash, true) + shipHash.str + showCard(buyer)
+	+ "<input type='hidden' id='user_id' value='" + getUserID() + "' />"
+	+ "<input type='hidden' id='invoice_id' value='" + inv.id + "' />"
+	+ "<input type='hidden' id='first_name' value='" + buyer.first_name + "' />"
+	+ "<input type='hidden' id='last_name' value='" + buyer.last_name + "' />"
+	+ "<input type='hidden' name='transaction_type' id='transaction_type' value='invoice' />"
+	+ "<input type='hidden' name='amt' id='amt' value='" + invHash.total + "' />"
+	+ "<input type='hidden' name='pixi_id' id='pixi_id' value='" + pid + "' />"
+	+ "<input type='hidden' id='description' value='" + pixi_title + "' />"
+	+ "<input type='hidden' name='seller_token' id='seller_token' value='" + inv.seller.acct_token + "' />"
+	+ "<input type='hidden' name='seller_inv_amt' id='seller_inv_amt' value='" + inv.seller_amount + "' />"
+	+ "<input type='hidden' id='processing_fee' value='" + invHash.prc_fee + "' />"
+	+ "<input type='hidden' id='convenience_fee' value='" + invHash.conv_fee + "' />"
         + "<input type='hidden' id='promo_code' value='" + promoCode + "' />"
-        + "<table><tr><td class='cal-size'><a href='#' id='txn-prev-btn' class='" + class_name + "' data-role='button' data-inline='true' " + id_str
-	+ idNum + "'>Prev</a></td></div>"
-	
+        + "<br><table><tr><td class='cal-size'>" + showButton(id_str, idNum, 'Back', '', 'txn-prev-btn', class_name) + "</td>"
         + "<td class='nav-right'><input type='submit' value='Done!' data-theme='d' data-inline='true' id='payForm'></td></tr></table>"
-	+ "</form></div>"; 
+	+ "</form>"; 
+
+      // show pixi info
+      showPixiTitle(inv.pixi_title);
+      var px_str = getPixiPic(inv.listings[0].photo_url, 'height:auto; width:100%!important;');
+      $('#px-pix').append(px_str);
 
       // build page
       $('#txn-frm').append(inv_str).trigger('create');
-      setState("#state", state);  // load state dropdown
+      setState("#state", addrHash.state);  // load state dropdown
       loadYear("#card_year", -15, 0, yr+1); // load year fld
       loadMonth("#card_month", month); // load month fld
+      setState("#recipient_state", shipHash.state);  // load state dropdown
     }
   }
   else {
     console.log('Load transaction failed');
     PGproxy.navigator.notification.alert("Transaction load failed", function() {}, 'Transaction', 'Done');
   }
+}
+
+function showBuyerInfo(buyer, resFlg, ahash, fldHash, bFlg) {
+  var fname = (bFlg) ? buyer.first_name : buyer.recipient_first_name;
+  var lname = (bFlg) ? buyer.last_name : buyer.recipient_last_name;
+  var name = fname + ' ' + lname;
+  var str = sectionHeader(fldHash.title) + "<table class='inv-descr " + fldHash.acol + "' style='" + ahash.style[0] + "'>"  
+    + "<tr><td class='cal-size'>" + name + "<br>" + ahash.addr + "</td>"
+    + "<td class='v-align price' style='" + ahash.style[0] + "'>" 
+    + showButton('data-id', 0, 'Change', '', fldHash.btnID, '', 'true') + "</td></tr></table>"
+    + "<table class='inv-descr " + fldHash.ucol + "' style='" + ahash.style[1] + "'>" 
+    + "<tr><td class='col-size'>" + textFld('First Name*', fldHash.fname,  fname, 'profile-txt') + "</td><td></td>"
+    + "<td class='col-size'>" + textFld('Last Name*', fldHash.lname, lname, 'profile-txt') + "</td></tr>"
+    + showAddress(buyer, resFlg, true, buyer.email, fldHash) + "</table>";
+  return str;	
+}
+
+// check for user address
+function txnAddress(buyer) {
+  var style = ['', ''], city='', state='', zip='', street='', home_addr='';
+  if(buyer.contacts.length > 0) {
+    addr = buyer.contacts[0];
+    state = addr.state; zip = addr.zip; city = addr.city; street = addr.address;
+    home_addr = street + "<br>" + city + ", " + state + " " + zip;
+
+    if(addr.address !== undefined && addr.city !== undefined && addr.state !== undefined && addr.zip !== undefined) 
+      style = ['', 'display:none'];
+    else 
+      style = ['display:none', ''];
+  }
+  var hash = { addr: home_addr, style: style, state: state };
+  return hash;
+}
+
+function showShipInfo(buyer, ftype, resFlg, fldHash) {
+  var recipient, addr_hash, ship_hash = { str: '', state: '' };
+  if(ftype == 'SHP') {
+    recipient = (buyer.ship_addresses.length > 0) ? buyer.ship_addresses[0] : buyer;
+    addr_hash = txnAddress(recipient);
+    ship_hash = { str: showBuyerInfo(recipient, resFlg, addr_hash, fldHash, false), state: addr_hash.state };
+  }
+  return ship_hash;
+}
+
+// show card account
+function showCard(buyer) {
+  var card_no, card_type, exp_dt, cust_token='', acct;
+  var card_edit_style, card_show_style;
+
+  if(buyer.active_card_accounts.length > 0) {
+    acct = buyer.active_card_accounts[0];
+    card_no = acct.card_no; exp_dt = acct.expiration_month + '/' + acct.expiration_year; 
+    card_type = acct.card_type, cust_token = buyer.cust_token;
+    card_edit_style = 'display:none'; card_show_style = '';
+  }
+  else {
+    card_show_style = 'display:none'; card_edit_style = '';
+  }
+
+  var str = sectionHeader('Payment Information') + "<table class='inv-descr card-dpl' style='" + card_show_style + "'>"  
+    + "<tr><td class='cal-size'>" + card_type + "<br>************" + card_no + "<br>Exp: " + exp_dt + "</td>"
+    + "<td class='v-align price'>" + showButton('', 0, 'Change', '', 'edit-card-btn', '', 'true') + "</td></tr></table>"
+    + "<table class='inv-descr card-tbl' style='" + card_edit_style + "'><tr><td class='cal-size'><label>Card #* </label>"
+    + "<img src='../img/cc_logos.jpeg' class='cc-logo' />"
+    + "<input type='number' name='card_number' id='card_number' maxlength=16 size=16 class='cal-size profile-txt' /></td></tr><tr><td>"
+    + "<table><tr><td><label>CVV*</label>"
+    + "<input type='number' name='cvv' id='card_code' maxlength=4 size=4 class='card-code profile-txt' /></td>"
+    + "<td></td><td><label class='mleft5'>Exp Mo</label><select name='card_month' id='card_month' data-mini='true'></select></td>"
+    + "<td><label>Exp Yr</label><select name='card_year' id='card_year' data-mini='true'></select></td></tr></table></td></tr></table>" 
+    + "<input type='hidden' id='token' name='token' value='" + cust_token + "' />"
+  return str;
 }
 
