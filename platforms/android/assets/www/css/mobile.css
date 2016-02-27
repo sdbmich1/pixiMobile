@@ -148,7 +148,7 @@ textarea { width: 99%!important; height: 32px!important; }
   min-height:175%
 }
 
-.neg-top { margin-top: -5px!important; }
+//.neg-top { margin-top: -5px!important; }
 .reg-top {top: 5px; height: auto; min-height: 150%;}
 
 .scroller {top: 44px; height: auto; min-height: 175%;}
@@ -830,8 +830,4 @@ a.close-btn, a.change-btn {
   background-size:cover;
   width: 10px; 
   height:10px;
-}
-
-input[type=text]::-ms-clear {
-  color:red; /* This sets the cross color as red. */
 }

@@ -329,7 +329,7 @@ function load_cover(flg, pic, sid, rating, descr, flwFlg) {
   var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'; 
 
   if (!flg && pic.length > 0) {
-    loadSearch('Search item or brand...');
+    //loadSearch('Search item or brand...');
     rating = rating || 0;
     descr = descr || '';
     var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + '</div>'
@@ -376,17 +376,31 @@ function isFollowed(data, sid) {
 // load feature items
 function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
   var flwFlg = (!slrFlg) ? isFollowed(user, sid) : false;
-  load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
-  if(data.length > 3) {
+
+  if (!homeUrl.match(/searches/i) && !slrFlg) 
+    load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
+
+  // check if min # of featured items exist
+  if(data.length > 2) {
     var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
-    var px_str = '<div class="featured-container"><div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
-      + '</div></div><div class="featured mleft20">' + '</div></div>';
-    $('#board-top').append(px_str).trigger("create");
+    var str = '<div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
+      + '</div></div><div class="featured mleft20">' + '</div>'; 
+    var px_str = '<div class="featured-container">' + str + '</div>';
+    
+    if (!homeUrl.match(/searches/i) && !homeUrl.match(/category/i)) 
+      $('#board-top').append(px_str).trigger("create");
+    else {
+      $('.featured-container').html(str).trigger("create");
+    }
+
     $("#pxboard").addClass('splash-top').removeClass('sm-splash-top');
+    $('.featured-container').show('fast');
     load_featured_slider(build_str(data, slrFlg));
   }
-  else
+  else {
     $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+    $('.featured-container').hide('fast');
+  }
 }
 
 function build_str(data, sFlg) {
@@ -419,9 +433,6 @@ function loadBoard(data, resFlg) {
     load_seller_header(data);
   }
   else { 
-    loadSearch('Search item, store or brand...');
-    cover = window.localStorage['home_image'];
-    pgTitle = window.localStorage['home_site_name'];
     load_featured_items(data.sellers, true, '');
   }
 
@@ -751,9 +762,11 @@ function processReload(res, dFlg) {
   if (!$.isEmptyObject(res)) {
     console.log('in process reload');
 
-    if(!isDefined($('#site_url').val())) {
+    if(!isDefined($('#site_url').val()))
       load_featured_items(res.sellers, true, '');
-    }
+    else
+      $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+
     result = load_board_items(res, '', dFlg);
     reload_items(result);
   }

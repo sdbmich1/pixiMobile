@@ -90,10 +90,10 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
-  loadDisplayPage();
+  loadDisplayPage('Search item, store or brand...');
 });
 
-function loadDisplayPage() {
+function loadDisplayPage(txt) {
   pxPath = listPath + '/';  // reset pxPath
   uiLoading(true);
 
@@ -106,7 +106,8 @@ function loadDisplayPage() {
 
 // load store page
 $(document).on('pageinit', '#store', function() {
-  loadDisplayPage();
+  console.log('in store pageinit');
+  loadDisplayPage('Search item or brand...');
 });
 
 // load pixi form data
@@ -291,7 +292,6 @@ function postData(postUrl, fdata, dType) {
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
       case 'search':
-        //console.log('search res = ' + JSON.stringify(res));
 	$('#search-btn').prop('disabled', false);
 	result = processReload(res, dFlg);
 	break;
@@ -1230,8 +1230,20 @@ var menu = [
 
 // show menu
 $(document).on("pageshow", function(event) {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    console.log('in pageshow');
+    var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
+    loadSearch(txt);
+    if (activePage == 'listapp') {
+      cover = window.localStorage['home_image'];
+      pgTitle = window.localStorage['home_site_name'];
+      load_cover(true, '', 0);
+    }
+  }
+
   var items = '', // menu items list
-    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processed
+    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processeD
   
   // build menu items
   for (var i = 0; i < menu.length; i++) {
