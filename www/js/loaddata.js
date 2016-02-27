@@ -470,7 +470,7 @@ function load_seller_header(data) {
   // set seller url 
   $('#site_url').val(data.sellers[0].url);
 
-  if(data.listings.length > 10) {
+  if(data.listings.length >= 10) {
     load_featured_items(data.listings, false, data.user, pic, sid, rating, descr);
   }
   else {

@@ -8,7 +8,7 @@ function loadStoreList(data, resFlg) {
   if (resFlg && data.length > 0) {
     $.each(data, function(index, item) {
       localUrl = 'data-url="' + item.url + '"';
-      var pic = getPixiPic(item.photo, 'height:60px; width:60px;'); 
+      var pic = getPixiPic(item.photo_url, 'height:60px; width:60px;'); 
       var hdr = item.business_name;
       var ftr = 'Location: ' + item.site_name + ' | Pixis: ' + item.pixi_count;
       item_str += build_list('slrUrl', localUrl, pic, hdr, ftr); 
