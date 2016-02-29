@@ -84,6 +84,12 @@ function loadData(listUrl, dType, params) {
       case 'stores':
         loadStoreList(data, dFlg); 
         break;
+      case 'card':
+        loadCardList(data, dFlg);
+        break;
+      case 'cardpg':
+        loadCardPage(data, dFlg);
+        break;
       default:
 	break;
       }

@@ -99,7 +99,7 @@ function loadConvPage(data, resFlg) {
   $('#conv-top').empty().append(str).trigger('create');
 
   // load listview
-  var item_str = '<div data-role="collapsible-set" data-inset="false" id="collapsible-list">';
+  var item_str = '<div data-role="collapsible-set" data-inset="false">';
   if (resFlg) {
     $.each(data.get_posts, function(index, item) {
       var img = item.user.photo;

@@ -122,15 +122,47 @@ $(document).on('pageinit', '#inv-form', function() {
 
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
-  if (usr.bank_accounts.length < 1) {
-    var data;
-    loadBankAcct(data, true);
+  if ($('bank-btn').hasClass('ui-btn-active')) {
+    if (usr.bank_accounts.length < 1) {
+      var data;
+      loadBankAcct(data, true);
+    }
+    else {
+      var acct_id = usr.bank_accounts[0].id;
+      var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
+      loadData(invUrl, 'bank');
+    }
   }
-  else {
-    var acct_id = usr.bank_accounts[0].id;
-    var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
-    loadData(invUrl, 'bank');
+});
+
+// load 'My Accounts' page
+$(document).on('click', '#acct-menu-btn', function() {
+  var cardUrl = url + '/card_accounts.json' + token;
+  loadData(cardUrl, 'card'); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+});
+
+// process click on card item
+$(document).on('click', ".card-item", function(e) {
+  e.preventDefault();
+
+  pid = $(this).attr("data-card-id");
+  console.log('pid = ' + pid);
+
+  // clear container
+  if ( pid !== undefined && pid != '' ) {
+    $('#pixi-list').html('');
+
+    var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+    loadData(cardUrl, 'cardpg'); 
   }
+});
+
+// process card delete btn 
+$(document).on('click', "#remove-card-btn", function (e) {
+  var id = $(this).attr('data-id');
+  var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+  deleteData(cardUrl, 'card');
 });
 
 // set invoice form
@@ -181,6 +213,7 @@ function getUserID() {
 // build image string to display pix 
 function getPixiPic(pic, style, fld, cls) {
   cls = cls || '';
+
   var pstr = (!localPixFlg) ? pic : url + '/' + pic;
   var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
 
@@ -316,9 +349,15 @@ function deleteData(delUrl, dType) {
     dataType: "json",
     data: {"_method":"delete"},
     success: function(data) {
-        if(dType !== 'exit') {
-          goToUrl(homePage);  // return home
-	}
+      switch (dType) {
+        case 'remove':
+          goToUrl(homePage);
+          break;
+        case 'card':
+          $('#pixi-list').html('');
+          loadCardList(data, isDefined(data));
+          break;
+      };
     },
     fail: function (a, b, c) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Delete Data', 'Done');
