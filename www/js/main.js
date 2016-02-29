@@ -452,7 +452,7 @@ function resetBoard(cid) {
   }
 
   // refresh the page
-  refreshBoard(false);
+  refreshBoard(true);
 }
 
 // refresh board content
@@ -462,7 +462,7 @@ function refreshBoard(flg) {
 
   // reset featured band if needed
   if(!flg) {
-    $('#board-top, .featured').html(''); 
+    $('.featured').html('');
   }
   reload_items(renderBoard(homeUrl, nextPg, flg));
 }

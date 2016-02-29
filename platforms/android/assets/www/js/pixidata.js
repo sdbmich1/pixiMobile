@@ -175,7 +175,7 @@ function showPixiPage(data) {
 
 // load title
 function showPixiTitle(title) {
-  var tstr = "<h4 class='mbot major_evnt'>" + title + "</h4><hr class='sm-top'>";
+  var tstr = "<h4 class='mbot major_evnt'>" + title + "</h4><hr class='neg-top'>";
   $('#list_title').append(tstr);
 }
 
@@ -238,7 +238,7 @@ function pixi_details(item) {
   str += add_event_features(item);
   str += show_features('Size', item.item_size);
   str += show_features('Amount Left', item.amt_left);
-  str += "</div><br />";  
+  str += "</div>";  
   str += sectionHeader('Description') + "<div class='inv-descr'>" + item.description + "</div><br />";
 
   // load details

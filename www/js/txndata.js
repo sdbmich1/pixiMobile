@@ -117,7 +117,7 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
 
       // show pixi info
       showPixiTitle(inv.pixi_title);
-      var px_str = getPixiPic(inv.listings[0].photo_url, 'height:auto; width:100%!important;');
+      var px_str = getPixiPic(inv.listings[0].photo_url, 'height:auto; width:320px!important;');
       $('#px-pix').append(px_str);
 
       // build page
