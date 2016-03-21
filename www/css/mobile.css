@@ -840,3 +840,8 @@ a.close-btn, a.change-btn {
   width: 10px; 
   height:10px;
 }
+
+#add-card-btn {
+  padding-right: 40px;
+}
+

@@ -14,6 +14,7 @@ function loadCardList(data, resFlg) {
       var pic = '<img src="' + cardImage(item.card_type) + '" style="height:60px; width:60px;">';
       var hdr = '**** **** **** ' + item.card_no;
       var ftr = 'Exp Date: ' + item.expiration_month + '/' + item.expiration_year;
+      ftr += (item.default_flg ? ' | Default' : '')
       item_str += build_list('card-item', localUrl, pic, hdr, ftr); 
     });
   }
@@ -22,6 +23,8 @@ function loadCardList(data, resFlg) {
   }
 
   // append items
+  $('#add-card-btn').show();
+  $('#acct-frm').empty();
   $container.append(item_str).listview('refresh');
 }
 
@@ -67,6 +70,146 @@ function loadCardPage(data, resFlg) {
 
   // turn off spinner
   uiLoading(false);
+}
+
+// process card account form
+function loadCardAcct() {
+  var title_str='', card_no='', card_code='', postal_code='';
+
+  // turn on spinner
+  uiLoading(true);
+
+  title_str = "<span>Create Card Account</span>"; 
+
+  // load title
+  $('#inv-pg-title').html(title_str);
+  $('#acct-frm').html('');
+
+  var cardImages = '';
+  var cardNames = ['Visa', 'Master Card', 'American Express', 'Discover', 'Jcb', 'Diners Club'];
+  cardNames.forEach(function(cardName) {
+    cardImages += "<img src='" + cardImage(cardName) + "' class='tiny'>";
+  });
+
+  var card_str = "<div id='data_error' style='display:none' class='error'></div>"
+    + "<div class='mleft10'>"
+    +   "<form id='card-acct-form' data-ajax='false'>"
+    +   "<div class='sm-top'>"
+    +     "<table class='inv-descr'>"
+    +       "<tr>"
+    +         "<td>Card #</td>"
+    +         "<td>"
+    +           "<div data-role='fieldcontain' class='sm-top ui-hide-label'>"
+    +             "<input type='text' name='card_number' id='card_number'"
+    +               "placeholder='Card Number' data-theme='a'"
+    +               "value='" + card_no + "' />"
+    +           "</div>"
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td></td>"
+    +         "<td>"
+    +           cardImages
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td>Card Code</td>"
+    +         "<td>"
+    +           "<div data-role='fieldcontain' class='sm-top ui-hide-label'>"
+    +             "<input type='text' name='card_code' id='card_code'"
+    +               "placeholder='Card Code' data-theme='a'"
+    +               "value='" + card_code + "' />"
+    +           "</div>"
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td></td>"
+    +         "<td>"
+    +           "<img src='../img/cvv.png' class='tiny'>"
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td>Postal Code</td>"
+    +         "<td>"
+    +           "<div data-role='fieldcontain' class='sm-top ui-hide-label'>"
+    +             "<input type='text' name='postal_code' id='postal_code'"
+    +                "placeholder='Postal Code' data-theme='a'"
+    +                "value='" + postal_code + "' />"
+    +           "</div>"
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td class='img-valign'>Exp Month</td>"
+    +         "<td>"
+    +           selectMonth()
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td class='img-valign'>Exp Year</td>"
+    +         "<td>"
+    +           selectYear()
+    +         "</td>"
+    +       "</tr>"
+    +       "<tr>"
+    +         "<td class='img-valign'>Default</td>"
+    +         "<td>"
+    +           "<input type='checkbox' id='default_flg_checkbox' value='Y' />"
+    +         "</td>"
+    +       "</tr>"
+    +     "</table>"
+    +     "<input type='hidden' name='user_id' id='user_id'"
+    +        "value='" + usr.id + "' />"
+    +     "<input type='hidden' name='token' id='token' />" 
+    +     "<input type='hidden' name='card_no' id='card_no' />"
+    +   "</div>"
+    + "</form>"
+    + "<table>"
+    +   "<tr>"
+    +     "<td class='cal-size'>"
+    +       "<a href='#' id='cancel-card-btn' data-role='button' "
+    +          "data-inline='true'>Cancel</a>"
+    +     "</td>"
+    +     "<td class='nav-right'>"
+    +       "<input type='submit' value='Save' data-theme='d' "
+    +         "data-inline='true' id='payForm'>"
+    +     "</td>"
+    +   "</tr>"
+    + "</table>";
+
+  // build page
+  $('#pixi-list').empty();
+  $('#add-card-btn').hide();
+  $('#acct-frm').append(card_str).trigger('create');
+
+  // turn off spinner
+  uiLoading(false);
+}
+
+function selectMonth() {
+  return "<select id='card_month' name='card_month'>"
+         + "<option value='1'>January</option>"
+         + "<option value='2'>February</option>"
+         + "<option value='3'>March</option>"
+         + "<option value='4'>April</option>"
+         + "<option value='5'>May</option>"
+         + "<option value='6'>June</option>"
+         + "<option value='7'>July</option>"
+         + "<option value='8'>August</option>"
+         + "<option value='9'>September</option>"
+         + "<option value='10'>October</option>"
+         + "<option value='11'>November</option>"
+         + "<option value='12'>December</option>"
+       + "</select>";
+}
+
+function selectYear() {
+  var output = "<select id='card_year' name='card_year'>";
+  var year = parseInt((new Date()).getFullYear());
+  for (var i = 1; i <= 15; i++) {
+    output += "<option value='" + (year + i) + "'>" + (year + i) + "</option>";
+  }
+  output += "</select>";
+  return output;
 }
 
 function cardImage(cardType) {

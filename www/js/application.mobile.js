@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://10.0.0.10:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -137,7 +137,7 @@ $(document).on('pageinit', '#acct-form', function() {
 });
 
 // load 'My Accounts' page
-$(document).on('click', '#acct-menu-btn', function() {
+$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
   var cardUrl = url + '/card_accounts.json' + token;
   loadData(cardUrl, 'card'); 
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
@@ -164,6 +164,11 @@ $(document).on('click', "#remove-card-btn", function (e) {
   var id = $(this).attr('data-id');
   var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
   deleteData(cardUrl, 'card');
+});
+
+// process new card btn
+$(document).on('click', "#add-card-btn", function (e) {
+  loadCardAcct();
 });
 
 // set invoice form
@@ -313,8 +318,9 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        loadTxnPage(res, dFlg, 'invoice');
-	break;
+        console.log(JSON.stringify(res));
+        loadCardList(res, dFlg);
+        break;
       case 'buy':
         var str = $.parseJSON(res.order);
 	pid = parseInt(str['invoice_id']);

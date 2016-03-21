@@ -1,6 +1,6 @@
 // initialize var
-var localPixFlg = true;
-var url = (localPixFlg) ? 'http://172.16.10.103:3001' : 'http://54.215.187.243';  //staging
+var localPixFlg = false;
+var url = (localPixFlg) ? 'http://10.0.0.10:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -90,10 +90,10 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
-  loadDisplayPage();
+  loadDisplayPage('Search item, store or brand...');
 });
 
-function loadDisplayPage() {
+function loadDisplayPage(txt) {
   pxPath = listPath + '/';  // reset pxPath
   uiLoading(true);
 
@@ -106,7 +106,8 @@ function loadDisplayPage() {
 
 // load store page
 $(document).on('pageinit', '#store', function() {
-  loadDisplayPage();
+  console.log('in store pageinit');
+  loadDisplayPage('Search item or brand...');
 });
 
 // load pixi form data
@@ -121,28 +122,28 @@ $(document).on('pageinit', '#inv-form', function() {
 });
 
 // load bank account form page
-$(document).on('pageinit', '#acct', function() {
-  if (usr.bank_accounts.length < 1) {
-    var data;
-    loadBankAcct(data, true);
-  }
-  else {
-    var acct_id = usr.bank_accounts[0].id;
-    var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
-    loadData(invUrl, 'bank');
+$(document).on('pageinit', '#acct-form', function() {
+  if ($('bank-btn').hasClass('ui-btn-active')) {
+    if (usr.bank_accounts.length < 1) {
+      var data;
+      loadBankAcct(data, true);
+    }
+    else {
+      var acct_id = usr.bank_accounts[0].id;
+      var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
+      loadData(invUrl, 'bank');
+    }
   }
 });
 
-// load card account data
-$(document).on("pageinit", "#acct-form", function(event, ui) {
+// load 'My Accounts' page
+$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
   var cardUrl = url + '/card_accounts.json' + token;
-
-  // load inv data
   loadData(cardUrl, 'card'); 
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
 });
 
-// process click on conversation item
+// process click on card item
 $(document).on('click', ".card-item", function(e) {
   e.preventDefault();
 
@@ -158,11 +159,16 @@ $(document).on('click', ".card-item", function(e) {
   }
 });
 
-// process post delete btn 
+// process card delete btn 
 $(document).on('click', "#remove-card-btn", function (e) {
   var id = $(this).attr('data-id');
   var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
   deleteData(cardUrl, 'card');
+});
+
+// process new card btn
+$(document).on('click', "#add-card-btn", function (e) {
+  loadCardAcct();
 });
 
 // set invoice form
@@ -312,8 +318,9 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        loadTxnPage(res, dFlg, 'invoice');
-	break;
+        console.log(JSON.stringify(res));
+        loadCardList(res, dFlg);
+        break;
       case 'buy':
         var str = $.parseJSON(res.order);
 	pid = parseInt(str['invoice_id']);
@@ -324,7 +331,6 @@ function postData(postUrl, fdata, dType) {
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
       case 'search':
-        //console.log('search res = ' + JSON.stringify(res));
 	$('#search-btn').prop('disabled', false);
 	result = processReload(res, dFlg);
 	break;
@@ -356,7 +362,7 @@ function deleteData(delUrl, dType) {
         case 'card':
           $('#pixi-list').html('');
           loadCardList(data, isDefined(data));
-          break
+          break;
       };
     },
     fail: function (a, b, c) {
@@ -1289,8 +1295,20 @@ var menu = [
 
 // show menu
 $(document).on("pageshow", function(event) {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    console.log('in pageshow');
+    var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
+    loadSearch(txt);
+    if (activePage == 'listapp') {
+      cover = window.localStorage['home_image'];
+      pgTitle = window.localStorage['home_site_name'];
+      load_cover(true, '', 0);
+    }
+  }
+
   var items = '', // menu items list
-    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processed
+    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processeD
   
   // build menu items
   for (var i = 0; i < menu.length; i++) {

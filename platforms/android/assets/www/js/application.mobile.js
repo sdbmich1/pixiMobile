@@ -1,11 +1,6 @@
 // initialize var
-<<<<<<< HEAD
-var localPixFlg = true;
-var url = (localPixFlg) ? 'http://172.16.10.103:3001' : 'http://54.215.187.243';  //staging
-=======
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';  //staging
->>>>>>> 8238229f5359096c317fec3e729e495b57658fc9
+var url = (localPixFlg) ? 'http://10.0.0.10:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -127,28 +122,28 @@ $(document).on('pageinit', '#inv-form', function() {
 });
 
 // load bank account form page
-$(document).on('pageinit', '#acct', function() {
-  if (usr.bank_accounts.length < 1) {
-    var data;
-    loadBankAcct(data, true);
-  }
-  else {
-    var acct_id = usr.bank_accounts[0].id;
-    var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
-    loadData(invUrl, 'bank');
+$(document).on('pageinit', '#acct-form', function() {
+  if ($('bank-btn').hasClass('ui-btn-active')) {
+    if (usr.bank_accounts.length < 1) {
+      var data;
+      loadBankAcct(data, true);
+    }
+    else {
+      var acct_id = usr.bank_accounts[0].id;
+      var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
+      loadData(invUrl, 'bank');
+    }
   }
 });
 
-// load card account data
-$(document).on("pageinit", "#acct-form", function(event, ui) {
+// load 'My Accounts' page
+$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
   var cardUrl = url + '/card_accounts.json' + token;
-
-  // load inv data
   loadData(cardUrl, 'card'); 
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
 });
 
-// process click on conversation item
+// process click on card item
 $(document).on('click', ".card-item", function(e) {
   e.preventDefault();
 
@@ -164,11 +159,16 @@ $(document).on('click', ".card-item", function(e) {
   }
 });
 
-// process post delete btn 
+// process card delete btn 
 $(document).on('click', "#remove-card-btn", function (e) {
   var id = $(this).attr('data-id');
   var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
   deleteData(cardUrl, 'card');
+});
+
+// process new card btn
+$(document).on('click', "#add-card-btn", function (e) {
+  loadCardAcct();
 });
 
 // set invoice form
@@ -318,8 +318,9 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        loadTxnPage(res, dFlg, 'invoice');
-	break;
+        console.log(JSON.stringify(res));
+        loadCardList(res, dFlg);
+        break;
       case 'buy':
         var str = $.parseJSON(res.order);
 	pid = parseInt(str['invoice_id']);
@@ -361,7 +362,7 @@ function deleteData(delUrl, dType) {
         case 'card':
           $('#pixi-list').html('');
           loadCardList(data, isDefined(data));
-          break
+          break;
       };
     },
     fail: function (a, b, c) {
