@@ -34,11 +34,6 @@ function load_featured_slider(str) {
       autoControls: false,
       mode: 'horizontal'
     });
-    //scrollEverySecond();
-
-    $('.lazy').lazyload({
-      effect: 'fadeIn'
-    });
 }
 
 // load status band carousel

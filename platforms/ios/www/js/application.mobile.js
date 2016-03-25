@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://10.0.0.10:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -221,7 +221,12 @@ function getPixiPic(pic, style, fld, cls) {
   cls = cls || '';
 
   var pstr = (!localPixFlg) ? pic : url + '/' + pic;
-  var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
+  var img_str = '<img class="' + cls + '" style="' + style;
+  if (cls === 'lazyload') {
+    img_str += '" src="../img/bx_loader.gif" data-src="' + pstr + '"';
+  } else {
+    img_str += '" src="' + pstr + '"';
+  }
 
   fld = fld || '';  // set fld id
   img_str += (fld.length > 0) ? ' id="' + fld + '">' : '>';
