@@ -845,7 +845,6 @@ a.close-btn, a.change-btn {
   height:10px;
 }
 
-<<<<<<< HEAD
 .ui-footer>.ui-btn-icon-notext, .ui-header>.ui-btn-icon-notext, .ui-header-fixed.ui-fixed-hidden>.ui-btn-icon-notext {
   top: 0px!important;
 }
@@ -853,9 +852,7 @@ a.close-btn, a.change-btn {
 .ui-controlgroup-horizontal .ui-btn {
   border-right-width: 1px!important;
 }
-=======
+
 #add-card-btn {
   padding-right: 40px;
 }
-
->>>>>>> f9ad6fc2b794783975dae89434bda26f4a9d3480

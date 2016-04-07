@@ -32,8 +32,7 @@ function load_featured_slider(str) {
       auto: false,
       pager: false,
       autoControls: false,
-      mode: 'horizontal',
-      swipeThreshold: 1
+      mode: 'horizontal'
     });
 }
 

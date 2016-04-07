@@ -1,11 +1,7 @@
 // initialize var
 var localPixFlg = false;
-<<<<<<< HEAD
 var url = (localPixFlg) ? 'http://192.168.1.15:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
-=======
-var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
->>>>>>> f9ad6fc2b794783975dae89434bda26f4a9d3480
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -136,12 +132,12 @@ $(document).on('pageinit', '#inv-form', function() {
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
   if ($('bank-btn').hasClass('ui-btn-active')) {
-    if (usr.bank_accounts.length < 1) {
+    if (usr.active_bank_accounts.length < 1) {
       var data;
       loadBankAcct(data, true);
     }
     else {
-      var acct_id = usr.bank_accounts[0].id;
+      var acct_id = usr.active_bank_accounts[0].id;
       var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
       loadData(invUrl, 'bank');
     }
@@ -377,17 +373,11 @@ function deleteData(delUrl, dType) {
     data: {"_method":"delete"},
     success: function(data) {
       switch (dType) {
-<<<<<<< HEAD
         case 'exit':
 	  console.log('signout success');
           localStorage.clear();
           navigator.app.exitApp();
 	  break;
-        default:
-          return data;
-	  break;
-	}
-=======
         case 'remove':
           goToUrl(homePage);
           break;
@@ -395,8 +385,10 @@ function deleteData(delUrl, dType) {
           $('#pixi-list').html('');
           loadCardList(data, isDefined(data));
           break;
+        default:
+          return data;
+	  break;
       };
->>>>>>> f9ad6fc2b794783975dae89434bda26f4a9d3480
     },
     fail: function (a, b, c) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Delete Data', 'Done');
@@ -454,7 +446,7 @@ $(document).on('pagehide', 'div[data-role="page"]', function(event, ui) {
 // process active btn
 $(document).on('click', '#bill-menu-btn', function(e) {
   if(usr !== undefined)  
-    invFormType = (usr.bank_accounts.length > 0) ? 'inv' : 'bank';
+    invFormType = (usr.active_bank_accounts.length > 0) ? 'inv' : 'bank';
   else 
     invFormType = 'new';  // set var
   console.log('invFormType = ' + invFormType);
@@ -1317,7 +1309,7 @@ $(document).on("click", ".sl-menu", function(e) {
 
     // set flg for navigation after acct creation
     if ($(this).attr("id") == 'bill-menu-btn') {
-      invFormType = (usr.bank_accounts.length < 1) ? 'new' : 'inv';
+      invFormType = (usr.active_bank_accounts.length < 1) ? 'new' : 'inv';
     }
 
     // set to most recent unpaid invoice
@@ -1385,7 +1377,7 @@ $(document).on("pageshow", function(event) {
           continue;
 	}
 /*
-        if (usr.bank_accounts.length < 1) {
+        if (usr.active_bank_accounts.length < 1) {
 	  menu[i].href = '../html/accounts.html';
 	}
 */
