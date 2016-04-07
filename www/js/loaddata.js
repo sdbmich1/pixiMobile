@@ -6,7 +6,7 @@ function loadData(listUrl, dType, params) {
   var dFlg, result;
 
   // turn on spinner
-  uiLoading(true);
+  //uiLoading(true);
 
   // set params
   params = params || {};
@@ -100,9 +100,9 @@ function loadData(listUrl, dType, params) {
 function set_home_data(data, dFlg) {
   if (data !== undefined) {
     console.log('home region = ' + data.id);
-    window.localStorage['home_site_id'] = data.id;
-    window.localStorage['home_site_name'] = data.name;
-    window.localStorage['home_image'] = data.photo_url;
+    setItem('home_site_id', data.id);
+    setItem('home_site_name', data.name);
+    setItem('home_image', data.photo_url);
   }
 }
 
@@ -153,7 +153,7 @@ function loadListPage(pgType, viewType) {
     var pixiUrl = url + '/conversations.json' + token + "&status=sent";
     break;
   case 'user':
-    var pixiUrl = url + '/settings.json' + token;
+    var pixiUrl = url + '/settings.json' + token + "&id=" + getUserID();
     break;
   case 'contact':
     var pixiUrl = url + '/settings/contact.json' + token;
@@ -237,10 +237,10 @@ function loadUserPage(data, resFlg) {
       btn_name = 'Register';
       id_btn = 'signup-btn';
       popName = '#popupPix2';
-      pwd_str = "<tr><td><label>Password</label></td><td class='cal-size'><input type='password' name='password' id='password' placeholder='Password'" 
-        + " class='profile-txt' data-theme='a' /></td></tr>"
-        + "<tr><td><label>Confirm Password</label></td><td class='cal-size'><input type='password' name='password_confirmation'"
-	+ " id='password_confirmation' class='profile-txt' placeholder='Re-enter Password' data-theme='a' /></td></tr>";
+      pwd_str = "<tr><td><label>Home Zip</label></td><td class='pct-width60'><input type='number' name='home_zip'"
+	+ " id='home_zip' class='profile-txt' placeholder='Enter Zip' data-theme='a' /></td></tr>"
+        + "<tr><td><label>Password</label></td><td class='cal-size'><input type='password' name='password' id='password' placeholder='Password'" 
+        + " class='profile-txt' data-theme='a' /></td></tr>";
     }
 
     var user_str = "<table><tr><td>" + photo + "</td><td>" + name_str
@@ -326,13 +326,12 @@ function load_rating(cls, amt, hgt, wd) {
 
 // load cover image
 function load_cover(flg, pic, sid, rating, descr, flwFlg) {
-  pgTitle = pgTitle || window.localStorage['home_site_name'];
+  pgTitle = pgTitle || getItem('home_site_name');
   flwFlg = flwFlg || false;
   var img = (!localPixFlg) ? cover : (cover === null) ? '../img/gm_grey.jpg' : url + '/' + cover;
   var px_str = '<div class="item-container" style="background: url(' + img + ') no-repeat;">'; 
 
   if (!flg && pic.length > 0) {
-    //loadSearch('Search item or brand...');
     rating = rating || 0;
     descr = descr || '';
     var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + '</div>'
@@ -543,7 +542,7 @@ function loadYear(fld, minVal, maxVal, yr) {
 // load month selectmenu
 function loadMonth(fld, curMonth) {
   var arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var item_str = '<option default value="">' + 'Mon' + '</option>';
+  var item_str = '<option default value="">' + 'Month' + '</option>';
 
   // build option list
   for (var i = 1; i <= arr.length; i++) {
@@ -766,9 +765,11 @@ function processReload(res, dFlg) {
     console.log('in process reload');
 
     if(!isDefined($('#site_url').val()))
-      load_featured_items(res.sellers, true, '');
+      if (nextPg < 3)
+        load_featured_items(res.sellers, true, '');
     else
-      $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+      if (res.sellers.length < 2)
+        $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
 
     result = load_board_items(res, '', dFlg);
     reload_items(result);

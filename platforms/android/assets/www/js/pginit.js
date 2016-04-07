@@ -1,3 +1,4 @@
+var prevPg = '';
 var App = {
     "app_loaded": false,
     "testing_on_desktop": true,
@@ -33,20 +34,27 @@ var App = {
  
 	  $.when(deviceReadyDeferred, jqmReadyDeferred).then(function () {
             console.log("PhoneGap & JQMobile finished loading");
-            initPages();
-            console.log("App finished loading");
             App.app_loaded = true;
-            //PGproxy.navigator.notification.alert("App finished loading", function() {}, 'App', 'Done');
 	  });
         });
  
  	function _onDeviceReady () {
+          console.log("in onDeviceReady");
+          initPages();
 	  PGproxy.navigator.splashscreen.hide();
+	  document.addEventListener("backbutton", function(e){
+	    e.preventDefault();
+	    if($.mobile.activePage.is('#listapp')){
+	      console.log('in back button - home page');
+	    }
+	    else {
+	      goToUrl(prevPg);
+	    }
+	  }, false);
     	}
 
         function initPages () {
 	  console.log("[initPages]");
-	  localStorage.clear();
 	  getLocation(true);
 	  checkPreAuth();
         }

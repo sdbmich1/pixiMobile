@@ -88,7 +88,8 @@ function uploadPhoto(imageURI, path, params) {
   options.chunkedMode = false;
   options.fileKey = "file";
   options.fileName = imageURI.substr(imageURI.lastIndexOf('/')+1)+'.png';
-  options.mimeType = "text/plain";
+  options.mimeType="image/jpeg";
+  //options.mimeType = "text/plain";
   options.params = params;
 
   // transfer file
