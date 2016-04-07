@@ -53,19 +53,31 @@ $(document).on('pageinit', '#mypixis, #myinv', function() {
 
 // process next page
 $(document).on('click', '.nxt-pg', function(e) {
+  console.log('in click nxt pg' + nextPg);
   renderBoard(homeUrl, nextPg);
 });
 
 // used to render main board
 function renderBoard(hUrl, pg, rFlg) {
+  var result;
   uiLoading(true);
   rFlg = rFlg || false;
+
   nextPg++;  // increment page counter
   var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
   console.log('in render board' + pgName);
   $('a.nxt-pg').attr('href', pgName);
+
   var str = (pg == 1 && !rFlg) ? 'board' : 'reload';
-  return loadData(hUrl + "&page=" + pg, str);
+
+  if (hUrl.match(/searches/i)) {
+    params = loadSearchParams(pg);
+    result = postData(hUrl, params, 'search');
+  } else {
+    result = loadData(hUrl + "&page=" + pg, str);
+  }
+  
+  return result;
 }
 
 // load initial board
@@ -78,12 +90,11 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
-  loadDisplayPage();
+  loadDisplayPage('Search item, store or brand...');
 });
 
-function loadDisplayPage() {
+function loadDisplayPage(txt) {
   pxPath = listPath + '/';  // reset pxPath
-  loadSearch();
   uiLoading(true);
 
   // set time ago format
@@ -95,7 +106,8 @@ function loadDisplayPage() {
 
 // load store page
 $(document).on('pageinit', '#store', function() {
-  loadDisplayPage();
+  console.log('in store pageinit');
+  loadDisplayPage('Search item or brand...');
 });
 
 // load pixi form data
@@ -111,15 +123,52 @@ $(document).on('pageinit', '#inv-form', function() {
 
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
-  if (usr.bank_accounts.length < 1) {
-    var data;
-    loadBankAcct(data, true);
+  if ($('bank-btn').hasClass('ui-btn-active')) {
+    if (usr.bank_accounts.length < 1) {
+      var data;
+      loadBankAcct(data, true);
+    }
+    else {
+      var acct_id = usr.bank_accounts[0].id;
+      var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
+      loadData(invUrl, 'bank');
+    }
   }
-  else {
-    var acct_id = usr.bank_accounts[0].id;
-    var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
-    loadData(invUrl, 'bank');
+});
+
+// load 'My Accounts' page
+$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
+  var cardUrl = url + '/card_accounts.json' + token;
+  loadData(cardUrl, 'card'); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+});
+
+// process click on card item
+$(document).on('click', ".card-item", function(e) {
+  e.preventDefault();
+
+  pid = $(this).attr("data-card-id");
+  console.log('pid = ' + pid);
+
+  // clear container
+  if ( pid !== undefined && pid != '' ) {
+    $('#pixi-list').html('');
+
+    var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+    loadData(cardUrl, 'cardpg'); 
   }
+});
+
+// process card delete btn 
+$(document).on('click', "#remove-card-btn", function (e) {
+  var id = $(this).attr('data-id');
+  var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+  deleteData(cardUrl, 'card');
+});
+
+// process new card btn
+$(document).on('click', "#add-card-btn", function (e) {
+  loadCardAcct();
 });
 
 // set invoice form
@@ -170,8 +219,14 @@ function getUserID() {
 // build image string to display pix 
 function getPixiPic(pic, style, fld, cls) {
   cls = cls || '';
+
   var pstr = (!localPixFlg) ? pic : url + '/' + pic;
-  var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
+  var img_str = '<img class="' + cls + '" style="' + style;
+  if (cls === 'lazyload') {
+    img_str += '" src="../img/bx_loader.gif" data-src="' + pstr + '"';
+  } else {
+    img_str += '" src="' + pstr + '"';
+  }
 
   fld = fld || '';  // set fld id
   img_str += (fld.length > 0) ? ' id="' + fld + '">' : '>';
@@ -235,7 +290,7 @@ function putData(putUrl, fdata, dType) {
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
   console.log('in postData: ' + postUrl);
-  var dFlg, data;
+  var dFlg, result, data;
 
   // turn on spinner
   uiLoading(true);
@@ -268,8 +323,9 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        loadTxnPage(res, dFlg, 'invoice');
-	break;
+        console.log(JSON.stringify(res));
+        loadCardList(res, dFlg);
+        break;
       case 'buy':
         var str = $.parseJSON(res.order);
 	pid = parseInt(str['invoice_id']);
@@ -278,6 +334,10 @@ function postData(postUrl, fdata, dType) {
       case 'follow':
 	var str = toggle_follow_btn(fdata.seller_id, true);
 	$('#store-btn').html('').append(str).trigger("create");
+	break;
+      case 'search':
+	$('#search-btn').prop('disabled', false);
+	result = processReload(res, dFlg);
 	break;
       default:
         return res;
@@ -288,6 +348,7 @@ function postData(postUrl, fdata, dType) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Post Data', 'Done');
         console.log(a.responseText + ' | ' + b + ' | ' + c);
   });
+  return result;
 }
 
 // delete server data
@@ -299,9 +360,15 @@ function deleteData(delUrl, dType) {
     dataType: "json",
     data: {"_method":"delete"},
     success: function(data) {
-        if(dType !== 'exit') {
-          goToUrl(homePage);  // return home
-	}
+      switch (dType) {
+        case 'remove':
+          goToUrl(homePage);
+          break;
+        case 'card':
+          $('#pixi-list').html('');
+          loadCardList(data, isDefined(data));
+          break;
+      };
     },
     fail: function (a, b, c) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Delete Data', 'Done');
@@ -330,6 +397,7 @@ function processPix(pixArr, style) {
 function getName(cid, token) {
   var cat_name; 
 
+  console.log('in getName');
   $.getJSON(catPath + cid + '.json' + token, function(res) {
     $.each(res.results, function(index, item) {
       cat_name = res_name;
@@ -968,6 +1036,7 @@ function processLogin(res, resFlg) {
       window.localStorage["pixi_count"] = usr.pixi_count;
 
       // go to main board
+      console.log('open listings');
       goToUrl("./html/listings.html", false);
     }
     else {
@@ -1230,9 +1299,21 @@ var menu = [
 ];
 
 // show menu
-$(document).on("pagebeforeshow", function(event) {
+$(document).on("pageshow", function(event) {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    console.log('in pageshow');
+    var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
+    loadSearch(txt);
+    if (activePage == 'listapp') {
+      cover = window.localStorage['home_image'];
+      pgTitle = window.localStorage['home_site_name'];
+      load_cover(true, '', 0);
+    }
+  }
+
   var items = '', // menu items list
-    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processed
+    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processeD
   
   // build menu items
   for (var i = 0; i < menu.length; i++) {
@@ -1362,7 +1443,7 @@ function checkScroll() {
   if (activePage == 'listapp' || activePage == 'store') {
 
     /* window's scrollTop() */
-    console.log('in checkScroll');
+    //console.log('in checkScroll');
     scrolled = $(this).scrollTop(),
 
     /* viewport */
@@ -1377,8 +1458,8 @@ function checkScroll() {
 
     /* total height to scroll */
     scrollEnd = contentHeight - screenHeight + header + footer;
-    console.log('scrolled = ' + scrolled);
-    console.log('scrollEnd = ' + scrollEnd);
+    //console.log('scrolled = ' + scrolled);
+    //console.log('scrollEnd = ' + scrollEnd);
     
     if (scrolled >= scrollEnd && !isScrolled) {
       addMore(activePage);
@@ -1392,7 +1473,7 @@ function addMore(page) {
   $(document).off("scrollstop");
 
   setTimeout(function() {
-    renderBoard(homeUrl, nextPg);
+    //renderBoard(homeUrl, nextPg);
 
     /* re-attach scrollstop */
     $(document).on("scrollstop", checkScroll);

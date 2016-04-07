@@ -141,12 +141,18 @@ function callbackHandler(response) {
 function submitData(dType, params) {
   uiLoading(true);
   params = params || {}; 
+  var dataUrl;
 
-  if (dType == 'card') {
-    var dataUrl = url + '/transactions.json' + token;
-  }
-  else {
-    var dataUrl = url + '/bank_accounts.json' + token;
+  switch (dType) {
+    case 'txn':
+      dataUrl = url + '/transactions.json' + token;
+      break;
+    case 'card':
+      dataUrl = url + '/card_accounts.json' + token + '&adminFlg=false';
+      break;
+    case 'bank':
+      dataUrl = url + '/bank_accounts.json' + token;
+      break;
   }
 
   // process data

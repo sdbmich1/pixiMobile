@@ -66,7 +66,7 @@ var App = {
          "URL":  "http://192.168.1.7:3001/",
          // perform unauthenticated query
          "query": function (action, method, data, callback) { 
-	   console.log("[local.query]");
+	   console.log("app.init [local.query]");
            App.servers.query(App.servers.public.URL+action, method, {"data": data}, callback); }
        },
        "public": {

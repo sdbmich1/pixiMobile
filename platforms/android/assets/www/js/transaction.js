@@ -45,7 +45,7 @@ function StripeCard() {
   
   if (payToken.length > 0)  {
     console.log('StripeCard payToken = ' + payToken);
-    submitData('card', buildTxnParams());
+    setParamType();
   }
   else {
     // create token	
@@ -139,7 +139,7 @@ function printIt(printThis)
 function set_token(response) {
   console.log('in set_token');
   $('#token').val(response.id);
-  submitData('card', buildTxnParams());
+  setParamType();
 }
 
 // handle credit card response
@@ -174,3 +174,27 @@ function stripeResponseHandler(status, response) {
   return false;
 }
 
+function setParamType() {
+  if ($('txn-form').length > 0) {
+    submitData('txn', buildTxnParams());
+  }
+  else {
+    submitData('card', buildCardParams());
+  }
+}
+
+function buildCardParams() {
+  return {
+    card_account: {
+      card_number: $('#card_number').val(),
+      card_code: $('#card_code').val(),
+      zip: $('#postal_code').val(),
+      expiration_month: $('#card_month').val(),
+      expiration_year: $('#card_year').val(),
+      default_flg: ($('#default_flg_checkbox').is(':checked') ? 'Y' : null),
+      card_no: $('#card_no').val(),
+      token: $('#token').val(),
+      user_id: getUserID()
+    }
+  };
+}

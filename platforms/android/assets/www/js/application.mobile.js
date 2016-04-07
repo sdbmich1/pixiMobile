@@ -1,7 +1,11 @@
 // initialize var
 var localPixFlg = false;
+<<<<<<< HEAD
 var url = (localPixFlg) ? 'http://192.168.1.15:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
+=======
+var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
+>>>>>>> f9ad6fc2b794783975dae89434bda26f4a9d3480
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -131,15 +135,52 @@ $(document).on('pageinit', '#inv-form', function() {
 
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
-  if (usr.bank_accounts.length < 1) {
-    var data;
-    loadBankAcct(data, true);
+  if ($('bank-btn').hasClass('ui-btn-active')) {
+    if (usr.bank_accounts.length < 1) {
+      var data;
+      loadBankAcct(data, true);
+    }
+    else {
+      var acct_id = usr.bank_accounts[0].id;
+      var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
+      loadData(invUrl, 'bank');
+    }
   }
-  else {
-    var acct_id = usr.bank_accounts[0].id;
-    var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
-    loadData(invUrl, 'bank');
+});
+
+// load 'My Accounts' page
+$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
+  var cardUrl = url + '/card_accounts.json' + token;
+  loadData(cardUrl, 'card'); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+});
+
+// process click on card item
+$(document).on('click', ".card-item", function(e) {
+  e.preventDefault();
+
+  pid = $(this).attr("data-card-id");
+  console.log('pid = ' + pid);
+
+  // clear container
+  if ( pid !== undefined && pid != '' ) {
+    $('#pixi-list').html('');
+
+    var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+    loadData(cardUrl, 'cardpg'); 
   }
+});
+
+// process card delete btn 
+$(document).on('click', "#remove-card-btn", function (e) {
+  var id = $(this).attr('data-id');
+  var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+  deleteData(cardUrl, 'card');
+});
+
+// process new card btn
+$(document).on('click', "#add-card-btn", function (e) {
+  loadCardAcct();
 });
 
 // set invoice form
@@ -190,8 +231,14 @@ function getUserID() {
 // build image string to display pix 
 function getPixiPic(pic, style, fld, cls) {
   cls = cls || '';
+
   var pstr = (!localPixFlg) ? pic : url + '/' + pic;
-  var img_str = '<img class="' + cls + '" style="' + style + '" src="' + pstr + '"';
+  var img_str = '<img class="' + cls + '" style="' + style;
+  if (cls === 'lazyload') {
+    img_str += '" src="../img/bx_loader.gif" data-src="' + pstr + '"';
+  } else {
+    img_str += '" src="' + pstr + '"';
+  }
 
   fld = fld || '';  // set fld id
   img_str += (fld.length > 0) ? ' id="' + fld + '">' : '>';
@@ -292,8 +339,9 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        loadTxnPage(res, dFlg, 'invoice');
-	break;
+        console.log(JSON.stringify(res));
+        loadCardList(res, dFlg);
+        break;
       case 'buy':
         var str = $.parseJSON(res.order);
 	pid = parseInt(str['invoice_id']);
@@ -329,6 +377,7 @@ function deleteData(delUrl, dType) {
     data: {"_method":"delete"},
     success: function(data) {
       switch (dType) {
+<<<<<<< HEAD
         case 'exit':
 	  console.log('signout success');
           localStorage.clear();
@@ -338,6 +387,16 @@ function deleteData(delUrl, dType) {
           return data;
 	  break;
 	}
+=======
+        case 'remove':
+          goToUrl(homePage);
+          break;
+        case 'card':
+          $('#pixi-list').html('');
+          loadCardList(data, isDefined(data));
+          break;
+      };
+>>>>>>> f9ad6fc2b794783975dae89434bda26f4a9d3480
     },
     fail: function (a, b, c) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Delete Data', 'Done');

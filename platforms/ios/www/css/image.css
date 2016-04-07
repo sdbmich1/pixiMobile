@@ -173,6 +173,17 @@ img.usr-med-photo {
   border-radius: 3px;
 }
 
+#px-container {
+  margin: 0 auto; /* this is the css that keeps the container centered in page */
+}
+
+#px-pix > .bx-wrapper {
+  max-width: 320px!important;
+  max-height: auto!important;
+  width: 320px!important;
+  height: auto!important;
+}
+
 .featured-container > .bx-wrapper {
   max-width: 100%!important;
 }

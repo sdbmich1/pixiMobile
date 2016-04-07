@@ -141,3 +141,8 @@ $pixiBlue: #026FB7;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 11px;
 }
+
+.ui-checkbox input {
+  width: 16px;
+  height: 16px;
+}

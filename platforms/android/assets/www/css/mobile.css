@@ -24,7 +24,6 @@
 
 .ui-content { overflow-x: visible!important }
 .ui-listview-filter {margin-top:0px!important; margin-bottom:0px!important; margin-left:0px!important; margin-right: 0!important} 
-.ui-listview {margin-top:0px!important; margin-bottom:0px!important; }
 .mainPg .ui-listview {margin-top:-10px!important; margin-left:-10px!important; 	margin-right:-10px!important;  }
 .major_evnt { margin-top: -4px!important; }
 .sponsorList {margin-left: 0!important; margin-right: -10px!important;}	
@@ -846,6 +845,7 @@ a.close-btn, a.change-btn {
   height:10px;
 }
 
+<<<<<<< HEAD
 .ui-footer>.ui-btn-icon-notext, .ui-header>.ui-btn-icon-notext, .ui-header-fixed.ui-fixed-hidden>.ui-btn-icon-notext {
   top: 0px!important;
 }
@@ -853,3 +853,9 @@ a.close-btn, a.change-btn {
 .ui-controlgroup-horizontal .ui-btn {
   border-right-width: 1px!important;
 }
+=======
+#add-card-btn {
+  padding-right: 40px;
+}
+
+>>>>>>> f9ad6fc2b794783975dae89434bda26f4a9d3480

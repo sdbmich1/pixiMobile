@@ -99,7 +99,7 @@ function loadConvPage(data, resFlg) {
   $('#conv-top').empty().append(str).trigger('create');
 
   // load listview
-  var item_str = '<div data-role="collapsible-set" data-inset="false" id="collapsible-list">';
+  var item_str = '<div data-role="collapsible-set" data-inset="false">';
   if (resFlg) {
     $.each(data.get_posts, function(index, item) {
       var img = item.user.photo;
@@ -130,10 +130,11 @@ function parseDate(dateString) {
   var date = new Date(dateString);
   // display time if date is today's date
   if (date.toDateString() === (new Date()).toDateString()) {
+    var minutes = ((date.getMinutes() < 10) ? '0' : '') + date.getMinutes();
     if (date.getHours() >= 12) {
-      return ((date.getHours() - 12) || 12) + ':' + date.getMinutes() + ' PM'
+      return ((date.getHours() - 12) || 12) + ':' + minutes + ' PM'
     } else {
-      return date.getHours() + ':' + date.getMinutes() + ' AM'
+      return date.getHours() + ':' + minutes + ' AM'
     }
   } else {
     return (date.getMonth() + 1) + '/' + date.getDate() + '/' + (date.getFullYear() % 100);

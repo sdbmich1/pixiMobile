@@ -32,12 +32,8 @@ function load_featured_slider(str) {
       auto: false,
       pager: false,
       autoControls: false,
-      mode: 'horizontal'
-    });
-    //scrollEverySecond();
-
-    $('.lazy').lazyload({
-      effect: 'fadeIn'
+      mode: 'horizontal',
+      swipeThreshold: 1
     });
 }
 

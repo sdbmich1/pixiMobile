@@ -84,6 +84,12 @@ function loadData(listUrl, dType, params) {
       case 'stores':
         loadStoreList(data, dFlg); 
         break;
+      case 'card':
+        loadCardList(data, dFlg);
+        break;
+      case 'cardpg':
+        loadCardPage(data, dFlg);
+        break;
       default:
 	break;
       }
@@ -414,7 +420,7 @@ function build_str(data, sFlg) {
     pic = (sFlg) ? item.photo_url : item.pictures[0].photo_url;
     str += '<div class="featured-item"><div class="center-wrapper">'
       + '<a href="#" ' + localUrl + ' class="' + cls + '" data-ajax="false">'  
-      + getPixiPic(pic, 'height:100px; width:100px;', '', 'lazy') + '</a>'
+      + getPixiPic(pic, 'height:100px; width:100px;', '', 'lazyload') + '</a>'
       + '<div class="sm-top profile-txt mbdescr truncate">' + title + '<br /><span class="mgdescr truncate">' + item.site_name + '</span></div>'
       + '</div></div>';
   });
