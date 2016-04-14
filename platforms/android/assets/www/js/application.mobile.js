@@ -1,7 +1,6 @@
 // initialize var
 var localPixFlg = true;
-var url = (localPixFlg) ? 'http://10.16.87.19:3001' : 'http://54.215.187.243';  //staging
-//var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
