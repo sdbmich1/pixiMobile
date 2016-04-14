@@ -132,12 +132,12 @@ $(document).on('pageinit', '#inv-form', function() {
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
   if ($('bank-btn').hasClass('ui-btn-active')) {
-    if (usr.active_bank_accounts.length < 1) {
+    if (usr.bank_accounts.length < 1) {
       var data;
       loadBankAcct(data, true);
     }
     else {
-      var acct_id = usr.active_bank_accounts[0].id;
+      var acct_id = usr.bank_accounts[0].id;
       var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
       loadData(invUrl, 'bank');
     }
@@ -446,7 +446,7 @@ $(document).on('pagehide', 'div[data-role="page"]', function(event, ui) {
 // process active btn
 $(document).on('click', '#bill-menu-btn', function(e) {
   if(usr !== undefined)  
-    invFormType = (usr.active_bank_accounts.length > 0) ? 'inv' : 'bank';
+    invFormType = (usr.bank_accounts.length > 0) ? 'inv' : 'bank';
   else 
     invFormType = 'new';  // set var
   console.log('invFormType = ' + invFormType);
@@ -1309,7 +1309,7 @@ $(document).on("click", ".sl-menu", function(e) {
 
     // set flg for navigation after acct creation
     if ($(this).attr("id") == 'bill-menu-btn') {
-      invFormType = (usr.active_bank_accounts.length < 1) ? 'new' : 'inv';
+      invFormType = (usr.bank_accounts.length < 1) ? 'new' : 'inv';
     }
 
     // set to most recent unpaid invoice
@@ -1377,7 +1377,7 @@ $(document).on("pageshow", function(event) {
           continue;
 	}
 /*
-        if (usr.active_bank_accounts.length < 1) {
+        if (usr.bank_accounts.length < 1) {
 	  menu[i].href = '../html/accounts.html';
 	}
 */
