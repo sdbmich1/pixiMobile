@@ -94,11 +94,6 @@ $(document).on('pageinit', '#listapp', function() {
   // set token string for authentication
   token = '?auth_token=' + getItem("token");
   homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
-  $.ajaxSetup({
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('X-API-KEY', getItem("token"));
-    }
-  });
 
   // set site id
   $('#site_id').val(getItem("home_site_id"));
@@ -485,7 +480,7 @@ function setItem(key, val) {
   localStorage.setItem(key, val);
 }
 
-fcfunction getItem(key) {
+function getItem(key) {
   return localStorage.getItem(key);
 }
 
