@@ -4,11 +4,12 @@ function loadCardList(data, resFlg) {
   var localUrl, item_str = '';
   console.log('in loadCardList');
 
+  title_str = "<span>My Accounts</span>"; 
+  $('#inv-pg-title').html(title_str);
+
   // load listview
   if (resFlg && data.length > 0) {
     $.each(data, function(index, item) {
-      title_str = "<span>My Accounts</span>"; 
-      $('#inv-pg-title').html(title_str);
 
       localUrl = 'data-card-id="' + item.id + '"';
       var pic = '<img src="' + cardImage(item.card_type) + '" style="height:60px; width:60px;">';

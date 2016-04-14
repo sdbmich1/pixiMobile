@@ -1,6 +1,6 @@
 // initialize var
-var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.1.15:3001' : 'http://54.215.187.243';  //staging
+var localPixFlg = true;
+var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
@@ -145,8 +145,9 @@ $(document).on('pageinit', '#acct-form', function() {
 });
 
 // load 'My Accounts' page
-$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
+$(document).on('touchstart', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
   var cardUrl = url + '/card_accounts.json' + token;
+  $('#pixi-list').html('');
   loadData(cardUrl, 'card'); 
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
 });
