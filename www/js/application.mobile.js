@@ -1,5 +1,5 @@
 // initialize var
-var localPixFlg = true;
+var localPixFlg = false;
 var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
@@ -243,7 +243,7 @@ function getPixiPic(pic, style, fld, cls) {
 }
 // put data based on given url & data type
 function putData(putUrl, fdata, dType) {
-  console.log('in putData: ' + putUrl);
+  //console.log('in putData: ' + putUrl);
   var dFlg;
 
   // turn on spinner
@@ -257,12 +257,12 @@ function putData(putUrl, fdata, dType) {
     data: fdata,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      console.log('putData success: ' + JSON.stringify(data));
+      //console.log('putData success: ' + JSON.stringify(data));
 
       // load data based on display type
       switch (dType) {
         case 'decline':
-	  console.log('decline success');
+	  //console.log('decline success');
           goToUrl(prevPg);
 	  break;
         case 'submit':
