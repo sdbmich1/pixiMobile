@@ -1110,7 +1110,7 @@ function checkPreAuth() {
   }
   else {
     console.log("calling login page");
-    goToUrl("../www/html/login.html");
+    goToUrl("../html/login.html");
   }
 }
 
