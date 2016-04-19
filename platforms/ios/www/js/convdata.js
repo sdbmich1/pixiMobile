@@ -13,11 +13,11 @@ function loadPosts(data, resFlg) {
 
         // display correct photo based on whether user is sender or recipient
         if(getUserID() == item.user_id) {
-          var img = item.recipient.photo;
+          var img = item.recipient.photo_url;
 	  var name = item.recipient_name;
         }
         else {
-          var img = item.user.photo;
+          var img = item.user.photo_url;
           var name = item.sender_name;
         }
 

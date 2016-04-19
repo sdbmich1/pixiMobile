@@ -63,7 +63,8 @@ function StripeCard() {
 
 // process Stripe bank account form for ACH payments
 $(document).on('click', '#bank-btn', function () {
-  Stripe.setPublishableKey($('meta[name="stripe-key"]').attr('content'));  // get stripe key		
+  //Stripe.setPublishableKey($('meta[name="stripe-key"]').attr('content'));  // get stripe key		
+  Stripe.setPublishableKey(api_key);
 
   // set form id
   $('#bank-btn').attr('disabled', true);

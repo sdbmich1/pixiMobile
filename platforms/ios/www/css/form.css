@@ -117,6 +117,9 @@ $pixiBlue: #026FB7;
 .width60 { width: 60px; }
 .width80 { width: 80px; }
 .width120 { width: 120px; }
+.width180 { width: 180px; }
+.pct-width60 {width: 60%!important;}
+.pct-width70 {width: 70%!important;}
 
 .small-title-white, .home-title-grp {
   text-shadow: 1px 1px 1px #000;

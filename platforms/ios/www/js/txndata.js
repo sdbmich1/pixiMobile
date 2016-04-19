@@ -85,14 +85,14 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
 
       // set vars based on txn type
       if (txnType == 'invoice') {
-	var pixi_title = inv.pixi_title, idNum = inv.id, class_name = "inv-item width80";
+	var pixi_title = inv.pixi_title, idNum = inv.id, class_name = "width80";
 	id_str = "data-inv-id";
       }
       else {
 	var pixi_title = inv.pixi_title, idNum = pid, class_name = 'bd-item width80';
 	id_str = "data-pixi-id";
       }
-
+	
       // build form string
       var inv_str = "<div id='data_error' style='display:none' class='error'></div>"
 	+ "<form id='payment_form' data-qty='" + qty + "' data-prc='" + prc + "' data-ajax='false'>" 
