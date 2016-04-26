@@ -1227,11 +1227,7 @@ $(document).on("pageinit", "#storeList", function(event) {
 });
 
 $(document).on("pageinit", "#catList", function(event, ui) {
-  var catUrl = url + '/categories.json' + token;
-
-  // load inv data
-  loadData(catUrl, 'catList'); 
-  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+  loadCatList(categories);
 });
 
 // process click on conversation item
@@ -1336,7 +1332,8 @@ $(document).on("click", ".sl-menu", function(e) {
 $(document).on("click", "#home-menu-btn", function(e) {
   var activePage = $.mobile.activePage.attr("id");
   nextPg = 1;
-    goToUrl(homePage, true);
+  setItem('cid', '');
+  goToUrl(homePage, true);
 });
 
 $(document).on("click", ".pixi-cat", function() {

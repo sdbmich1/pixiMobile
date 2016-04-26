@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = true;
-var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://192.168.1.15:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
@@ -93,7 +93,8 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set token string for authentication
   token = '?auth_token=' + getItem("token");
-  homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
+  var cid = getItem('cid');
+  homeUrl = locPath + token + '&loc=4469' + (cid ? '&cid=' + cid : '');
 
   // set site id
   $('#site_id').val(getItem("home_site_id"));
@@ -1225,6 +1226,14 @@ $(document).on("pageinit", "#storeList", function(event) {
   loadData(storeUrl, 'stores'); 
 });
 
+$(document).on("pageinit", "#catList", function(event, ui) {
+  var catUrl = url + '/categories.json' + token;
+
+  // load inv data
+  loadData(catUrl, 'catList'); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+});
+
 // process click on conversation item
 $(document).on('click', ".conv-item", function(e) {
   e.preventDefault();
@@ -1330,6 +1339,12 @@ $(document).on("click", "#home-menu-btn", function(e) {
     goToUrl(homePage, true);
 });
 
+$(document).on("click", ".pixi-cat", function() {
+  nextPg = 1;
+  setItem('cid', $(this).attr('data-cat-id'));
+  goToUrl(homePage, true);
+})
+
 var menu = [
   { title: 'Home', href: '#', icon: '../img/home_button_blue.png', id: 'home-menu-btn' },
   { title: 'Send Bill', href: '../html/invoice_form.html', icon: '../img/162-receipt.png', id: 'bill-menu-btn' },
@@ -1341,6 +1356,7 @@ var menu = [
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Settings', href: '../html/user_form.html', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
   { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
+  { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
   { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 
