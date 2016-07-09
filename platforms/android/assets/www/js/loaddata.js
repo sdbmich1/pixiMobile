@@ -90,9 +90,6 @@ function loadData(listUrl, dType, params) {
       case 'cardpg':
         loadCardPage(data, dFlg);
         break;
-      case 'catList':
-        loadCatList(data, dFlg);
-        break;
       default:
 	break;
       }

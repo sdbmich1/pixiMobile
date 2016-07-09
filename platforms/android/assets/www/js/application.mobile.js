@@ -1,6 +1,6 @@
 // initialize var
-var localPixFlg = true;
-var url = (localPixFlg) ? 'http://192.168.1.15:3001' : 'http://54.215.187.243';  //staging
+var localPixFlg = false;
+var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
@@ -15,7 +15,17 @@ var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #
 var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType, deviceType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
-var startX, startY, endX, endY;  
+var startX, startY, endX, endY;
+
+API_KEYS = getApiKeys();
+
+function getApiKeys() {
+  var path = window.location.href.replace('index.html', '');
+  $.getJSON(path + "www/js/api_keys.json", function(data) {
+    console.log("data: " + data);
+    return data;
+  });
+}
 
 // ajax setup
 $(function(){
@@ -94,7 +104,7 @@ $(document).on('pageinit', '#listapp', function() {
   // set token string for authentication
   token = '?auth_token=' + getItem("token");
   var cid = getItem('cid');
-  homeUrl = locPath + token + '&loc=4469' + (cid ? '&cid=' + cid : '');
+  homeUrl = locPath + token + '&loc=' + getItem("home_site_id") + (cid ? '&cid=' + cid : '');
 
   // set site id
   $('#site_id').val(getItem("home_site_id"));
@@ -1099,6 +1109,7 @@ function checkPreAuth() {
   email = getItem("email");
   pwd = getItem("password");
   console.log("in checkPreAuth");
+  console.log(getApiKeys());
 
   if(isDefined(email) && isDefined(pwd)) {
     console.log("in local storage");
@@ -1227,11 +1238,7 @@ $(document).on("pageinit", "#storeList", function(event) {
 });
 
 $(document).on("pageinit", "#catList", function(event, ui) {
-  var catUrl = url + '/categories.json' + token;
-
-  // load inv data
-  loadData(catUrl, 'catList'); 
-  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+  loadCatList(categories);
 });
 
 // process click on conversation item
@@ -1336,7 +1343,8 @@ $(document).on("click", ".sl-menu", function(e) {
 $(document).on("click", "#home-menu-btn", function(e) {
   var activePage = $.mobile.activePage.attr("id");
   nextPg = 1;
-    goToUrl(homePage, true);
+  setItem('cid', '');
+  goToUrl(homePage, true);
 });
 
 $(document).on("click", ".pixi-cat", function() {

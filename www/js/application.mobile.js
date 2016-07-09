@@ -15,7 +15,7 @@ var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #
 var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType, deviceType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
-var startX, startY, endX, endY;  
+var startX, startY, endX, endY;
 
 // ajax setup
 $(function(){
@@ -1078,6 +1078,7 @@ function processLogin(res, params, resFlg) {
       setItem("pixi_count", usr.pixi_count);
 
       // go to main board
+      pushNotifications();
       goToUrl(pgName);
     }
     else {
