@@ -51,6 +51,7 @@
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <gap:plugin name="org.apache.cordova.vibration" />
+    <gap:plugin name="pushwoosh-pgb-plugin" source="npm" />
     <icon src="www/img/rsz_pixi_top_logo.png" />
     <icon density="ldpi" platform="android" src="www/img/rsz_pixi_top_logo.png" />
     <icon density="mdpi" platform="android" src="www/img/rsz_pixi_top_logo.png" />

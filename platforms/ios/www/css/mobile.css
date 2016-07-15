@@ -118,7 +118,7 @@ a.signup-btn {
 .slide-menu .ui-controlgroup {
   margin:0; /*make the buttons flush to the top*/
 }
-.slide-menu { font-size: 10px!important; line-height: 14px!important;}
+.slide-menu { font-size: 14px!important; line-height: 14px!important;}
 .profile-txt { font-size: 10px!important; }
 textarea { width: 99%!important; height: 32px!important; }
 
@@ -148,7 +148,7 @@ textarea { width: 99%!important; height: 32px!important; }
   min-height:175%
 }
 
-.neg-top { margin-top: -5px!important; }
+//.neg-top { margin-top: -5px!important; }
 .reg-top {top: 5px; height: auto; min-height: 150%;}
 
 .scroller {top: 44px; height: auto; min-height: 175%;}
@@ -723,7 +723,7 @@ table.items th.price, td.price {
 }
 
 table.txn-tbl th, td {
-  padding: 0px!important;
+  padding: 2px!important;
 }
 
 .qty-col {
@@ -816,7 +816,11 @@ a.close-btn, a.change-btn {
 .ui-mobile-viewport-transitioning .ui-footer-fixed { visibility: hidden; }
 
 .splash-top {
-	margin-top: 410px;
+	margin-top: 425px;
+}
+
+.sm-splash-top {
+	margin-top: 75%;
 }
 
 #reoccur-dt, #start-dt, #end-dt, #start-tm, #end-tm {

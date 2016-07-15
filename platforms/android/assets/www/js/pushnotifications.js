@@ -1,6 +1,5 @@
 // Modified code from https://github.com/Pushwoosh/phonegap-build-sample-app
 function pushNotifications() {
-  PGproxy.navigator.notification.alert("in pushNotifications()", function() {}, 'Post Data', 'Done');
   try {
     var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
     if (device.platform == "Android") {
@@ -95,7 +94,6 @@ function onPushwooshAndroidInitialized(pushToken) {
 }
 
 function registerPushwooshIOS() {
-  PGproxy.navigator.notification.alert("in registerPushwooshIOS", function() {}, 'Post Data', 'Done');
   try {
     var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
 

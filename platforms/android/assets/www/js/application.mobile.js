@@ -987,6 +987,7 @@ function processLogin(res, resFlg) {
 
       // go to main board
       console.log('open listings');
+      pushNotifications();
       goToUrl("./html/listings.html", false);
     }
     else {

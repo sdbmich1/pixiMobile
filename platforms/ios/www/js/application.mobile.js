@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -53,19 +53,31 @@ $(document).on('pageinit', '#mypixis, #myinv', function() {
 
 // process next page
 $(document).on('click', '.nxt-pg', function(e) {
+  console.log('in click nxt pg' + nextPg);
   renderBoard(homeUrl, nextPg);
 });
 
 // used to render main board
 function renderBoard(hUrl, pg, rFlg) {
+  var result;
   uiLoading(true);
   rFlg = rFlg || false;
+
   nextPg++;  // increment page counter
   var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
   console.log('in render board' + pgName);
   $('a.nxt-pg').attr('href', pgName);
+
   var str = (pg == 1 && !rFlg) ? 'board' : 'reload';
-  return loadData(hUrl + "&page=" + pg, str);
+
+  if (hUrl.match(/searches/i)) {
+    params = loadSearchParams(pg);
+    result = postData(hUrl, params, 'search');
+  } else {
+    result = loadData(hUrl + "&page=" + pg, str);
+  }
+  
+  return result;
 }
 
 // load initial board
@@ -78,12 +90,11 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set site id
   $('#site_id').val(window.localStorage["home_site_id"]);
-  loadDisplayPage();
+  loadDisplayPage('Search item, store or brand...');
 });
 
-function loadDisplayPage() {
+function loadDisplayPage(txt) {
   pxPath = listPath + '/';  // reset pxPath
-  loadSearch();
   uiLoading(true);
 
   // set time ago format
@@ -95,7 +106,8 @@ function loadDisplayPage() {
 
 // load store page
 $(document).on('pageinit', '#store', function() {
-  loadDisplayPage();
+  console.log('in store pageinit');
+  loadDisplayPage('Search item or brand...');
 });
 
 // load pixi form data
@@ -235,7 +247,7 @@ function putData(putUrl, fdata, dType) {
 // post data based on given url & data type
 function postData(postUrl, fdata, dType) {
   console.log('in postData: ' + postUrl);
-  var dFlg, data;
+  var dFlg, result, data;
 
   // turn on spinner
   uiLoading(true);
@@ -279,6 +291,10 @@ function postData(postUrl, fdata, dType) {
 	var str = toggle_follow_btn(fdata.seller_id, true);
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
+      case 'search':
+	$('#search-btn').prop('disabled', false);
+	result = processReload(res, dFlg);
+	break;
       default:
         return res;
 	break;
@@ -288,6 +304,7 @@ function postData(postUrl, fdata, dType) {
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Post Data', 'Done');
         console.log(a.responseText + ' | ' + b + ' | ' + c);
   });
+  return result;
 }
 
 // delete server data
@@ -330,6 +347,7 @@ function processPix(pixArr, style) {
 function getName(cid, token) {
   var cat_name; 
 
+  console.log('in getName');
   $.getJSON(catPath + cid + '.json' + token, function(res) {
     $.each(res.results, function(index, item) {
       cat_name = res_name;
@@ -968,6 +986,8 @@ function processLogin(res, resFlg) {
       window.localStorage["pixi_count"] = usr.pixi_count;
 
       // go to main board
+      console.log('open listings');
+      pushNotifications();
       goToUrl("./html/listings.html", false);
     }
     else {
@@ -1230,9 +1250,21 @@ var menu = [
 ];
 
 // show menu
-$(document).on("pagebeforeshow", function(event) {
+$(document).on("pageshow", function(event) {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    console.log('in pageshow');
+    var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
+    loadSearch(txt);
+    if (activePage == 'listapp') {
+      cover = window.localStorage['home_image'];
+      pgTitle = window.localStorage['home_site_name'];
+      load_cover(true, '', 0);
+    }
+  }
+
   var items = '', // menu items list
-    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processed
+    ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processeD
   
   // build menu items
   for (var i = 0; i < menu.length; i++) {
@@ -1362,7 +1394,7 @@ function checkScroll() {
   if (activePage == 'listapp' || activePage == 'store') {
 
     /* window's scrollTop() */
-    console.log('in checkScroll');
+    //console.log('in checkScroll');
     scrolled = $(this).scrollTop(),
 
     /* viewport */
@@ -1377,8 +1409,8 @@ function checkScroll() {
 
     /* total height to scroll */
     scrollEnd = contentHeight - screenHeight + header + footer;
-    console.log('scrolled = ' + scrolled);
-    console.log('scrollEnd = ' + scrollEnd);
+    //console.log('scrolled = ' + scrolled);
+    //console.log('scrollEnd = ' + scrollEnd);
     
     if (scrolled >= scrollEnd && !isScrolled) {
       addMore(activePage);
@@ -1392,7 +1424,7 @@ function addMore(page) {
   $(document).off("scrollstop");
 
   setTimeout(function() {
-    renderBoard(homeUrl, nextPg);
+    //renderBoard(homeUrl, nextPg);
 
     /* re-attach scrollstop */
     $(document).on("scrollstop", checkScroll);
