@@ -10,15 +10,15 @@
     <feature name="Camera">
         <param name="android-package" value="org.apache.cordova.camera.CameraLauncher" />
     </feature>
+    <feature name="File">
+        <param name="android-package" value="org.apache.cordova.file.FileUtils" />
+        <param name="onload" value="true" />
+    </feature>
     <feature name="FileTransfer">
         <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
     </feature>
     <feature name="NetworkStatus">
         <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
-    </feature>
-    <feature name="File">
-        <param name="android-package" value="org.apache.cordova.file.FileUtils" />
-        <param name="onload" value="true" />
     </feature>
     <name>Pixiboard</name>
     <description>
@@ -27,7 +27,7 @@
     <author email="support@pixiboard.com" href="http://pixiboard.com">
         Pixiboard Team
     </author>
-    <preference name="phonegap-version" value="3.6.3" />
+    <preference name="phonegap-version" value="6.0.0" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="portrait" />
     <preference name="target-device" value="universal" />
@@ -62,6 +62,7 @@
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <gap:plugin name="org.apache.cordova.vibration" />
+    <gap:plugin name="pushwoosh-pgb-plugin" source="npm" />
     <icon src="www/img/rsz_pixi_top_logo.png" />
     <icon density="ldpi" platform="android" src="www/img/rsz_pixi_top_logo.png" />
     <icon density="mdpi" platform="android" src="www/img/rsz_pixi_top_logo.png" />

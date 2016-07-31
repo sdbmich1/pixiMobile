@@ -17,16 +17,6 @@ var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
 var startX, startY, endX, endY;
 
-API_KEYS = getApiKeys();
-
-function getApiKeys() {
-  var path = window.location.href.replace('index.html', '');
-  $.getJSON(path + "www/js/api_keys.json", function(data) {
-    console.log("data: " + data);
-    return data;
-  });
-}
-
 // ajax setup
 $(function(){
   $.ajaxSetup({
@@ -1088,6 +1078,7 @@ function processLogin(res, params, resFlg) {
       setItem("pixi_count", usr.pixi_count);
 
       // go to main board
+      pushNotifications();
       goToUrl(pgName);
     }
     else {
@@ -1109,7 +1100,6 @@ function checkPreAuth() {
   email = getItem("email");
   pwd = getItem("password");
   console.log("in checkPreAuth");
-  console.log(getApiKeys());
 
   if(isDefined(email) && isDefined(pwd)) {
     console.log("in local storage");
@@ -1122,7 +1112,7 @@ function checkPreAuth() {
   }
   else {
     console.log("calling login page");
-    goToUrl("../html/login.html");
+    goToUrl("../www/html/login.html");
   }
 }
 
