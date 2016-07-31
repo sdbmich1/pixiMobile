@@ -15,7 +15,17 @@ var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #
 var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType, deviceType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
-var startX, startY, endX, endY;  
+var startX, startY, endX, endY;
+
+API_KEYS = getApiKeys();
+
+function getApiKeys() {
+  var path = window.location.href.replace('index.html', '');
+  $.getJSON(path + "www/js/api_keys.json", function(data) {
+    console.log("data: " + data);
+    return data;
+  });
+}
 
 // ajax setup
 $(function(){
@@ -93,7 +103,8 @@ $(document).on('pageinit', '#listapp', function() {
 
   // set token string for authentication
   token = '?auth_token=' + getItem("token");
-  homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
+  var cid = getItem('cid');
+  homeUrl = locPath + token + '&loc=' + getItem("home_site_id") + (cid ? '&cid=' + cid : '');
 
   // set site id
   $('#site_id').val(getItem("home_site_id"));
@@ -1098,6 +1109,7 @@ function checkPreAuth() {
   email = getItem("email");
   pwd = getItem("password");
   console.log("in checkPreAuth");
+  console.log(getApiKeys());
 
   if(isDefined(email) && isDefined(pwd)) {
     console.log("in local storage");
@@ -1110,7 +1122,7 @@ function checkPreAuth() {
   }
   else {
     console.log("calling login page");
-    goToUrl("../www/html/login.html");
+    goToUrl("../html/login.html");
   }
 }
 
@@ -1225,6 +1237,10 @@ $(document).on("pageinit", "#storeList", function(event) {
   loadData(storeUrl, 'stores'); 
 });
 
+$(document).on("pageinit", "#catList", function(event, ui) {
+  loadCatList(categories);
+});
+
 // process click on conversation item
 $(document).on('click', ".conv-item", function(e) {
   e.preventDefault();
@@ -1327,8 +1343,15 @@ $(document).on("click", ".sl-menu", function(e) {
 $(document).on("click", "#home-menu-btn", function(e) {
   var activePage = $.mobile.activePage.attr("id");
   nextPg = 1;
-    goToUrl(homePage, true);
+  setItem('cid', '');
+  goToUrl(homePage, true);
 });
+
+$(document).on("click", ".pixi-cat", function() {
+  nextPg = 1;
+  setItem('cid', $(this).attr('data-cat-id'));
+  goToUrl(homePage, true);
+})
 
 var menu = [
   { title: 'Home', href: '#', icon: '../img/home_button_blue.png', id: 'home-menu-btn' },
@@ -1341,6 +1364,7 @@ var menu = [
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Settings', href: '../html/user_form.html', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
   { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
+  { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
   { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 
