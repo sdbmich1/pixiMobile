@@ -815,6 +815,10 @@ a.close-btn, a.change-btn {
 .ui-mobile-viewport-transitioning .ui-footer-fixed { visibility: hidden; }
 
 .splash-top {
+	margin-top: 405px;
+}
+
+.big-splash-top {
 	margin-top: 425px;
 }
 
@@ -841,7 +845,15 @@ a.close-btn, a.change-btn {
   height:10px;
 }
 
+.ui-footer>.ui-btn-icon-notext, .ui-header>.ui-btn-icon-notext, .ui-header-fixed.ui-fixed-hidden>.ui-btn-icon-notext {
+  top: 0px!important;
+}
+
+.ui-controlgroup-horizontal .ui-btn {
+  border-right-width: 1px!important;
+}
+/*
 #add-card-btn {
   padding-right: 40px;
 }
-
+*/

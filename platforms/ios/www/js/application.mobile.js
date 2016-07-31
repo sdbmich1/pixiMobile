@@ -1,6 +1,7 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.0.119:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
+//var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
 var pixPath = url + '/pictures.json';
@@ -12,8 +13,9 @@ var catPath = pxPath + 'category.json' ;
 var locPath = pxPath + 'local.json';
 var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
 var nextPg = 1;
-var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType,
+var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType, deviceType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
+var startX, startY, endX, endY;  
 
 // ajax setup
 $(function(){
@@ -32,6 +34,10 @@ $.event.special.swipe.verticalDistanceThreshold = 75; // Swipe vertical displace
 // change page
 function goToUrl(pxUrl, rFlg) {
   rFlg = rFlg || false;
+  if(homePage != pxUrl && pxUrl != "../www/index.html" && pxUrl != '../html/login.html') {
+    prevPg = $.mobile.activePage[0].baseURI;
+    console.log('Prev page URL: ' + prevPg);
+  }
   $.mobile.changePage( pxUrl, { transition: "none", reverse: false, reloadPage: rFlg, changeHash: false });
 }
 
@@ -64,7 +70,7 @@ function renderBoard(hUrl, pg, rFlg) {
   rFlg = rFlg || false;
 
   nextPg++;  // increment page counter
-  var pgName = "../html/listings.html?page=" + nextPg;  // set next page href string
+  var pgName = homePage + "?page=" + nextPg;  // set next page href string
   console.log('in render board' + pgName);
   $('a.nxt-pg').attr('href', pgName);
 
@@ -83,19 +89,20 @@ function renderBoard(hUrl, pg, rFlg) {
 // load initial board
 $(document).on('pageinit', '#listapp', function() {
   console.log('in listapp pageinit');
+  nextPg = 1;
 
   // set token string for authentication
-  token = '?auth_token=' + window.localStorage["token"];
-  homeUrl = locPath + token + '&loc=' + window.localStorage["home_site_id"];
+  token = '?auth_token=' + getItem("token");
+  homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
 
   // set site id
-  $('#site_id').val(window.localStorage["home_site_id"]);
+  $('#site_id').val(getItem("home_site_id"));
   loadDisplayPage('Search item, store or brand...');
 });
 
 function loadDisplayPage(txt) {
   pxPath = listPath + '/';  // reset pxPath
-  uiLoading(true);
+  //uiLoading(true);
 
   // set time ago format
   $("time.timeago").timeago();
@@ -107,6 +114,7 @@ function loadDisplayPage(txt) {
 // load store page
 $(document).on('pageinit', '#store', function() {
   console.log('in store pageinit');
+  nextPg = 1;
   loadDisplayPage('Search item or brand...');
 });
 
@@ -124,12 +132,12 @@ $(document).on('pageinit', '#inv-form', function() {
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
   if ($('bank-btn').hasClass('ui-btn-active')) {
-    if (usr.bank_accounts.length < 1) {
+    if (usr.active_bank_accounts.length < 1) {
       var data;
       loadBankAcct(data, true);
     }
     else {
-      var acct_id = usr.bank_accounts[0].id;
+      var acct_id = usr.active_bank_accounts[0].id;
       var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
       loadData(invUrl, 'bank');
     }
@@ -137,8 +145,9 @@ $(document).on('pageinit', '#acct-form', function() {
 });
 
 // load 'My Accounts' page
-$(document).on('click', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
+$(document).on('touchstart', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
   var cardUrl = url + '/card_accounts.json' + token;
+  $('#pixi-list').html('');
   loadData(cardUrl, 'card'); 
   $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
 });
@@ -213,7 +222,7 @@ $(document).on('pageinit', '#formapp', function() {
 
 // get user id
 function getUserID() {
-  return window.localStorage["user_id"];
+  return getItem("user_id");
 }
 
 // build image string to display pix 
@@ -234,7 +243,7 @@ function getPixiPic(pic, style, fld, cls) {
 }
 // put data based on given url & data type
 function putData(putUrl, fdata, dType) {
-  console.log('in putData: ' + putUrl);
+  //console.log('in putData: ' + putUrl);
   var dFlg;
 
   // turn on spinner
@@ -248,10 +257,14 @@ function putData(putUrl, fdata, dType) {
     data: fdata,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      console.log('putData success: ' + JSON.stringify(data));
+      //console.log('putData success: ' + JSON.stringify(data));
 
       // load data based on display type
       switch (dType) {
+        case 'decline':
+	  //console.log('decline success');
+          goToUrl(prevPg);
+	  break;
         case 'submit':
           showPixiSuccess(data);
 	  break;
@@ -297,12 +310,12 @@ function postData(postUrl, fdata, dType) {
 
   // process post
   $.post(postUrl, fdata, function(res) {
-    dFlg = (res == undefined) ? false : true;  // set flag
+    dFlg = (isDefined(res)) ? true : false;  // set flag
 
     // load data based on display type
     switch (dType) {
       case 'login':
-        processLogin(res, dFlg);
+        processLogin(res, fdata, dFlg);
 	break;
       case 'pixi':
         processPixiData(res);
@@ -361,6 +374,11 @@ function deleteData(delUrl, dType) {
     data: {"_method":"delete"},
     success: function(data) {
       switch (dType) {
+        case 'exit':
+	  console.log('signout success');
+          localStorage.clear();
+          navigator.app.exitApp();
+	  break;
         case 'remove':
           goToUrl(homePage);
           break;
@@ -368,6 +386,9 @@ function deleteData(delUrl, dType) {
           $('#pixi-list').html('');
           loadCardList(data, isDefined(data));
           break;
+        default:
+          return data;
+	  break;
       };
     },
     fail: function (a, b, c) {
@@ -426,7 +447,7 @@ $(document).on('pagehide', 'div[data-role="page"]', function(event, ui) {
 // process active btn
 $(document).on('click', '#bill-menu-btn', function(e) {
   if(usr !== undefined)  
-    invFormType = (usr.bank_accounts.length > 0) ? 'inv' : 'bank';
+    invFormType = (usr.active_bank_accounts.length > 0) ? 'inv' : 'bank';
   else 
     invFormType = 'new';  // set var
   console.log('invFormType = ' + invFormType);
@@ -456,16 +477,23 @@ $(document).on('click', '#pixis-menu-btn', function(e) {
   return false;
 });
 
+function setItem(key, val) {
+  localStorage.setItem(key, val);
+}
+
+function getItem(key) {
+  return localStorage.getItem(key);
+}
+
 // process menu btn
 $(document).on('click', '#signout-menu-btn', function(e) {
-  var curToken = window.localStorage["token"];
-  var logoutUrl = url + '/api/v1/sessions/' + curToken + '.json';
+  var logoutUrl = url + '/api/v1/sessions/' + getItem("token") + '.json';
 
   // check if app exit
   navigator.notification.confirm('Close App?', onExitConfirm, 'Exit', 'No, Yes');
 
   // process request
-  deleteData(logoutUrl, 'exit');
+  //deleteData(logoutUrl, 'exit');
   return false;
 });
 
@@ -518,7 +546,8 @@ $(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
 });
 
 // process list btn click
-$(document).on('click', plist, function(e) {
+$(document).on('touchstart', plist, function(e) {
+  e.stopPropagation();
   var $this = $(this);
 
   // reset active class
@@ -582,6 +611,7 @@ $(document).on('click', '#login-btn', function(e) {
 // process confirmation
 function onExitConfirm(button) {
   if (button == 2) {
+    localStorage.clear();
     navigator.app.exitApp();
   }
 }
@@ -744,7 +774,7 @@ $(document).on('click', "#unfollow-btn", function (e) {
 
 // reset pixi page after successful post
 function resetPost (resFlg) {
-  $("#contact-btn").removeAttr("disabled");
+  $("#contact-btn").prop("disabled", false);
 
   if (resFlg) {
     $("#content").html('').val('');
@@ -855,16 +885,17 @@ $(document).on("click", "#signup-btn", function(e) {
 
   $("#signup-btn").attr("disabled","disabled");
 
-  var pxUrl = url + '/signup.json';
+  var loginUrl = url + '/api/v1/registrations.json';
   var imageURI = $('#smallImage').attr("src");
 
   // set params
   var params = new Object();
   var dt = new Date($('#birth_mo').val() + '/' + $('#birth_dt').val() + '/' + $('#birth_yr').val());
   params.user = { first_name: $('#first_name').val(), last_name: $('#last_name').val(), gender: $('#gender').val(),
-    email: $('#email').val(), password: $('#password').val(), password_confirmation: $('#password_confirmation').val(), birth_date: dt }; 
+    email: $('#email').val(), password: $('#password').val(), birth_date: dt, home_zip: $('#home_zip').val() }; 
 
-  uploadPhoto(imageURI, pxUrl, params);
+  //uploadPhoto(imageURI, loginUrl, params);
+  postData(loginUrl, params, 'login');
   return false;
 });
 
@@ -998,74 +1029,88 @@ $(document).on("submit", "#loginForm", function(e) {
   return false;
 });
 
-function handleLogin() {
+function handleLogin(email, pwd) {
   console.log('in handlelogin');
   uiLoading(true);
 
-  //disable the button so we can't resubmit while we wait
-  $("#signin-btn").attr("disabled","disabled");
+  if(!isDefined(email)) {
+    console.log('handleLogin checking form...');
+    $("#signin-btn").attr("disabled","disabled"); //disable the button so we can't resubmit while we wait
 
-  // set vars
-  email = $("#email").val();
-  pwd = $("#password").val();
+    // set vars
+    email = $("#email").val();
+    pwd = $("#password").val();
+    var src = 'form';
+  }
+  else
+    var src = 'local';
 
-  var fdata = $("#loginForm").serialize();
+  // store data
   var loginUrl = url + '/api/v1/sessions.json';
+  var params = new Object();
+
+  // set params
+  params = { email: email, password: pwd, src: src };
 
   // process login
-  postData(loginUrl, fdata, 'login');
+  postData(loginUrl, params, 'login');
 }
 
 // complete login process
-function processLogin(res, resFlg) {
+function processLogin(res, params, resFlg) {
   if(resFlg) {
     if(res.token.length > 0) {
+      var pgName = '../www/html/listings.html';
       console.log('login success');
 
       // set user
       usr = res.user;
-      console.log('user id = '+ usr.id);
-      console.log('user pixi count = '+ usr.pixi_count);
-      console.log('user email = '+ email);
 
       //store credentials on device
-      window.localStorage["email"] = email;
-      window.localStorage["password"] = pwd;
-      window.localStorage["token"] = res.token;
-      window.localStorage["user_id"] = usr.id;
-      window.localStorage["pixi_count"] = usr.pixi_count;
+      if(params.src == 'form') {
+        setItem("email", params.email);
+        setItem("password", params.password);
+	pgName = homePage;
+      }
+      setItem("token", res.token);
+      setItem("user_id", usr.id);
+      setItem("pixi_count", usr.pixi_count);
 
       // go to main board
-      console.log('open listings');
-      goToUrl("./html/listings.html", false);
+      goToUrl(pgName);
     }
     else {
       console.log('login failed');
-      $("#signin-btn").removeAttr("disabled");
+      $("#signin-btn").prop("disabled", false);
       PGproxy.navigator.notification.alert("No token found", function() {}, 'Login', 'Done');
     }
   }
   else {
     console.log('login failed');
-    $("#signin-btn").removeAttr("disabled");
-    PGproxy.navigator.notification.alert("Login failed", function() {}, 'Login', 'Done');
+    $("#signin-btn").prop("disabled", false);
+    PGproxy.navigator.notification.alert("Login failed. Please try again.", function() {}, 'Login', 'Done');
   }
   uiLoading(false);
 }
 
 // check if credentials are already set locally
 function checkPreAuth() {
-  console.log("checkPreAuth");
-  var $form = $("#loginForm");
+  email = getItem("email");
+  pwd = getItem("password");
+  console.log("in checkPreAuth");
 
-  if(window.localStorage["email"] != undefined && window.localStorage["password"] != undefined) {
+  if(isDefined(email) && isDefined(pwd)) {
     console.log("in local storage");
 
-    $("#email", $form).val(window.localStorage["email"]);
-    $("#password", $form).val(window.localStorage["password"]);
+    //$("#email", $form).val(email);
+    //$("#password", $form).val(pwd);
 
     // process login
-    handleLogin();
+    handleLogin(email, pwd);
+  }
+  else {
+    console.log("calling login page");
+    goToUrl("../www/html/login.html");
   }
 }
 
@@ -1135,7 +1180,8 @@ function togglePath() {
 }
 
 // process click on board pix
-$(document).on('click', ".bd-item, .pixi-link", function(e) {
+$(document).on('touchstart', ".bd-item, .pixi-link", function(e) {
+  e.stopPropagation();
   e.preventDefault();
 
   // reset vars
@@ -1264,7 +1310,7 @@ $(document).on("click", ".sl-menu", function(e) {
 
     // set flg for navigation after acct creation
     if ($(this).attr("id") == 'bill-menu-btn') {
-      invFormType = (usr.bank_accounts.length < 1) ? 'new' : 'inv';
+      invFormType = (usr.active_bank_accounts.length < 1) ? 'new' : 'inv';
     }
 
     // set to most recent unpaid invoice
@@ -1306,8 +1352,8 @@ $(document).on("pageshow", function(event) {
     var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
     loadSearch(txt);
     if (activePage == 'listapp') {
-      cover = window.localStorage['home_image'];
-      pgTitle = window.localStorage['home_site_name'];
+      cover = getItem('home_image');
+      pgTitle = getItem('home_site_name');
       load_cover(true, '', 0);
     }
   }
@@ -1332,7 +1378,7 @@ $(document).on("pageshow", function(event) {
           continue;
 	}
 /*
-        if (usr.bank_accounts.length < 1) {
+        if (usr.active_bank_accounts.length < 1) {
 	  menu[i].href = '../html/accounts.html';
 	}
 */
@@ -1428,22 +1474,36 @@ function buildCollapsibleList(pic, hdr, hdr2, preview, ftr, id) {
 
 var isScrolled = false;
 
-$('.featured-container').on("swipeleft, swiperight", function (e) {
+$('#px-container, .bxslider, .featured').on("touchstart", function (e) {
   console.log('in listapp swipe event');
+  startX = e.originalEvent.touches[0].pageX;
+  startY = e.originalEvent.touches[0].pageY;
+  console.log('startX = ' + startX);
+  console.log('startY = ' + startY);
+  /*  
   var activePage = $.mobile.activePage.attr("id");
   if (activePage == 'listapp' || activePage == 'store') {
     $(document).off("scrollstop");
     isScrolled = true;
   }
+  */
+}).on("touchmove", ".inner", function (e, ui) {
+  e.preventDefault();
+}).on("touchend", ".inner", function (e, ui) {
+
+  endX = e.originalEvent.changedTouches[0].pageX;
+  endY = e.originalEvent.changedTouches[0].pageY;
+  console.log('endX = ' + endX);
+  console.log('endY = ' + endY);
 });
 
+$(document).on("scrollstart", setScroll);
 $(document).on("scrollstop", checkScroll);
-function checkScroll() {
+
+function setScroll() {
   var activePage = $.mobile.activePage.attr("id");
   if (activePage == 'listapp' || activePage == 'store') {
-
     /* window's scrollTop() */
-    //console.log('in checkScroll');
     scrolled = $(this).scrollTop(),
 
     /* viewport */
@@ -1454,12 +1514,18 @@ function checkScroll() {
 
     /* header's & footer's height within active page (remove -1 for unfixed) */
     header = $(".ui-header", activePage).outerHeight() - 1,
-    footer = $(".ui-footer", activePage).outerHeight() - 1,
+    footer = $(".ui-footer", activePage).outerHeight() - 1;
+  }
+}
+
+function checkScroll() {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
 
     /* total height to scroll */
     scrollEnd = contentHeight - screenHeight + header + footer;
-    //console.log('scrolled = ' + scrolled);
-    //console.log('scrollEnd = ' + scrollEnd);
+    console.log('scrolled = ' + scrolled);
+    console.log('scrollEnd = ' + scrollEnd);
     
     if (scrolled >= scrollEnd && !isScrolled) {
       addMore(activePage);
@@ -1473,7 +1539,7 @@ function addMore(page) {
   $(document).off("scrollstop");
 
   setTimeout(function() {
-    //renderBoard(homeUrl, nextPg);
+    renderBoard(homeUrl, nextPg);
 
     /* re-attach scrollstop */
     $(document).on("scrollstop", checkScroll);
@@ -1489,3 +1555,22 @@ function showButton(tag, id, title, theme, btnID, cls, sz, tag2, id2) {
     + title + "</a>";
   return str;
 }
+
+$(document).on("orientationchange", function (e) {
+  var activePage = $.mobile.activePage.attr("id");
+  if (activePage == 'listapp' || activePage == 'store') {
+    if (e.orientation == 'landscape')
+      $('#pxboard').addClass('big-splash-top').removeClass('splash-top');
+    else
+      $('#pxboard').addClass('splash-top').removeClass('big-splash-top');
+  }
+});
+
+$(document).on('click', '#txn-prev-btn', function(e) {
+  console.log('in txn-prev-btn');
+  var id = $(this).attr('data-inv-id');
+  var params = {reason: 'Did Not Want'}; 
+  var pxUrl = url + '/invoices/' + id + '/decline.json' + token;
+  putData(pxUrl, JSON.stringify(params), 'decline');
+  return false;
+});

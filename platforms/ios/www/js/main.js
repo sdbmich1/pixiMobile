@@ -133,37 +133,25 @@ $(document).on("ajax:success, ajax:complete", aStr,  function () {
 
 // handle 401 ajax error
 $(document).ajaxError( function(e, xhr, options){
-  if(xhr.status == 401)
-      window.location.replace('/users/sign_in');
+  if(xhr.status == 401) {
+    console.log('in ajax 401 error');
+    $("#signin-btn").prop("disabled", false);
+  }
 });	
 
 $(document).ready(function(){
+  deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : 
+    (navigator.userAgent.match(/iPhone/i))  == "iPhone" ? "iPhone" : 
+    (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
   console.log('doc ready - main.js');
-
-  // used to scroll up page
-  $(window).scroll(function(){
-    console.log('scroll - main.js');
-    if ($(this).scrollTop() > 100) {
-      $('.scrollup').fadeIn();
-    } 
-    else {
-      $('.scrollup').fadeOut();
-    }
-  }); 
+  console.log('device type: ' + deviceType);
 
   // remove stnd header icon
   $('a[data-theme="app-bar"], a[data-theme="app-loc"]').find('.ui-icon').remove();
-
-  // set window scroll
-  $('.scrollup').click(function(){
-    $("html, body").animate({ scrollTop: 0 }, 600);
-    return false;
-  });
-
 });
 
 // reload masonry on ajax calls to swap data
-$(document).on("click", ".pixi-cat", function(showElem){
+$(document).on("touchstart", ".pixi-cat", function(showElem){
   var cid = $(this).attr("data-cat-id");
   console.log('category id = ' + cid);
 
@@ -603,8 +591,8 @@ function fld_form(fid, sid, fld, txt, bname, btnID) {
   return str;    
 }
 
-function isDefined(variable) {
-  return (variable !== null && variable !== undefined);
+function isDefined(s) {
+  return (!$.isEmptyObject(s) && s !== null && s !== undefined && s !== '' && s !== 'undefined');
 }
 
 function textFld(title, fnID, fld, cls) {

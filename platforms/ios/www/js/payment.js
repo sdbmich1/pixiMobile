@@ -44,10 +44,6 @@ function buildTxnParams() {
   var invID = $('#invoice_id').val();
   var pid = $('#pixi_id').val(); 
   var payToken = $('#token').val(); 
-  console.log('inv item prc = ' + prc);
-  console.log('inv ID = ' + invID);
-  console.log('pixi ID = ' + pid);
-  console.log('payToken = ' + payToken);
 
   // store form data
   var params = new Object();
