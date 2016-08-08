@@ -1078,7 +1078,7 @@ function processLogin(res, params, resFlg) {
       setItem("pixi_count", usr.pixi_count);
 
       // go to main board
-      pushNotifications();
+      //pushNotifications();
       goToUrl(pgName);
     }
     else {
