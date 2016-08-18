@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.pixiboard.pxbMobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Pixiboard</name>
+    <name>Pixiboard Mobile App</name>
     <description>
         Pixiboard Mobile app for making the local exchange of goods and services frictionless.
     </description>
@@ -38,6 +38,10 @@
     <preference name="android-installLocation" value="auto" />
     <preference name="LoadUrlTimeoutValue" value="10000"/>
     <preference name="android-build-tool" value="gradle" />
+    <!-- Do not auto hide splash on iOS -->
+    <preference name="AutoHideSplashScreen" value="false" />
+    <!-- Do not auto hide splash on Android -->
+    <preference name="SplashScreenDelay" value="10000"/>
     <gap:plugin name="org.apache.cordova.battery-status" />
     <gap:plugin name="org.apache.cordova.camera" />
     <gap:plugin name="org.apache.cordova.media-capture" />

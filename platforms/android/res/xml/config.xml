@@ -27,7 +27,7 @@
     <author email="support@pixiboard.com" href="http://pixiboard.com">
         Pixiboard Team
     </author>
-    <preference name="phonegap-version" value="6.0.0" />
+    <preference name="phonegap-version" value="cli-6.3.0" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="portrait" />
     <preference name="target-device" value="universal" />
@@ -41,9 +41,10 @@
     <preference name="show-splash-screen-spinner" value="true" />
     <preference name="auto-hide-splash-screen" value="true" />
     <preference name="disable-cursor" value="false" />
-    <preference name="android-minSdkVersion" value="8" />
+    <preference name="android-minSdkVersion" value="9" />
     <preference name="android-installLocation" value="auto" />
     <preference name="LoadUrlTimeoutValue" value="10000" />
+    <preference name="android-build-tool" value="gradle" />
     <gap:plugin name="org.apache.cordova.battery-status" />
     <gap:plugin name="org.apache.cordova.camera" />
     <gap:plugin name="org.apache.cordova.media-capture" />
@@ -89,6 +90,7 @@
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
     <access subdomains="true" uri="*" />
     <access origin="*" />
+    <access origin="*.pushwoosh.com" />
     <allow-navigation href="*" />
     <allow-intent href="*" />
     <content src="index.html" />
