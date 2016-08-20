@@ -39,9 +39,9 @@ var App = {
         });
  
  	function _onDeviceReady () {
-          console.log("in onDeviceReady");
-          initPages();
+          alert("in onDeviceReady");
 	  PGproxy.navigator.splashscreen.hide();
+          initPages();
 	  document.addEventListener("backbutton", function(e){
 	    e.preventDefault();
 	    if($.mobile.activePage.is('#listapp')){
