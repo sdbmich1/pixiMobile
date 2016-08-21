@@ -86,12 +86,10 @@
     <gap:splash gap:density="xhdpi" gap:platform="android" src="www/res/screen/android/screen-xhdpi-portrait.png" />
     <gap:splash gap:platform="blackberry" src="www/res/screen/blackberry/screen-225.png" />
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
-    <platform name="ios">
-        <splash height="480" src="www/res/screen/ios/screen-iphone-portrait.png" width="320" />
-        <splash height="960" src="www/res/screen/ios/screen-iphone-portrait-2x.png" width="640" />
-        <splash height="1024" src="www/res/screen/ios/screen-ipad-portrait.png" width="768" />
-        <splash height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
-    </platform>
+    <gap:splash gap:platform="ios" height="480" src="www/res/screen/ios/screen-iphone-portrait.png" width="320" />
+    <gap:splash gap:platform="ios" height="960" src="www/res/screen/ios/screen-iphone-portrait-2x.png" width="640" />
+    <gap:splash gap:platform="ios" height="1024" src="www/res/screen/ios/screen-ipad-portrait.png" width="768" />
+    <gap:splash gap:platform="ios" height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <allow-navigation href="http://*/*" />
     <allow-intent href="*" />
     <access uri="*" subdomains="true" />
