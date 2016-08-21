@@ -1111,8 +1111,7 @@ function checkPreAuth() {
     handleLogin(email, pwd);
   }
   else {
-    console.log("calling login page");
-    goToUrl("../www/html/login.html");
+    goToUrl("../html/login.html");
   }
 }
 

@@ -39,7 +39,7 @@ var App = {
         });
  
  	function _onDeviceReady () {
-          alert("in onDeviceReady");
+          console.log("in onDeviceReady");
 	  PGproxy.navigator.splashscreen.hide();
           initPages();
 	  document.addEventListener("backbutton", function(e){
