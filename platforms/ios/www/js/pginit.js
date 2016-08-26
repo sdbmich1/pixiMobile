@@ -40,8 +40,8 @@ var App = {
  
  	function _onDeviceReady () {
           console.log("in onDeviceReady");
-          initPages();
 	  PGproxy.navigator.splashscreen.hide();
+          initPages();
 	  document.addEventListener("backbutton", function(e){
 	    e.preventDefault();
 	    if($.mobile.activePage.is('#listapp')){

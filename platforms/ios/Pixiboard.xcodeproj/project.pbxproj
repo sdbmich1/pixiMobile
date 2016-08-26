@@ -46,6 +46,13 @@
 		CE46D9D7BFFB485E9AC4E951 /* CDVFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 852F7BEA37AB40C3890E5804 /* CDVFile.m */; };
 		B2D189C993DF4FF1AD94B9F6 /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = D464AF6D7A9C4F5C8009E428 /* CDVLocalFilesystem.m */; };
 		14F325808FB741E39D6300A4 /* CDVAssetLibraryFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = B1381125DAA34A3F8A0C99B1 /* CDVAssetLibraryFilesystem.m */; };
+		8ED6EF010F9D40C8B0C8F603 /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F44DDD9E8F5C41269CB7A1A7 /* PushNotification.m */; };
+		515152D58E334E7DBD9872E1 /* Pushwoosh in Resources */ = {isa = PBXBuildFile; fileRef = AA7F0BEB2ECB436BBC1A1244 /* Pushwoosh */; };
+		16E0F1570FA34EF9AFB7F4DA /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F13361ABAE274F15B134D4DC /* Security.framework */; };
+		F56E5844D44B4BE1848F5B61 /* Storekit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2621B61048CC4854B5F8E12B /* Storekit.framework */; };
+		FDB17A72FE1841EE92B975F4 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66093805F5342C9B6FB4A2B /* CoreLocation.framework */; };
+		654037C9CC0E49B39997DD9E /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B9A31205D884AD5B8AF30DC /* libstdc++.dylib */; };
+		83CBAE9B57684ED8B34DA571 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 593240E71CD94956BC9E18B0 /* libz.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +131,16 @@
 		10880240EC274CB988731FED /* CDVFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVFile.h"; path = "org.apache.cordova.file/CDVFile.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		AC34B85F702443DA8E33D790 /* CDVLocalFilesystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVLocalFilesystem.h"; path = "org.apache.cordova.file/CDVLocalFilesystem.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		C76F5E409D40413D965C2730 /* CDVAssetLibraryFilesystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVAssetLibraryFilesystem.h"; path = "org.apache.cordova.file/CDVAssetLibraryFilesystem.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		F44DDD9E8F5C41269CB7A1A7 /* PushNotification.m */ = {isa = PBXFileReference; name = "PushNotification.m"; path = "pushwoosh-cordova-plugin/ios/PushNotification.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		AA7F0BEB2ECB436BBC1A1244 /* Pushwoosh */ = {isa = PBXFileReference; name = "Pushwoosh"; path = "Pixiboard/Plugins/pushwoosh-cordova-plugin/Pushwoosh"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1BBC23652A6741839D1134AA /* PushNotification.h */ = {isa = PBXFileReference; name = "PushNotification.h"; path = "pushwoosh-cordova-plugin/ios/PushNotification.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		321E83AC08F54826A44FABDF /* PushNotificationManager.h */ = {isa = PBXFileReference; name = "PushNotificationManager.h"; path = "pushwoosh-cordova-plugin/ios/PushNotificationManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D77FF1C4C5DB4958AED5AF9E /* PWLog.h */ = {isa = PBXFileReference; name = "PWLog.h"; path = "pushwoosh-cordova-plugin/ios/PWLog.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		F13361ABAE274F15B134D4DC /* Security.framework */ = {isa = PBXFileReference; name = "Security.framework"; path = "System/Library/Frameworks/Security.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		2621B61048CC4854B5F8E12B /* Storekit.framework */ = {isa = PBXFileReference; name = "Storekit.framework"; path = "System/Library/Frameworks/Storekit.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		A66093805F5342C9B6FB4A2B /* CoreLocation.framework */ = {isa = PBXFileReference; name = "CoreLocation.framework"; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		0B9A31205D884AD5B8AF30DC /* libstdc++.dylib */ = {isa = PBXFileReference; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = compiled.mach-o.dylib; explicitFileType = undefined; includeInIndex = 0; };
+		593240E71CD94956BC9E18B0 /* libz.dylib */ = {isa = PBXFileReference; name = "libz.dylib"; path = "usr/lib/libz.dylib"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = compiled.mach-o.dylib; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +153,12 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */,
 				4B0D8B0E8FC2498C84321C74 /* SystemConfiguration.framework in Frameworks */,
+				515152D58E334E7DBD9872E1 /* Pushwoosh in Resources */,
+				16E0F1570FA34EF9AFB7F4DA /* Security.framework in Frameworks */,
+				F56E5844D44B4BE1848F5B61 /* Storekit.framework in Frameworks */,
+				FDB17A72FE1841EE92B975F4 /* CoreLocation.framework in Frameworks */,
+				654037C9CC0E49B39997DD9E /* libstdc++.dylib in Frameworks */,
+				83CBAE9B57684ED8B34DA571 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +232,12 @@
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 				305D5FD0115AB8F900A74A75 /* MobileCoreServices.framework */,
 				1DCE96B4CEE74AEEB6572CC2 /* SystemConfiguration.framework */,
+				AA7F0BEB2ECB436BBC1A1244 /* Pushwoosh */,
+				F13361ABAE274F15B134D4DC /* Security.framework */,
+				2621B61048CC4854B5F8E12B /* Storekit.framework */,
+				A66093805F5342C9B6FB4A2B /* CoreLocation.framework */,
+				0B9A31205D884AD5B8AF30DC /* libstdc++.dylib */,
+				593240E71CD94956BC9E18B0 /* libz.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -236,6 +265,10 @@
 				10880240EC274CB988731FED /* CDVFile.h */,
 				AC34B85F702443DA8E33D790 /* CDVLocalFilesystem.h */,
 				C76F5E409D40413D965C2730 /* CDVAssetLibraryFilesystem.h */,
+				F44DDD9E8F5C41269CB7A1A7 /* PushNotification.m */,
+				1BBC23652A6741839D1134AA /* PushNotification.h */,
+				321E83AC08F54826A44FABDF /* PushNotificationManager.h */,
+				D77FF1C4C5DB4958AED5AF9E /* PWLog.h */,
 			);
 			name = Plugins;
 			path = "Pixiboard/Plugins";
@@ -426,6 +459,7 @@
 				CE46D9D7BFFB485E9AC4E951 /* CDVFile.m in Sources */,
 				B2D189C993DF4FF1AD94B9F6 /* CDVLocalFilesystem.m in Sources */,
 				14F325808FB741E39D6300A4 /* CDVAssetLibraryFilesystem.m in Sources */,
+				8ED6EF010F9D40C8B0C8F603 /* PushNotification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,6 +502,10 @@
 				);
 				PRODUCT_NAME = "Pixiboard";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Pixiboard/Plugins/pushwoosh-cordova-plugin\"",
+				);
 			};
 			name = Debug;
 		};
@@ -497,6 +535,10 @@
 				);
 				PRODUCT_NAME = "Pixiboard";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Pixiboard/Plugins/pushwoosh-cordova-plugin\"",
+				);
 			};
 			name = Release;
 		};

@@ -80,6 +80,12 @@
         },
         "org.apache.cordova.network-information": {
             "PACKAGE_NAME": "com.pixiboard.pxbMobile"
+        },
+        "pushwoosh-cordova-plugin": {
+            "LOG_LEVEL": "DEBUG",
+            "IOS_FOREGROUND_ALERT_TYPE": "NONE",
+            "ANDROID_FOREGROUND_PUSH": "false",
+            "PACKAGE_NAME": "com.pixiboard.pxbMobile"
         }
     },
     "dependent_plugins": {

@@ -368,7 +368,7 @@ function toggle_follow_btn(sid, flg) {
 
 // loop to check if seller exists in followed list
 function isFollowed(data, sid) {
-  if(data == '') return false;
+  if(data == '' || data.length == 0) return false;
   var flg = false;
   if(data !== '' && isDefined(data.sellers) && data.sellers.length > 0) {
     $.each(data.sellers, function(index, item) {

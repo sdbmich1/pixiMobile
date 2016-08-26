@@ -199,14 +199,18 @@ module.exports = [
             "cordova"
         ],
         "runs": true
+    },
+    {
+        "file": "plugins/pushwoosh-cordova-plugin/www/PushNotification.js",
+        "id": "pushwoosh-cordova-plugin.PushNotification",
+        "pluginId": "pushwoosh-cordova-plugin",
+        "clobbers": [
+            "plugins.pushNotification"
+        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
-{
-    "org.apache.cordova.file-transfer": "0.5.0",
-    "org.apache.cordova.network-information": "0.2.15",
-    "org.apache.cordova.file": "1.3.3"
-}
+{}
 // BOTTOM OF METADATA
 });

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.pixiboard.pxbMobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Pixiboard Mobile App</name>
+    <name>Pixiboard</name>
     <description>
         Pixiboard Mobile app for making the local exchange of goods and services frictionless.
     </description>
@@ -65,7 +65,6 @@
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <gap:plugin name="org.apache.cordova.vibration" />
-    <gap:plugin name="pushwoosh-pgb-plugin" source="npm" />
     <icon src="www/img/rsz_pixi_top_logo.png" />
     <icon src="www/img/rsz_pixi_top_logo.png" platform="android" density="ldpi" />
     <icon src="www/img/rsz_pixi_top_logo.png" platform="android" density="mdpi" />
@@ -94,6 +93,5 @@
     <allow-intent href="*" />
     <access uri="*" subdomains="true" />
     <access origin="*" />
-    <access origin="*.pushwoosh.com" />
     <content src="index.html" />
 </widget>

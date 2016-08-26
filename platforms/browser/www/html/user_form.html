@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>My Settings</title>
+  </head>
+  <body>
+    <div data-role="page" id="profile-page" data-cache="never" data-theme="a">
+      <div data-role="panel" id="navpanel" data-theme="d" data-display="overlay" data-position="left">
+        <div data-role="controlgroup" data-corners="false">
+    	    <ul data-role='listview' data-icon="false" data-theme='e' class='mainMenu'></ul>
+        </div>
+      </div>    
+      <div data-role="popup" id="popupPix1" data-theme="a" data-overlay-theme='d'></div>
+      <div data-role="header" data-theme="d">
+        <div class='pg-title center-wrapper'>My Settings</div>
+	<a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
+	<a href='#' data-theme="app-loc" id='add-pixi-link'><img src='../img/rsz_camera-icon_blue.png'></a>
+	<div id="show-list-hdr"></div>
+      </div>
+      <div class="app-content" data-theme="a" data-role="content">
+	<div id="form_errors" style="display:none" class="error"></div>
+	<div id='user_form'><form id="user-doc" data-ajax="false">
+	  <div id='usr-prof' class="mleft10"></div>
+	</form></div>
+      </div>
+    </div>
+  </body>
+</html>

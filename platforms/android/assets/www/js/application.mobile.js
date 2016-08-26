@@ -36,9 +36,9 @@ function goToUrl(pxUrl, rFlg) {
   rFlg = rFlg || false;
   if(homePage != pxUrl && pxUrl != "../www/index.html" && pxUrl != '../html/login.html') {
     prevPg = $.mobile.activePage[0].baseURI;
-    console.log('Prev page URL: ' + prevPg);
+    //console.log('Prev page URL: ' + prevPg);
   }
-  $.mobile.changePage( pxUrl, { transition: "none", reverse: false, reloadPage: rFlg, changeHash: false });
+  $.mobile.changePage( pxUrl, { transition: "slide", reverse: false, reloadPage: rFlg, changeHash: false });
 }
 
 // load post page
@@ -491,7 +491,7 @@ $(document).on('click', '#signout-menu-btn', function(e) {
   var logoutUrl = url + '/api/v1/sessions/' + getItem("token") + '.json';
 
   // check if app exit
-  navigator.notification.confirm('Close App?', onExitConfirm, 'Exit', 'No, Yes');
+  //navigator.notification.confirm('Close App?', onExitConfirm, 'Exit', 'No, Yes');
 
   // process request
   //deleteData(logoutUrl, 'exit');
@@ -1078,7 +1078,7 @@ function processLogin(res, params, resFlg) {
       setItem("pixi_count", usr.pixi_count);
 
       // go to main board
-      pushNotifications();
+      //pushNotifications();
       goToUrl(pgName);
     }
     else {
@@ -1112,7 +1112,7 @@ function checkPreAuth() {
   }
   else {
     console.log("calling login page");
-    goToUrl("../www/html/login.html");
+    goToUrl("../html/login.html");
   }
 }
 

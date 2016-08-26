@@ -189,5 +189,9 @@
         <string>{768, 1024}</string>
       </dict>
     </array>
+    <key>Pushwoosh_LOG_LEVEL</key>
+    <string>DEBUG</string>
+    <key>Pushwoosh_ALERT_TYPE</key>
+    <string>NONE</string>
   </dict>
 </plist>

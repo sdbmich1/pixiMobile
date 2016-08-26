@@ -7,5 +7,61 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "pushwoosh-cordova-plugin": {
+        "source": {
+            "type": "registry",
+            "id": "pushwoosh-cordova-plugin"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "org.apache.cordova.camera": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.camera\\0.3.6\\package"
+        }
+    },
+    "org.apache.cordova.console": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.console\\0.2.13\\package"
+        }
+    },
+    "org.apache.cordova.device": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.device\\0.3.0\\package"
+        }
+    },
+    "org.apache.cordova.dialogs": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.dialogs\\0.3.0\\package"
+        }
+    },
+    "org.apache.cordova.file": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.file\\1.3.3\\package"
+        }
+    },
+    "org.apache.cordova.file-transfer": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.file-transfer\\0.5.0\\package"
+        }
+    },
+    "org.apache.cordova.geolocation": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.geolocation\\0.3.12\\package"
+        }
+    },
+    "org.apache.cordova.network-information": {
+        "source": {
+            "type": "local",
+            "path": "C:\\Users\\Sean\\.plugman\\cache\\org.apache.cordova.network-information\\0.2.15\\package"
+        }
     }
 }
