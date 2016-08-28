@@ -5,3 +5,7 @@
 *.swo
 *.iml
 /www/js/api_keys.js
+
+# ignore platform  and plugin files
+/platforms
+/plugins
