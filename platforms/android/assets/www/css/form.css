@@ -121,12 +121,17 @@ $pixiBlue: #026FB7;
 .pct-width60 {width: 60%!important;}
 .pct-width70 {width: 70%!important;}
 
-.small-title-white, .home-title-grp {
+.small-title-white, .home-title-grp, .bold-tag-line {
   text-shadow: 1px 1px 1px #000;
   color: #ffffff;
   font-weight: bold;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
+}
+
+.bold-tag-line {
+  padding-top: 3px;
+  font-size: 16px;
 }
 
 .small-title {

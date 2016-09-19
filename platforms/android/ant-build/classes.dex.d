@@ -10,6 +10,8 @@ C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\a
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R$styleable.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\facebook\android\R.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\BuildConfig.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\Manifest$permission.class \
+C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\Manifest.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\pixiMobile.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\R$attr.class \
 C:\Users\Sean\Documents\Aptana Studio 3 Workspace\pixiMobile\platforms\android\ant-build\classes\com\pixiboard\pxbMobile\R$drawable.class \

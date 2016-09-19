@@ -15,7 +15,7 @@ var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #
 var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType, deviceType,
   addr, cover, pgTitle, homeUrl, postType = 'recv';
-var startX, startY, endX, endY;  
+var invID, scrolled = 0;  
 
 // ajax setup
 $(function(){
@@ -38,7 +38,7 @@ function goToUrl(pxUrl, rFlg) {
     prevPg = $.mobile.activePage[0].baseURI;
     console.log('Prev page URL: ' + prevPg);
   }
-  $.mobile.changePage( pxUrl, { transition: "none", reverse: false, reloadPage: rFlg, changeHash: false });
+  $.mobile.changePage( pxUrl, { transition: "fade", reverse: false, reloadPage: rFlg, changeHash: false });
 }
 
 // load post page
@@ -60,7 +60,9 @@ $(document).on('pageinit', '#mypixis, #myinv', function() {
 // process next page
 $(document).on('click', '.nxt-pg', function(e) {
   console.log('in click nxt pg' + nextPg);
-  renderBoard(homeUrl, nextPg);
+  //renderBoard(homeUrl, nextPg);
+  var pgName = homePage + "?page=" + nextPg;
+  $('#px-container').infinitescroll({pathParse:[pgName]});
 });
 
 // used to render main board
@@ -71,16 +73,15 @@ function renderBoard(hUrl, pg, rFlg) {
 
   nextPg++;  // increment page counter
   var pgName = homePage + "?page=" + nextPg;  // set next page href string
-  console.log('in render board' + pgName);
   $('a.nxt-pg').attr('href', pgName);
 
   var str = (pg == 1 && !rFlg) ? 'board' : 'reload';
 
-  if (hUrl.match(/searches/i)) {
+  if (isDefined(hUrl) && hUrl.match(/searches/i)) {
     params = loadSearchParams(pg);
     result = postData(hUrl, params, 'search');
   } else {
-    result = loadData(hUrl + "&page=" + pg, str);
+    result = loadData(hUrl + "&page=" + pg + "&per_page=10", str);
   }
   
   return result;
@@ -90,10 +91,13 @@ function renderBoard(hUrl, pg, rFlg) {
 $(document).on('pageinit', '#listapp', function() {
   console.log('in listapp pageinit');
   nextPg = 1;
+  isScrolled = false;
 
   // set token string for authentication
-  token = '?auth_token=' + getItem("token");
-  homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
+  if(getItem('cid') == '') {
+    token = '?auth_token=' + getItem("token");
+    homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
+  }
 
   // set site id
   $('#site_id').val(getItem("home_site_id"));
@@ -101,8 +105,9 @@ $(document).on('pageinit', '#listapp', function() {
 });
 
 function loadDisplayPage(txt) {
+  $('#app-footer').hide('fast');
   pxPath = listPath + '/';  // reset pxPath
-  //uiLoading(true);
+  scrolled = 0;
 
   // set time ago format
   $("time.timeago").timeago();
@@ -263,7 +268,7 @@ function putData(putUrl, fdata, dType) {
       switch (dType) {
         case 'decline':
 	  //console.log('decline success');
-          goToUrl(prevPg);
+          goToUrl(listPage);
 	  break;
         case 'submit':
           showPixiSuccess(data);
@@ -349,7 +354,10 @@ function postData(postUrl, fdata, dType) {
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
       case 'search':
+        console.log('search result: ' + res.listings.length);
+	isScrolled = (res.listings.length < 10) ? true : false;
 	$('#search-btn').prop('disabled', false);
+	$('#search_txt').val('').blur();
 	result = processReload(res, dFlg);
 	break;
       default:
@@ -546,7 +554,7 @@ $(document).on('click', '#sent-post-btn, #recv-post-btn', function(e) {
 });
 
 // process list btn click
-$(document).on('touchstart', plist, function(e) {
+$(document).on('click', plist, function(e) {
   e.stopPropagation();
   var $this = $(this);
 
@@ -628,6 +636,17 @@ function onRemoveConfirm(button) {
   if (button == 2) {
     deleteData(deleteUrl, 'remove');  // delete record
   }
+}
+
+// process confirmation
+function onCancelConfirm(button) {
+  if (button == 2) {
+    console.log('cancel inv-id: ' + invID);
+    var params = {reason: 'Did Not Want'}; 
+    var pxUrl = url + '/invoices/' + invID + '/decline.json' + token;
+    putData(pxUrl, JSON.stringify(params), 'decline');
+  }
+  return button
 }
 
 // toggle page display
@@ -1075,6 +1094,7 @@ function processLogin(res, params, resFlg) {
       setItem("token", res.token);
       setItem("user_id", usr.id);
       setItem("pixi_count", usr.pixi_count);
+      setItem('cid', '');
 
       // go to main board
       goToUrl(pgName);
@@ -1180,7 +1200,7 @@ function togglePath() {
 }
 
 // process click on board pix
-$(document).on('touchstart', ".bd-item, .pixi-link", function(e) {
+$(document).on('click', ".bd-item, .pixi-link", function(e) {
   e.stopPropagation();
   e.preventDefault();
 
@@ -1204,7 +1224,8 @@ $(document).on('click', ".inv-item", function(e) {
   console.log('pid = ' + pid);
 
   if ( pid !== undefined && pid != '' ) {
-    goToUrl('../html/invoice.html', false);
+    openTxnPage('invoice');
+    //goToUrl('../html/invoice.html', false);
   }
 });
 
@@ -1223,6 +1244,12 @@ $(document).on("pageinit", "#storeList", function(event) {
   
   // load inv data
   loadData(storeUrl, 'stores'); 
+});
+
+// initial categories
+$(document).on("pageinit", "#catList", function(event, ui) {
+  loadCatList(categories);
+  $.mobile.silentScroll(0);
 });
 
 // process click on conversation item
@@ -1325,22 +1352,25 @@ $(document).on("click", ".sl-menu", function(e) {
 });
 
 $(document).on("click", "#home-menu-btn", function(e) {
-  var activePage = $.mobile.activePage.attr("id");
   nextPg = 1;
-    goToUrl(homePage, true);
+  setItem('cid', '');
+  goToUrl(homePage, true);
+});
+
+$(document).on("click", "#settings-menu-btn", function(e) {
+  goToUrl('../html/user_form.html', true);
 });
 
 var menu = [
   { title: 'Home', href: '#', icon: '../img/home_button_blue.png', id: 'home-menu-btn' },
-  { title: 'Send Bill', href: '../html/invoice_form.html', icon: '../img/162-receipt.png', id: 'bill-menu-btn' },
-  { title: 'Pay Bill', href: '../html/invoice.html', icon: '../img/rsz_pixipay_wings_blue.png', id: 'pay-menu-btn' },
-  { title: 'MY STUFF', href: '#', icon: '', id: 'menu-divider' },
+//  { title: 'Pay Bill', href: '../html/invoice.html', icon: '../img/rsz_pixipay_wings_blue.png', id: 'pay-menu-btn' },
+//  { title: 'MY STUFF', href: '#', icon: '', id: 'menu-divider' },
   { title: 'My Pixis', href: '../html/pixis.html', icon: '../img/pixi_wings_blue.png', id: 'pixis-menu-btn' },
   { title: 'My Messages', href: '../html/posts.html', icon: '../img/09-chat-2.png', id: 'posts-menu-btn' },
-  { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
+//  { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
-  { title: 'My Settings', href: '../html/user_form.html', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
   { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
+  { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
   { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 
@@ -1348,7 +1378,7 @@ var menu = [
 $(document).on("pageshow", function(event) {
   var activePage = $.mobile.activePage.attr("id");
   if (activePage == 'listapp' || activePage == 'store') {
-    console.log('in pageshow');
+    console.log('in pageshow listapp');
     var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
     loadSearch(txt);
     if (activePage == 'listapp') {
@@ -1474,27 +1504,8 @@ function buildCollapsibleList(pic, hdr, hdr2, preview, ftr, id) {
 
 var isScrolled = false;
 
-$('#px-container, .bxslider, .featured').on("touchstart", function (e) {
-  console.log('in listapp swipe event');
-  startX = e.originalEvent.touches[0].pageX;
-  startY = e.originalEvent.touches[0].pageY;
-  console.log('startX = ' + startX);
-  console.log('startY = ' + startY);
-  /*  
-  var activePage = $.mobile.activePage.attr("id");
-  if (activePage == 'listapp' || activePage == 'store') {
-    $(document).off("scrollstop");
-    isScrolled = true;
-  }
-  */
-}).on("touchmove", ".inner", function (e, ui) {
-  e.preventDefault();
-}).on("touchend", ".inner", function (e, ui) {
-
-  endX = e.originalEvent.changedTouches[0].pageX;
-  endY = e.originalEvent.changedTouches[0].pageY;
-  console.log('endX = ' + endX);
-  console.log('endY = ' + endY);
+$(document).on("touchstart", '.bx-wrapper, .featured-container', function (e) {
+  scrolled = 0;
 });
 
 $(document).on("scrollstart", setScroll);
@@ -1504,17 +1515,20 @@ function setScroll() {
   var activePage = $.mobile.activePage.attr("id");
   if (activePage == 'listapp' || activePage == 'store') {
     /* window's scrollTop() */
-    scrolled = $(this).scrollTop(),
+    //scrolled = $(window).scrollTop(),
 
     /* viewport */
     screenHeight = $.mobile.getScreenHeight(),
+    //console.log('screenHeight: ' + screenHeight),
+
 
     /* content div height within active page */
-    contentHeight = $(".ui-content", activePage).outerHeight(),
+    contentHeight = $(".ui-content").outerHeight(true),
+    //console.log('contentHeight: ' + contentHeight),
 
     /* header's & footer's height within active page (remove -1 for unfixed) */
-    header = $(".ui-header", activePage).outerHeight() - 1,
-    footer = $(".ui-footer", activePage).outerHeight() - 1;
+    header = $(".ui-header").outerHeight(true) - 1,
+    footer = $(".ui-footer").outerHeight(true) - 1;
   }
 }
 
@@ -1524,13 +1538,17 @@ function checkScroll() {
 
     /* total height to scroll */
     scrollEnd = contentHeight - screenHeight + header + footer;
-    console.log('scrolled = ' + scrolled);
-    console.log('scrollEnd = ' + scrollEnd);
+
+    //console.log('scrolled = ' + scrolled);
+    //console.log('scrollEnd = ' + scrollEnd);
     
     if (scrolled >= scrollEnd && !isScrolled) {
       addMore(activePage);
+      scrolled = 0;
       isScrolled = true;
     }
+    else
+      scrolled = scrolled + screenHeight;
   }
 }
 
@@ -1550,7 +1568,7 @@ function addMore(page) {
 // default for rendering page buttons
 function showButton(tag, id, title, theme, btnID, cls, sz, tag2, id2) {
   cls = cls || ''; tag2 = tag2 || ''; id2 = id2 || ''; sz = sz || 'false';
-  var id_str = (tag2 == '') ? tag + "='" + id + "'": tag + "=" + id + tag2 + "=" + id2; 
+  var id_str = (tag2 == '') ? tag + "='" + id + "'": tag + "=" + id + ' ' + tag2 + "=" + id2; 
   var str= "<a href='#' " + id_str + " data-mini='" + sz + "' data-role='button' data-theme='" + theme + "' id='" + btnID + "' class='" + cls + "'>" 
     + title + "</a>";
   return str;
@@ -1558,19 +1576,20 @@ function showButton(tag, id, title, theme, btnID, cls, sz, tag2, id2) {
 
 $(document).on("orientationchange", function (e) {
   var activePage = $.mobile.activePage.attr("id");
+  console.log('active page: ' + activePage);
+  /*
   if (activePage == 'listapp' || activePage == 'store') {
     if (e.orientation == 'landscape')
       $('#pxboard').addClass('big-splash-top').removeClass('splash-top');
     else
       $('#pxboard').addClass('splash-top').removeClass('big-splash-top');
   }
+  */
 });
 
 $(document).on('click', '#txn-prev-btn', function(e) {
-  console.log('in txn-prev-btn');
-  var id = $(this).attr('data-inv-id');
-  var params = {reason: 'Did Not Want'}; 
-  var pxUrl = url + '/invoices/' + id + '/decline.json' + token;
-  putData(pxUrl, JSON.stringify(params), 'decline');
+  invID = $(this).attr('data-inv-id');
+  pid = $(this).attr("data-pixi-id");
+  navigator.notification.confirm('Cancel Purchase?', onCancelConfirm, 'Cancel?', 'No, Yes');
   return false;
 });

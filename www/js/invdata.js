@@ -88,9 +88,9 @@ function showInvTable(prc, qty, invHash, flg) {
 }
 
 function setInvData(inv) {
-  var tax = (isDefined(inv.sales_tax)) ? parseFloat(inv.sales_tax).toFixed(2) : 0.0;
-  var ship_amt = (isDefined(inv.ship_amt)) ? parseFloat(inv.ship_amt).toFixed(2) : 0.0;
-  var tax_total = (isDefined(inv.tax_total)) ? parseFloat(inv.tax_total).toFixed(2) : 0.0;
+  var tax = parseFloat(inv.sales_tax).toFixed(2);
+  var ship_amt = parseFloat(inv.ship_amt).toFixed(2);
+  var tax_total = parseFloat(inv.tax_total).toFixed(2);
   var prc_fee = parseFloat(inv.get_processing_fee).toFixed(2);
   var conv_fee = parseFloat(inv.get_convenience_fee).toFixed(2);
   var fee = parseFloat(inv.get_fee).toFixed(2);

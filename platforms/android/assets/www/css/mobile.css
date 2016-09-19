@@ -90,16 +90,12 @@ a.signup-btn {
 #mapPage {height: 100%;}
 
 /* footer */
-
 #app-footer {
   bottom:5%; position:fixed !important; top: auto !important; width:100%; z-index: 999; 
-
-  .ui-bar-a { 
-    border: 0!important; 
-  }
 }
 
 #push {height: 60px;}
+#listpush {height: 200px;}
 .pg-ftr .ui-bar-a { border: 0!important; }
 
 #app-header {position:fixed !important; top:0 !important; width:100%; z-index: 999;}  
@@ -428,7 +424,7 @@ label, label.ui-input-text { font-size:12px!important; margin-top:5px!important;
 .close-lnk, .suggestions { font-size: 0.75em; }
 .hdescr { font-size: 1.25em; line-height: 12px;}
 .version {font-size: 0.625em; color: blue;}
-a.pixi-cat, .item-dt {font-size: 0.625em; line-height: 10px; vertical-align: middle;}
+a.pixi-cat, .item-dt {font-size: 0.625em; line-height: 16px; vertical-align: middle;}
 .item-dt {padding: 2px 0 1px 0;}
 .width50 { width: 50%!important; }
 .width40 { width: 40%!important; }
@@ -830,7 +826,7 @@ a.close-btn, a.change-btn {
 	width:140px!important;
 }
 
-.nxt-pg { display:none; }
+.nxt-pg { display:none; } 
 .ui-body-a, .ui-overlay-a {
   text-shadow: 0 0 0 #ffffff;
 }

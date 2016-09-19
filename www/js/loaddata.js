@@ -368,13 +368,11 @@ function toggle_follow_btn(sid, flg) {
 
 // loop to check if seller exists in followed list
 function isFollowed(data, sid) {
-  if(data == '') return false;
   var flg = false;
-  if(data !== '' && isDefined(data.sellers) && data.sellers.length > 0) {
+  if(isDefined(data) && isDefined(data.sellers) && data.sellers.length > 0) {
     $.each(data.sellers, function(index, item) {
       if(item.id == sid) {
         flg = true;
-	return false;
       }
     });
   }
@@ -383,7 +381,7 @@ function isFollowed(data, sid) {
 
 // load feature items
 function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
-  var flwFlg = (!slrFlg) ? isFollowed(user, sid) : false;
+  var flwFlg = (!slrFlg) ? isFollowed(data, sid) : false;
 
   if (!homeUrl.match(/searches/i) && !slrFlg) 
     load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
@@ -391,22 +389,22 @@ function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
   // check if min # of featured items exist
   if(data.length > 2) {
     var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
-    var str = '<div class="center-wrapper"><div class="sm-top bold-tag-line sm-bot">' + title 
+    var str = '<div class="center-wrapper"><div class="bold-tag-line sm-bot">' + title 
       + '</div></div><div class="featured mleft20">' + '</div>'; 
     var px_str = '<div class="featured-container">' + str + '</div>';
     
-    if (!homeUrl.match(/searches/i) && !homeUrl.match(/category/i)) 
+    if (!homeUrl.match(/searches/i)) // && !homeUrl.match(/category/i)) 
       $('#board-top').append(px_str).trigger("create");
     else {
       $('.featured-container').html(str).trigger("create");
     }
 
-    $("#pxboard").addClass('splash-top').removeClass('sm-splash-top');
+    //$("#pxboard").addClass('splash-top').removeClass('sm-splash-top');
     $('.featured-container').show('fast');
     load_featured_slider(build_str(data, slrFlg));
   }
   else {
-    $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+    //$("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
     $('.featured-container').hide('fast');
   }
 }
@@ -431,7 +429,6 @@ function build_str(data, sFlg) {
 function loadBoard(data, resFlg) {
   var $container = $('#px-container'); 
   var result = '', item_str = '';
-  console.log('in load board');
   uiLoading(true);
 
   // load featured items
@@ -479,8 +476,8 @@ function load_seller_header(data) {
     load_featured_items(data.listings, false, data.user, pic, sid, rating, descr);
   }
   else {
-    $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
-    load_cover(false, pic, sid, rating, descr, isFollowed(data.user, sid));
+    //$("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+    load_cover(false, pic, sid, rating, descr, isFollowed(data, sid));
   }
 }
 
@@ -496,7 +493,7 @@ function load_board_items(data, str, resFlg) {
 
   // load pixis
   $.each(data.listings, function(index, item) {
-    var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + item.price : '$0';
+    var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + humanizeNumber(item.price) : '$0';
     localUrl = 'data-pixi-id="' + item.pixi_id + '"';
 
     str += '<div class="item"><div class="center-wrapper">'
@@ -514,20 +511,6 @@ function load_board_items(data, str, resFlg) {
   // initialize infinite scroll
   load_masonry('#px-nav', '#px-nav a', '#pxboard .item', 1);
   return str;
-}
-
-// build masonry blocks for board
-function reload_items(str) {
-  var $container = $('#px-container');
-  if(isDefined($('#site_url').val())) 
-    $container.masonry('reloadItems');
-  else {
-    var $elem = $(str).css({ opacity: 0 });
-    $container.imagesLoaded(function(){
-      $elem.animate({ opacity: 1 });
-      $container.masonry('reloadItems');
-    });
-  }
 }
 
 // load year dropdown
@@ -643,7 +626,6 @@ function setPrice(data, resFlg) {
   if (resFlg) {
     if (data !== undefined) {
       $('#inv_price').val(parseFloat(data).toFixed(2)); 
-      //console.log('price = ' + data);
     }
     else {
       $('#inv_price').val(0);
@@ -769,13 +751,14 @@ function processReload(res, dFlg) {
   var result = '';
   if (!$.isEmptyObject(res)) {
     console.log('in process reload');
+    $('#px-container').infinitescroll('unbind');
 
     if(!isDefined($('#site_url').val()))
       if (nextPg < 3)
         load_featured_items(res.sellers, true, '');
     else
       if (res.sellers.length < 2)
-        $("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
+        $("#pxboard").removeClass('splash-top');
 
     result = load_board_items(res, '', dFlg);
     reload_items(result);

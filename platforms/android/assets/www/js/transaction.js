@@ -188,7 +188,7 @@ function buildCardParams() {
     card_account: {
       card_number: $('#card_number').val(),
       card_code: $('#card_code').val(),
-      zip: $('#postal_code').val(),
+      zip: $('#zip').val(),
       expiration_month: $('#card_month').val(),
       expiration_year: $('#card_year').val(),
       default_flg: ($('#default_flg_checkbox').is(':checked') ? 'Y' : null),
