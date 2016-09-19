@@ -85,11 +85,11 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
 
       // set vars based on txn type
       if (txnType == 'invoice') {
-	var pixi_title = inv.pixi_title, idNum = inv.id, class_name = "width80";
+	var pixi_title = inv.pixi_title, idNum = inv.id, class_name = "width120";
 	id_str = "data-inv-id";
       }
       else {
-	var pixi_title = inv.pixi_title, idNum = pid, class_name = 'bd-item width80';
+	var pixi_title = inv.pixi_title, idNum = pid, class_name = 'width120', id2 = 'data-inv-id', idNum2 = inv.id;
 	id_str = "data-pixi-id";
       }
 	
@@ -111,7 +111,8 @@ function loadTxnForm(data, resFlg, txnType, promoCode) {
 	+ "<input type='hidden' id='processing_fee' value='" + invHash.prc_fee + "' />"
 	+ "<input type='hidden' id='convenience_fee' value='" + invHash.conv_fee + "' />"
         + "<input type='hidden' id='promo_code' value='" + promoCode + "' />"
-        + "<br><table><tr><td class='cal-size'>" + showButton(id_str, idNum, 'Back', '', 'txn-prev-btn', class_name) + "</td>"
+        + "<br><table><tr><td class='cal-size'>" 
+	+ showButton(id_str, idNum, 'Cancel', '', 'txn-prev-btn', class_name, '', id2, idNum2) + "</td>"
         + "<td class='nav-right'><input type='submit' value='Done!' data-theme='d' data-inline='true' id='payForm'></td></tr></table>"
 	+ "</form>"; 
 

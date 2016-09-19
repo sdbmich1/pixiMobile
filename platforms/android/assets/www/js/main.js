@@ -148,10 +148,13 @@ $(document).ready(function(){
 
   // remove stnd header icon
   $('a[data-theme="app-bar"], a[data-theme="app-loc"]').find('.ui-icon').remove();
+
+  // initialize infinite scroll
+  //load_masonry('#px-nav', '#px-nav a', '#pxboard .item', 1);
 });
 
 // reload masonry on ajax calls to swap data
-$(document).on("touchstart", ".pixi-cat", function(showElem){
+$(document).on("click", ".pixi-cat", function(showElem){
   var cid = $(this).attr("data-cat-id");
   console.log('category id = ' + cid);
 
@@ -440,7 +443,12 @@ function resetBoard(cid) {
   }
 
   // refresh the page
-  refreshBoard(true);
+  if ($.mobile.activePage.attr("id") == 'catList') {
+    setItem('cid', cid); //$(this).attr('data-cat-id'));
+    goToUrl(homePage, true);
+  }
+  else
+    refreshBoard(true);
 }
 
 // refresh board content
@@ -606,4 +614,29 @@ function numberFld(title, fnID, fld, cls, sz) {
     + "<input type='number' name='" + fnID + "' id='" + fnID + "' class='" + cls + "' size=" + sz + " maxlength=" + sz 
     + " placeholder='" + title + "' value='" + fld + "' />"; 
   return str;
+}
+
+
+// build masonry blocks for board
+function reload_items(str) {
+  var $container = $('#px-container');
+  if(isDefined($('#site_url').val()))
+    $container.masonry('reloadItems');
+  else {
+    var $elem = $(str).css({ opacity: 0 });
+    $container.imagesLoaded(function(){
+      $elem.animate({ opacity: 1 });
+      $container.masonry('reloadItems');
+    });
+  }
+}
+
+function humanizeNumber(n) {
+  var n2, n = n.toString();
+  while (true) {
+    n2 = n.replace(/(\d)(\d{3})($|,|\.)/g, '$1,$2$3');
+    if (n == n2) break
+      n = n2;
+  }
+  return n;
 }

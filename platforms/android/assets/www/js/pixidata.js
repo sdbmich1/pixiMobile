@@ -119,7 +119,7 @@ function showPixiPage(data) {
     // set pixi header details
     cstr = "<div class='show-pixi-bar' data-role='navbar'><ul>"
       + "<li><a href='#' id='show-pixi' data-theme='d' class='ui-btn-active' data-pixi-id='" + pid + "' data-mini='true'>Details</a></li>"
-      + "<li><a href='#' id='show-cmt' data-theme='d' data-mini='true' data-pixi-id='" + pid + "'>Comments (" + data.comments.length 
+      + "<li><a href='#' id='show-cmt' data-theme='d' data-mini='true' data-pixi-id='" + pid + "'>Reviews (" + data.comments.length 
       + ")</a></li></ul></div>";
   } 
   else {
@@ -212,7 +212,7 @@ function pixi_details(item) {
   if(item.price !== undefined) {
     var btn_str = (myPixiPage != 'purchase') ? showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn') : '';
     var prc = parseFloat(item.price).toFixed(2);
-    str += "<br /><div class='mtop'><table><tr><td><span class='pixi-str'>$" + prc + "</span></td><td class='width60'></td><td>"  
+    str += "<br /><div class='mtop'><table><tr><td><span class='pixi-str'>$" + humanizeNumber(prc) + "</span></td><td class='width60'></td><td>"  
       + btn_str + "</td></tr></table><br /></div></div>";
   } 
   else {
@@ -348,7 +348,7 @@ function showCommentPage(data) {
   // set pixi header details
   var cstr = "<div class='show-pixi-bar' data-role='navbar'><ul>"
     + "<li><a href='#' id='show-pixi' data-theme='d' data-pixi-id='" + pid + "' data-mini='true'>Details</a></li>"
-    + "<li><a href='#' id='show-cmt' data-theme='d' class='ui-btn-active' data-mini='true' data-pixi-id='" + pid + "'>Comments (" 
+    + "<li><a href='#' id='show-cmt' data-theme='d' class='ui-btn-active' data-mini='true' data-pixi-id='" + pid + "'>Reviews (" 
     + data.comments.length + ")</a></li></ul></div>";
 
   // load post values

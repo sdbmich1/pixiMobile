@@ -20,7 +20,6 @@
         <param name="android-package" value="org.apache.cordova.CameraLauncher" />
 	<param name="ios-package" value="CDVCamera" />
     </feature>
-    <preference name="phonegap-version" value="3.6.3" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="portrait" />
     <preference name="target-device" value="universal" />
@@ -34,7 +33,7 @@
     <preference name="show-splash-screen-spinner" value="true" />
     <preference name="auto-hide-splash-screen" value="true" />
     <preference name="disable-cursor" value="false" />
-    <preference name="android-minSdkVersion" value="8" />
+    <preference name="android-minSdkVersion" value="14" />
     <preference name="android-installLocation" value="auto" />
     <preference name="LoadUrlTimeoutValue" value="10000"/>
     <gap:plugin name="org.apache.cordova.battery-status" />
