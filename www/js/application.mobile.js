@@ -785,7 +785,7 @@ $(document).on('click', "#unfollow-btn", function (e) {
     params = { uid: getUserID(), seller_id: sid };
 
     // set path
-    var pxUrl = url + '/favorite_sellers/1.json' + token;
+    var pxUrl = url + '/favorite_sellers/' + sid + '.json' + token;
 
     // put data
     putData(pxUrl, JSON.stringify(params), 'unfollow');
@@ -1241,7 +1241,7 @@ $(document).on("pageinit", "#txn-form", function(event, ui) {
 
 // set data for 'My Stores' page
 $(document).on("pageinit", "#storeList", function(event) {
-  var storeUrl = url + '/favorite_sellers.json' + token + '&ftype=buyer&status=active';
+  var storeUrl = url + '/favorite_sellers.json' + token + '&id=' + getUserID() + '&ftype=buyer&status=active';
   
   // load inv data
   loadData(storeUrl, 'stores'); 
