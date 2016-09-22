@@ -111,6 +111,8 @@ $pixiBlue: #026FB7;
 }
 
 .pad10 { padding: 10px 0 10px 0; }
+.pad-top5 { padding-top: 5px; }
+.pad-top10 { padding-top: 10px; }
 .pad10-all { padding: 10px; }
 .rpad10 { padding-right: 10px; }
 .wdth50 { width: 47px; }

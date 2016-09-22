@@ -13,11 +13,11 @@ function loadPosts(data, resFlg) {
 
         // display correct photo based on whether user is sender or recipient
         if(getUserID() == item.user_id) {
-          var img = item.recipient.photo_url;
+          var img = item.recipient.photo;
 	  var name = item.recipient_name;
         }
         else {
-          var img = item.user.photo_url;
+          var img = item.user.photo;
           var name = item.sender_name;
         }
 
@@ -122,9 +122,11 @@ function loadConvPage(data, resFlg) {
 
   // render content
   $('#conv-bot').empty().append(item_str).append(send_msg(data)).trigger('create');
-  $('#reply_content').parent().attr('style', 'border:1px solid gray;')
+  $('#reply_content').parent().attr('style', 'border:none;').removeClass("ui-shadow-inset");
   uiLoading(false);
 }
+
+
 
 function parseDate(dateString) {
   var date = new Date(dateString);

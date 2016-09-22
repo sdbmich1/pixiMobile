@@ -352,7 +352,7 @@ li.plist { line-height: 14px!important; }
 }
 
 .collapsible-item {
-  min-height: 77px;
+  min-height: 70px;
 }
 
 .ui-collapsible-preview {
@@ -371,7 +371,7 @@ li.plist { line-height: 14px!important; }
 }
 
 .ui-collapsible-heading, .ui-collapsible-heading > .ui-btn {
-  padding-bottom: 5.5px;
+  /* padding-bottom: 5.5px; */
   min-height: 71px;
 }
 
@@ -848,6 +848,19 @@ a.close-btn, a.change-btn {
 .ui-controlgroup-horizontal .ui-btn {
   border-right-width: 1px!important;
 }
+
+.lv-str{
+  padding: 0.1em!important; 
+}
+
+#reply_content .ui-text-input {
+  border: none;
+}
+
+.center-btn {
+  padding-left: 30%;
+}
+
 /*
 #add-card-btn {
   padding-right: 40px;

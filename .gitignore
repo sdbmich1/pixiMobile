@@ -4,6 +4,3 @@
 *.swp
 *.swo
 *.iml
-
-# ignore all platform files
-/platforms

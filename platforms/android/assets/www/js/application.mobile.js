@@ -332,6 +332,7 @@ function postData(postUrl, fdata, dType) {
 	goToUrl('../html/invoices.html');
 	break;
       case 'comment':
+        $('#show-list-hdr').html('');
         showCommentPage(res);
 	break;
       case 'bank':
@@ -1371,7 +1372,7 @@ var menu = [
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
   { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
-  { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
+//  { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 
 // show menu
