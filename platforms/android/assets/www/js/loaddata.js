@@ -386,7 +386,7 @@ function isFollowed(data, sid) {
 
 // load feature items
 function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
-  var flwFlg = (!slrFlg) ? isFollowed(data, sid) : false;
+  var flwFlg = (!slrFlg) ? isFollowed(user, sid) : false;
 
   if (!homeUrl.match(/searches/i) && !slrFlg) 
     load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
@@ -478,7 +478,7 @@ function load_seller_header(data) {
   $('#site_url').val(data.sellers[0].url);
 
   if(data.listings.length >= 10) {
-    load_featured_items(data.listings, false, data.user, pic, sid, rating, descr);
+    load_featured_items(data.listings, false, usr, pic, sid, rating, descr);
   }
   else {
     //$("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
