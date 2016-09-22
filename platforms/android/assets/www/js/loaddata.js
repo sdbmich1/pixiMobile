@@ -228,11 +228,13 @@ function loadUserPage(data, resFlg) {
       id_btn = 'edit-usr-btn';
 
       // update menu
+      /*
       if (data.fb_user == undefined) {
         cstr += "<li><a href='#' id='prefs-nav-btn' data-dtype='prefs' data-mini='true'>Prefs</a></li></ul></div>";
       } else {
+      */
         cstr += "</ul></div>";
-      }
+      //}
 
       // build nav bar
       $('#show-list-hdr').append(cstr).trigger("create");
@@ -311,8 +313,11 @@ function loadContactPage(data, resFlg) {
     }
 
     var fldHash = {addr: 'address', city: 'city', state: 'state', zip: 'zip', hphone: 'home_phone', email: 'email'};
-    var user_str = "<table class='inv-descr'>" + showAddress(data, resFlg, false, email, fldHash) + "</table><div class='sm-top center-wrapper'>" 
-      + '<input type="submit" value="Save" data-theme="d" data-inline="true" id="edit-usr-btn"></div>';
+    var user_str = "<table class='inv-descr'>" + showAddress(data, resFlg, false, email, fldHash) 
+      + "</table><div class='sm-top center-wrapper'>" 
+      + '<input type="submit" value="Save" data-theme="d" data-inline="true" id="edit-usr-btn"></div><hr>' 
+      + '<div class="center-btn">'
+      + showButton('data-user-id', getUserID(), 'Sign Out', 'b', 'signout-menu-btn', 'width120') + '</div>';
 
     $('#usr-prof').append(user_str).trigger('create');
     setState("#state", state);  // load state dropdown

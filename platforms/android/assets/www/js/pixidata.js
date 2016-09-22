@@ -334,15 +334,15 @@ function show_features(title, item) {
 // open comment page
 function showCommentPage(data) {
   console.log('in show comment page');
-  var item_str = '<ol class="posts">';
+  var $container = $('#pixi-list');
+  var item_str = '';
   var post_dt;
 
-  uiLoading(true);  // toggle spinner
+  //uiLoading(true);  // toggle spinner
 
   // clear page
-  $('#show-list-hdr').html('');
-  $('#comment-item').html('');
   $('#content').html('').val('');
+  $container.html('');
   $("#comment-btn").removeAttr("disabled");
 
   // set pixi header details
@@ -358,22 +358,29 @@ function showCommentPage(data) {
   // load comments
   if (data.comments.length > 0) {
     $.each(data.comments, function(index, item) {
+      var localUrl = 'data-pixi-id="' + pid + '"';
       post_dt = $.timeago(item.created_at); // set post dt
-      item_str += '<li id="' + item.id + '"><div class="no-left"><table><tr><div class="sender"><td>'  
-	+ getPixiPic(item.user.photo, 'height:45px; width:45px;') + "</td><td>" + item.sender_name 
-	+ "</td><td>|</td><td><span class='timestamp'>"
-	+ "Posted " + post_dt + "</span></td></div></tr></table><br /><span class='fcontent'>" + item.content + "</span></div></li>";
+      var str = item.content + '<br />' + "Posted " + post_dt;
+      var pic = getPixiPic(item.user.photo, 'height:60px; width:60px;');
+      item_str += commentItem(item.id, pic, item.sender_name, str);
     });
-    item_str += '</ol>';
   }
   else {
-    item_str += "<li class='center-wrapper'>No comments found.</li></ol>";
+    item_str += "<li class='center-wrapper'>No reviews found.</li>";
   }
 
   // append content
   $('#show-list-hdr').append(cstr).trigger("create");
-  $('#comment-item').append(item_str);
+  $container.append(item_str).listview('refresh');
+
+  // set title
+  $('.pg-title').html(data.listing.title);
 
   uiLoading(false);  // toggle spinner
 }
 
+function commentItem(id, pic, hdr, txt) {
+  var str = "<li id=" + id + " class='lv-str plist'>" + pic + '<div class="neg-mleft5 pstr pad-top5"><h6>' 
+    + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div>' + '</li>';
+  return str;
+}
