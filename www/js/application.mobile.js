@@ -136,53 +136,23 @@ $(document).on('pageinit', '#inv-form', function() {
 
 // load bank account form page
 $(document).on('pageinit', '#acct-form', function() {
-  if ($('bank-btn').hasClass('ui-btn-active')) {
-    if (usr.active_bank_accounts.length < 1) {
-      var data;
-      loadBankAcct(data, true);
-    }
-    else {
-      var acct_id = usr.active_bank_accounts[0].id;
-      var invUrl = url + '/bank_accounts/' + acct_id + '.json' + token;
-      loadData(invUrl, 'bank');
-    }
-  }
+  getAcctData('card');
 });
+
+function getAcctData(atype) {
+  var acctUrl = url + '/' + atype + '_accounts.json' + token;
+  $('#pixi-list').html('');
+  loadData(acctUrl, atype); 
+  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+}
 
 // load 'My Accounts' page
-$(document).on('touchstart', '#acct-menu-btn, #cancel-card-btn, #card-btn', function() {
-  var cardUrl = url + '/card_accounts.json' + token;
-  $('#pixi-list').html('');
-  loadData(cardUrl, 'card'); 
-  $('#popupInfo').popup({ history: false });  // clear popup history to prevent app exit
+$(document).on('touchstart', '#cancel-card-btn, #card-btn', function() {
+  getAcctData('card');
 });
 
-// process click on card item
-$(document).on('click', ".card-item", function(e) {
-  e.preventDefault();
-
-  pid = $(this).attr("data-card-id");
-  console.log('pid = ' + pid);
-
-  // clear container
-  if ( pid !== undefined && pid != '' ) {
-    $('#pixi-list').html('');
-
-    var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
-    loadData(cardUrl, 'cardpg'); 
-  }
-});
-
-// process card delete btn 
-$(document).on('click', "#remove-card-btn", function (e) {
-  var id = $(this).attr('data-id');
-  var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
-  deleteData(cardUrl, 'card');
-});
-
-// process new card btn
-$(document).on('click', "#add-card-btn", function (e) {
-  loadCardAcct();
+$(document).on('touchstart', '#cancel-bank-btn, #bank-btn', function() {
+  getAcctData('bank');
 });
 
 // set invoice form
@@ -342,8 +312,11 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        console.log(JSON.stringify(res));
+        //console.log('card data: ' + JSON.stringify(res));
         loadCardList(res, dFlg);
+        break;
+      case 'txn':
+        loadTxnPage(res, dFlg, 'invoice');
         break;
       case 'buy':
         var str = $.parseJSON(res.order);
@@ -355,7 +328,7 @@ function postData(postUrl, fdata, dType) {
 	$('#store-btn').html('').append(str).trigger("create");
 	break;
       case 'search':
-        console.log('search result: ' + res.listings.length);
+        //console.log('search result: ' + res.listings.length);
 	isScrolled = (res.listings.length < 10) ? true : false;
 	$('#search-btn').prop('disabled', false);
 	$('#search_txt').val('').blur();
@@ -368,6 +341,11 @@ function postData(postUrl, fdata, dType) {
   },"json").fail(function (a, b, c) {
   	uiLoading(false);
         PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Post Data', 'Done');
+	if (dType == 'txn') {
+	  $('#payForm').prop('disabled', false);
+	  $btnID.prop('disabled', false);
+	}
+
         console.log(a.responseText + ' | ' + b + ' | ' + c);
   });
   return result;
@@ -996,7 +974,8 @@ $(document).on("click", "#add-acct-btn", function(e) {
     // store form data
     var params = new Object();
     params.bank_account = { user_id: $('#user_id').val(), acct_number: $('#acct_number').val(), routing_number: $('#routing_number').val(), 
-      acct_name: $('#acct_name').val(), acct_type: $('#acct_type').val(), description: $('#bank_acct_descr').val() }; 
+      acct_name: $('#acct_name').val(), acct_type: $('#acct_type').val(), description: $('#bank_acct_descr').val(),
+      country_code: $('#country_code').val(), currency_type_code: $('#currency_type_code').val() }; 
 
     // post data
     var pxUrl = url + '/bank_accounts.json' + token;

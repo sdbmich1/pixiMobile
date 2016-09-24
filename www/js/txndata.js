@@ -30,7 +30,7 @@ function loadTxnPage(data, resFlg, txnType) {
         + "<tr><td class='width240'>Name: </td><td></td><td>" + txn.buyer_name + "</td></tr>" 
 	+ "<tr><td class='width240'>Email: </td><td></td><td>" + txn.email + "<br></td></tr>" 
 	+ "<tr><td class='width240'>Description: </td><td></td><td>" + descr + "<br></td></tr></table>"
-	+ "<div class='clear-all'></div><div class='mtop center-wrapper'>" 
+	+ "<div class='clear-all'></div><div class='mtop center-btn'>" 
 	+ showButton('', '', 'Done', 'd', 'home-menu-btn', 'width120') + "</div>";
 
       // build page
