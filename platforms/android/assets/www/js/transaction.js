@@ -41,7 +41,7 @@ function StripeCard() {
 
   // disable form
   $('#payForm').attr('disabled', 'disabled');
-    $btnID.attr('disabled', true);
+  $btnID.attr('disabled', true);
   
   if (payToken.length > 0)  {
     console.log('StripeCard payToken = ' + payToken);
@@ -86,10 +86,10 @@ $(document).on('click', '#bank-btn', function () {
 function processStripeAcct() {
     uiLoading(true);
     $('#bank-acct-form').attr('disabled', true);
-	
+
       Stripe.bankAccount.createToken({
-	country: $('#bank_account_country_code').val(),
-	currency: $('#bank_account_currency_type_code').val(),
+	country: $('#country_code').val(),
+	currency: $('#currency_type_code').val(),
         account_number: $('#acct_number').val(),
         routing_number: $('#routing_number').val()
       }, stripeResponseHandler);
@@ -175,7 +175,7 @@ function stripeResponseHandler(status, response) {
 }
 
 function setParamType() {
-  if ($('txn-form').length > 0) {
+  if ($('#txn-form').length > 0) {
     submitData('txn', buildTxnParams());
   }
   else {

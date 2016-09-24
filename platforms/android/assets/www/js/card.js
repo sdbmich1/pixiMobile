@@ -24,6 +24,7 @@ function loadCardList(data, resFlg) {
   }
 
   // append items
+  $('.acct-btn').attr('id', 'add-card-btn');
   $('#add-card-btn').show();
   $('#acct-frm').empty();
   $container.append(item_str).listview('refresh');
@@ -179,7 +180,7 @@ function loadCardAcct() {
 
   // build page
   $('#pixi-list').empty();
-  $('#add-card-btn').hide();
+  $('#add-card-btn').hide('fast');
   $('#acct-frm').append(card_str).trigger('create');
 
   // turn off spinner
@@ -224,3 +225,29 @@ function cardImage(cardType) {
   };
   return '../img/' + files[cardType];
 }
+
+// process click on card item
+$(document).on('click', ".card-item", function(e) {
+  e.preventDefault();
+  pid = $(this).attr("data-card-id");
+
+  // clear container
+  if ( pid !== undefined && pid != '' ) {
+    $('#pixi-list').html('');
+
+    var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+    loadData(cardUrl, 'cardpg'); 
+  }
+});
+
+// process card delete btn 
+$(document).on('click', "#remove-card-btn", function (e) {
+  var id = $(this).attr('data-id');
+  var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
+  deleteData(cardUrl, 'card');
+});
+
+// process new card btn
+$(document).on('click', "#add-card-btn", function (e) {
+  loadCardAcct();
+});
