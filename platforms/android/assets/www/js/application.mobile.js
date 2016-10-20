@@ -170,30 +170,37 @@ function setInvForm() {
 
 // load pixi form data
 $(document).on('pageinit', '#formapp', function() {
+  var item;
 
   // if edit mode load pixi data
   if (pxFormType == 'edit') {
-    var editUrl = url + '/editpixi' + '.json' + token;
+    togglePath();
+    var editUrl = pxPath + pid + '/edit' + '.json' + token;
     loadData(editUrl, 'edit', {id:pid});
   }
   else {
     loadYear("#yr_built", 0, 90, '0'); // load year fld
+
+    // load site info
+    $('#site_id').val(getItem('home_site_id'));  // set site id
+    $('#site_name').val(getItem('home_site_name'));  // set site name
+
+    // load categories
+    getCatData('Category');
+    loadCondType('#condType', '');
+    loadQty('#px-qty', 0, 99);
+    load_delivery_type(item);
   }
 
-  // load categories
-  if (categories !== undefined) {
-    loadList(categories, '#category_id', 'Category');
-  }
-  else {
-    // get category data
-    var catUrl = url + '/categories.json' + token;
-    var data = loadData(catUrl, 'list');
-    loadList(data, '#category_id', 'Category');
-  }
-
-  $("#category_id").trigger("change"); // update item
   pixPopup("#popupPix");  // load popup page
 });
+
+// get category data
+function getCatData (val) {
+  var catUrl = url + '/categories.json' + token;
+  var params = { fld: '#catID', val: val };
+  loadData(catUrl, 'category', params);
+}
 
 // get user id
 function getUserID() {
@@ -218,7 +225,7 @@ function getPixiPic(pic, style, fld, cls) {
 }
 // put data based on given url & data type
 function putData(putUrl, fdata, dType) {
-  //console.log('in putData: ' + putUrl);
+  console.log('in putData: ' + putUrl);
   var dFlg;
 
   // turn on spinner
@@ -232,12 +239,11 @@ function putData(putUrl, fdata, dType) {
     data: fdata,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      //console.log('putData success: ' + JSON.stringify(data));
+      console.log('putData success: ' + JSON.stringify(data));
 
       // load data based on display type
       switch (dType) {
         case 'decline':
-	  //console.log('decline success');
           goToUrl(listPage);
 	  break;
         case 'submit':
@@ -247,7 +253,7 @@ function putData(putUrl, fdata, dType) {
 	  goToUrl('../html/invoices.html');
 	  break;
         case 'pixi':
-          pxPath = tmpPath;
+          pxPath = tmpPath + '/';
           goToUrl(listPage);
 	  break;
         case 'conv':
@@ -256,7 +262,6 @@ function putData(putUrl, fdata, dType) {
           break;
         case 'post':
           $('#post' + data.id).remove();
-          //loadConvPage(data, data !== undefined);
           break;
         case 'unfollow':
           var str = toggle_follow_btn(fdata.seller_id, false);
@@ -312,11 +317,10 @@ function postData(postUrl, fdata, dType) {
         loadConvPage(res.conversation, dFlg);
 	break;
       case 'card':
-        console.log('card data: ' + JSON.stringify(res));
+        //console.log('card data: ' + JSON.stringify(res));
         loadCardList(res, dFlg);
         break;
       case 'txn':
-        console.log('txn data: ' + JSON.stringify(res));
         loadTxnPage(res, dFlg, 'invoice');
         break;
       case 'buy':
@@ -373,6 +377,10 @@ function deleteData(delUrl, dType) {
         case 'card':
           $('#pixi-list').html('');
           loadCardList(data, isDefined(data));
+          break;
+        case 'bank':
+          $('#pixi-list').html('');
+          loadBankList(data, isDefined(data));
           break;
         default:
           return data;
@@ -562,9 +570,10 @@ $(document).on('click', plist, function(e) {
 $(document).on('click', '#submit-pixi-btn', function(e) {
   var sType = $('#px-status').attr('data-status-type');
   var path = (sType == 'edit') ? '/resubmit' : '/submit'; 
-  var submitUrl = url + path + '.json' + token;
+  var submitUrl = pxPath + pid + path + '.json' + token;
+  var params = {id:pid};
 
-  putData(submitUrl, {id:pid}, 'submit');
+  putData(submitUrl, JSON.stringify(params), 'submit');
   return false;
 });
 
@@ -995,20 +1004,20 @@ $(document).on("click", "#add-pixi-btn", function(e) {
   var params = new Object();
 
   // set params
-  params.temp_listing = { title: $('#title').val(), site_id: $('#site_id').val(), category_id: $('#category_id').val(),
-    price: $('#price').val(), description: $('#description').val(), compensation: $('#salary').val(), year_built: $('#yr_built').val(),
-    event_start_date: $('#start-date').val(), event_end_date: $('#end-date').val(), post_ip: usr.current_sign_in_ip, 
-    event_start_time: $('#start-time').val(), event_end_time: $('#end-time').val(), start_date: new Date(), seller_id: usr.id };
+  params.temp_listing = { title: $('#title').val(), site_id: getItem('home_site_id'), category_id: $('#catID').val(),
+    price: $('#price').val(), description: $('#description').val(), year_built: $('#yr_built').val(), condition_type_code: $('#condType').val(), quantity: $('#px-qty').val(), fulfillment_type_code: $('#ftype').val(), post_ip: usr.current_sign_in_ip, start_date: new Date(), seller_id: usr.id };
 
   // push to server
   if (pxFormType == 'edit') {
     var pxUrl = tmpPath + '/' + pid + '.json' + token;
+    uploadPhoto(imageURI, pxUrl, params, 'PUT');
+    //  putData(pxUrl, JSON.stringify(params), 'pixi');
   }
   else {
     var pxUrl = tmpPath + '.json' + token;
+    uploadPhoto(imageURI, pxUrl, params);
   }
 
-  uploadPhoto(imageURI, pxUrl, params);
   return false;
 });
 
@@ -1125,6 +1134,7 @@ $(document).on('click', "#add-pixi-link", function (e) {
 // edit listing
 $(document).on('click', "#edit-pixi-btn", function (e) {
   pxFormType = 'edit'; 
+  myPixiPage = 'draft';
   goToUrl("../html/new_temp_listing.html", false);
 });
 
@@ -1166,7 +1176,7 @@ $(document).on('click', ".ac-item", function(e) {
   // set fld values
   if ($.mobile.activePage.attr("id") == 'formapp') {
     $('#site_id').val(sid);
-    $('#site_name').val(sname);
+    //$('#site_name').val(sname);
   }
   else {
     $('#buyer_id').val(sid);
@@ -1349,6 +1359,7 @@ var menu = [
   { title: 'My Pixis', href: '../html/pixis.html', icon: '../img/pixi_wings_blue.png', id: 'pixis-menu-btn' },
   { title: 'My Messages', href: '../html/posts.html', icon: '../img/09-chat-2.png', id: 'posts-menu-btn' },
 //  { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
+  { title: 'My Settings', href: '#', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
   { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
@@ -1359,7 +1370,6 @@ var menu = [
 $(document).on("pageshow", function(event) {
   var activePage = $.mobile.activePage.attr("id");
   if (activePage == 'listapp' || activePage == 'store') {
-    console.log('in pageshow listapp');
     var txt = (activePage == 'listapp') ? 'Search item, store or brand...' : 'Search item or brand...';
     loadSearch(txt);
     if (activePage == 'listapp') {

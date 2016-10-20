@@ -1,13 +1,14 @@
 
 // load list view if resFlg else return not found
 function loadListView(data, resFlg) {
-  var localUrl, post_dt, item_str = '', px_str = '';
+  var res, localUrl, post_dt, item_str = '', px_str = '';
   var $container = $('#pixi-list');
 
   // load listview
   if(resFlg) {
-    if (data.length > 0) {
-      $.each(data, function(index, item) {
+    res = (data.length > 0) ? data : isDefined(data.listings) ? data.listings : data;
+    if (res.length > 0) {
+      $.each(res, function(index, item) {
 	post_dt = $.timeago(item.updated_at); // set post dt
 
         // build pixi item string
@@ -34,20 +35,19 @@ function loadListView(data, resFlg) {
 function editPixiPage(data, resFlg) {
   if (resFlg) {
     if (data !== undefined) {
-      var pic = getPixiPic(data.listing.pictures[0].photo_url, 'height:80px; width:80px;', 'smallImage'); 
+      var item = (isDefined(data.listing)) ? data.listing : data;
+      var pic = getPixiPic(item.pictures[0].photo_url, 'height:80px; width:80px;', 'smallImage'); 
       $('#picture').html(pic);
-      $('#title').val(data.listing.title);
-      $('#site_id').val(data.listing.site_id);
-      $('#site_name').val(data.listing.site_name);
-      $('#price').val(data.listing.price);
-      $('#salary').val(data.listing.compensation);
-      $('#description').val(data.listing.description);
-      $('#event_start_date').val(data.listing.event_start_date);
-      $('#event_start_time').val(data.listing.event_start_time);
-      $('#event_end_date').val(data.listing.event_end_date);
-      $('#event_end_time').val(data.listing.event_end_time);
-      setSelectMenu('#category_id', '', data.listing.category_id);  // set option menu
-      loadYear("#yr_built", 0, 90, data.listing.year_built); // load year fld
+      $('#title').val(item.title);
+      $('#site_id').val(item.site_id);
+      $('#site_name').val(item.site_name);
+      $('#price').val(item.price);
+      $('#description').val(item.description);
+      getCatData(item.category_id); 
+      loadYear("#yr_built", 0, 90, item.year_built); // load year fld
+      loadCondType('#condType', item.condition_type_code);
+      loadQty('#px-qty', item.quantity, 99);
+      load_delivery_type(item);
     }
   }
   else {
@@ -74,16 +74,15 @@ function loadPixiPage(data, resFlg) {
 
 // open pixi success page
 function showPixiSuccess(data) {
-  console.log('in pixi success page');
   if (data !== undefined) {
-    var txt = "Your pixi <span class='pstr'>" + data.med_title + "</span> has been submitted.</div>"
+    var txt = "Your pixi <span class='pstr'>" + data.title + "</span> has been submitted.</div>"
     var detail_str = "<div class='mtop inv-descr'>Subject to approval, your pixi will be posted shortly. Thank you for your business.</div>"
-      + "<div class='mtop center-wrapper'><a href='#' id='px-done-btn' data-mini='true' data-role='button' data-inline='true'"
+      + "<div class='mtop center-wrapper'><a href='#' id='px-done-btn' data-role='button' data-inline='true'"
       + " data-theme='d'>Done</a></div>";
         
     var pg_title = 'Pixi Submitted!';
     $('#px-page-title').html(pg_title);
-    $('#post_form').hide('fast');  // hide post form
+    $('#pixi-form').hide('fast');  // hide post form
 
     // load title
     var tstr = "<h4 class='mbot'>" + txt + "</h4>";
@@ -124,8 +123,9 @@ function showPixiPage(data) {
   } 
   else {
     var pg_title = 'Review Your Pixi';
+    myPixiPage = 'draft';
     $('#px-page-title').html(pg_title);
-    $('#post_form').hide();  // hide post form
+    $('#pixi-form').hide();  // hide post form
   }
 
   // load title
@@ -181,13 +181,13 @@ function showPixiTitle(title) {
 
 // check if listing owner to display edit buttons
 function edit_pixi_buttons(data, cstr) {
-  console.log('in edit pixi buttons');
   if(data.listing.seller_id == getUserID()) {
     var stat_str = "<div class='px-status' data-status-type='" + data.listing.status + "'></div>";
     $('#edit-pixi-details').append(stat_str);
 
-    $('#post_form').hide();  // hide post form
+    $('#pixi-form').hide();  // hide post form
     $('#edit-pixi-btn').toggle();
+    console.log('pxPath = ' + pxPath);
       
     if(pxPath.indexOf("temp_listing") > 0) {
       $('#submit-pixi-btn').toggle();
@@ -207,13 +207,18 @@ function show_arrow(style) {
 }
 
 function pixi_details(item) {
-  var str = '';
+  var btn_str, str = '';
 
   if(item.price !== undefined) {
-    var btn_str = (myPixiPage != 'purchase') ? showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn') : '';
+    console.log('pixi_details myPixiPage = ' + myPixiPage);
+    if (myPixiPage == 'active' && item.seller_id != getUserID())
+      btn_str = showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn');
+    else
+      btn_str = '';
+
     var prc = parseFloat(item.price).toFixed(2);
-    str += "<br /><div class='mtop'><table><tr><td><span class='pixi-str'>$" + humanizeNumber(prc) + "</span></td><td class='width60'></td><td>"  
-      + btn_str + "</td></tr></table><br /></div></div>";
+    str += "<br /><div><table><tr><td><span class='pixi-str'>$" + humanizeNumber(prc) + "</span></td><td class='width60'></td><td>"  
+      + btn_str + "</td></tr></table></div></div>";
   } 
   else {
     if(item.compensation !== undefined) {
@@ -243,8 +248,11 @@ function pixi_details(item) {
 
   // load details
   $('#pixi-details').append(str).trigger("create");
-  loadQty('#px_qty', 1, parseInt(item.amt_left));
-  load_delivery_type(item);
+
+  if(item.status == 'active') {
+    loadQty('#px_qty', 1, parseInt(item.amt_left));
+    load_delivery_type(item);
+  }
 }
 
 function sectionHeader(title) {
@@ -253,14 +261,18 @@ function sectionHeader(title) {
 
 // build array
 function load_delivery_type(item) {
-  var arr = [], dval;
-  if (item.delivery_type == 'All') {
-    arr = [{ id: 'P', name_title: 'Pickup'}, {id: 'SHP', name_title: 'Ship'}];
+  var dval;
+  var arr = [{ id: 'P', name_title: 'Pickup'}, {id: 'SHP', name_title: 'Ship'}];
+  if (isDefined(item) && item.delivery_type == 'All') {
     dval = 'SHP';
   }
   else {
-    arr.push({id: item.fulfillment_type_code, name_title: item.delivery_type});
-    dval = item.fulfillment_type_code;
+    if(isDefined(item)) {
+      dval = item.fulfillment_type_code;
+    }
+    else {
+      dval = 'P';
+    }
   }
   loadList(arr, '#ftype', '', dval);
 }
@@ -383,4 +395,11 @@ function commentItem(id, pic, hdr, txt) {
   var str = "<li id=" + id + " class='lv-str plist'>" + pic + '<div class="neg-mleft5 pstr pad-top5"><h6>' 
     + hdr + '</h6></div>' + '<div id="mlist"><p>' + txt + '</p></div>' + '</li>';
   return str;
+}
+
+function loadCondType (fld, val) {
+  var cond_str = '<option default value="">' + 'Condition' + '</option>'
+    + "<option value='N'>New</option>"
+    + "<option value='UG'>Used</option>";
+  setSelectMenu(fld, cond_str, val);  // set option menu
 }

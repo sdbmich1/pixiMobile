@@ -807,8 +807,16 @@ a.close-btn, a.change-btn {
 	background-color:#C2E1EF;
 }
 
+/*
 .ui-mobile-viewport-transitioning .ui-header-fixed,
 .ui-mobile-viewport-transitioning .ui-footer-fixed { visibility: hidden; }
+*/
+
+.ui-mobile-viewport-transitioning, .ui-mobile-viewport-transitioning .ui-page {
+  overflow: scroll!important;
+}
+
+.px-table, .ui-table-reflow.ui-responsive { display: table !important; }
 
 .splash-top {
 	margin-top: 405px;
@@ -859,6 +867,11 @@ a.close-btn, a.change-btn {
 
 .center-btn {
   padding-left: 30%;
+}
+
+.scrollable {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 /*

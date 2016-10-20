@@ -45,8 +45,11 @@ function capturePhoto() {
 // Retrieve image file location from specified source
 function getPhoto(source) {
   console.log('in getPhoto');
-  navigator.camera.getPicture(setImage, onFail, { quality: 50, 
+  navigator.camera.getPicture(setImage, onFail, { quality: 70, 
     destinationType: destinationType.FILE_URI,
+    correctOrientation : true,
+    targetWidth: 500,
+    targetHeight: 375,
     sourceType: source });
 }
 
@@ -81,15 +84,15 @@ function setImage(imageURI) {
 }
 
 // uploads image to server
-function uploadPhoto(imageURI, path, params) {
+function uploadPhoto(imageURI, path, params, method) {
   console.log('in upload photo');
 
   var options = new FileUploadOptions();
-  options.chunkedMode = false;
+  options.chunkedMode = true;
   options.fileKey = "file";
   options.fileName = imageURI.substr(imageURI.lastIndexOf('/')+1)+'.png';
   options.mimeType="image/jpeg";
-  //options.mimeType = "text/plain";
+  options.httpMethod = method || 'POST';
   options.params = params;
 
   // transfer file
@@ -106,15 +109,15 @@ function onSuccess(r) {
   var result = $.parseJSON(r.response)
 
   // process pixi
-  if(result['pixi_id'] !== undefined) {
-    console.log('response pixi id = ' + result['pixi_id']);
-    pid = result['pixi_id'];  // reset pid
+  if(result['listing'] !== undefined) {
+    console.log('response pixi id = ' + result['listing']['pixi_id']);
+    pid = result['listing']['pixi_id'];  // reset pid
     pxPath = tmpPath + '/';
     goToUrl(listPage);
   }
 
-  if(result.user.email !== undefined) {
-    console.log('response email = ' + result.user.email);
+  if(result['user'] !== undefined) {
+    console.log('response email = ' + result['user']['email']);
     goToUrl('../index.html');  // go to login page
     PGproxy.navigator.notification.alert("Signup successful. A confirmation email was sent to your account.", function() {}, 'Signup', 'Done');
   }
@@ -126,7 +129,9 @@ function onFail(error) {
   PGproxy.navigator.notification.alert("An error has occurred: Code = " + error.code, function() {}, 'Upload', 'Done');
   console.log("upload error source " + error.source);
   console.log("upload error target " + error.target);
-  $("#signup-btn").removeAttr("disabled");
+  console.log("upload error body " + error.body);
+  console.log("upload error exception " + error.exception);
+  $("#signup-btn, #add-pixi-btn").prop('disabled', false); //.removeAttr("disabled");
   uiLoading(false);
 }
 

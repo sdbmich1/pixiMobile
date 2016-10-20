@@ -32,8 +32,9 @@ function loadData(listUrl, dType, params) {
       case 'reload':
         result = processReload(data, dFlg);
 	break;
-      case 'list':
-	result = data;
+      case 'category':
+	result = loadCategories(data.categories, dFlg, params.fld);
+        setSelectMenu(params.fld, result, params.val);  // set option menu
 	break;
       case 'autocomplete':
         loadResults(data, dFlg);
@@ -132,7 +133,7 @@ function loadResults(res, dFlg) {
 function loadListPage(pgType, viewType) {
   switch(pgType){
   case 'draft':
-    var pixiUrl = tmpPath + '/unposted.json' + token;
+    var pixiUrl = tmpPath + '/unposted.json' + token + "&status=draft";
     break;
   case 'purchase':
     var pixiUrl = pxPath + 'purchased.json' + token + "&status=purchased";
@@ -215,6 +216,7 @@ function loadUserPage(data, resFlg) {
   if (resFlg) {
 
     // set pixi header details
+    console.log('in loadUserPage');
     $('#show-list-hdr').html('');
     var cstr = "<div class='show-pixi-bar' data-role='navbar'><ul>"
       + "<li><a href='#' id='profile-nav-btn' data-dtype='user' data-mini='true' class='ui-btn-active'>Profile</a></li>"
@@ -229,15 +231,7 @@ function loadUserPage(data, resFlg) {
       popName = '#popupPix1';
       btn_name = 'Save';
       id_btn = 'edit-usr-btn';
-
-      // update menu
-      /*
-      if (data.fb_user == undefined) {
-        cstr += "<li><a href='#' id='prefs-nav-btn' data-dtype='prefs' data-mini='true'>Prefs</a></li></ul></div>";
-      } else {
-      */
-        cstr += "</ul></div>";
-      //}
+      cstr += "</ul></div>";
 
       // build nav bar
       $('#show-list-hdr').append(cstr).trigger("create");
@@ -602,6 +596,19 @@ function setPixiList(res, fld, val) {
   } 
   // set long names to wrap when displayed
   $('.dd-list').find('span').each(function () { $(this).css("white-space", "normal"); });
+}
+
+// load category dropdown
+function loadCategories(res, dFlg, fld) {
+  var val = $(fld).val();
+  if (dFlg) {
+    var cat_str = '<option value="">Category</option>';
+    for(var i=0, len=res.length-1; i<len; i++) {
+	cat_str += "<option value='" + res[i].id + "'>" + res[i].name_title + "</option>";
+    }
+    setSelectMenu(fld, cat_str, val);  // set option menu
+  } 
+  return cat_str;
 }
 
 // load states dropdown menu

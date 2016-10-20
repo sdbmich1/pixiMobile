@@ -27,37 +27,25 @@
 		    </td>
 		</tr>
 	      </table>
-		<div data-role="fieldcontain" class="sm-top ui-hide-label">
+	      <table class="sm-top sm-bot"><tbody class='px-table'>
+	        <tr><td><label>Title</label></td><td>
 	          <input type="text" name="title" id="title" placeholder="Pixi Title" data-theme='a' />
-		</div>
-		<div data-role="fieldcontain" class="sm-top ui-hide-label">
-	          <input type="text" name="site_name" id="site_name" placeholder="Pixi Location" data-theme='a' />
-		</div>
-		<ul class="suggestions" data-role="listview" data-inset="true" data-icon="false"></ul>
-	        <div class='sm-top sm-bot'><div data-role="fieldcontain"> 
-		  <select name="category_id" id="category_id"></select>
-	        </div></div>
-		<table class="sm-top sm-bot"><tr><td class='width50'>
-		  <div data-role="fieldcontain" class="ui-hide-label" id="price-fld">
-	            <input type="number" name="price" id="price" placeholder="Price" data-theme='a' />
-		  </div></td><td>
-		  <div data-role="fieldcontain" class="ui-hide-label" id="yr-fld" style="display:none">
-		    <select name="year_built" id="yr_built"></select> 
-		  </div></td>
-		</tr></table>
-		<div data-role="fieldcontain" class="sm-top ui-hide-label" id="comp-fld" style="display:none">
-	          <input type="text" name="compensation" id="salary" placeholder="Salary" data-theme='a' />
-		</div>
-		<table id='event-fields' style="display:none">
-		  <tr><td><label for="event_start_date" class='med-top'>Start Date</label> 
-		          <input type="date" name="event_start_date" id="start-date" /></td><td></td>
-		      <td><label for="event_end_date" class='med-top'>End Date</label> 
-		          <input type="date" name="event_end_date" id="end-date" /></td></tr>
-		  <tr><td><label for="event_start_time" class='med-top'>Start Time</label> 
-		          <input type="time" name="event_start_time" id="start-time" /></td><td></td>
-		      <td><label for="event_end_time" class='med-top'>End Time</label> 
-		          <input type="time" name="event_end_time" id="end-time" /></td></tr>
-		</table>
+		</td></tr>
+	        <tr class='sm-top sm-bot'><td><label>Category</label></td><td>
+		  <select name="category_id" id="catID"></select>
+		</td></tr>
+	        <tr class='sm-top sm-bot'><td><label>Condition</label></td><td>
+		  <select name="condition_type_code" id="condType"></select>
+		</td></tr>
+	        <tr class='sm-top sm-bot'><td><label>Price</label></td><td>
+	          <input type="number" name="price" id="price" placeholder="Price" data-theme='a' />
+		</td></tr>
+	        <tr class='sm-top sm-bot'><td><label>Qty</label></td><td>
+		    <select name="quantity" id="px-qty" class='width60'></select>
+		</td></tr>
+		  <tr class='sm-top sm-bot'><td><label>Delivery</label></td>
+		  <td><select name='delivery_type' id='ftype' class='width60'></select></td></tr>
+		</tbody></table>
 		<div data-role="fieldcontain" class="sm-top ui-hide-label">
 	          <textarea name="description" id="description" cols="40" rows="8" placeholder="Describe Your Pixi" data-theme='a' ></textarea>
 		</div>
