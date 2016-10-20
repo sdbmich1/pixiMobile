@@ -2,7 +2,6 @@
 function loadCardList(data, resFlg) {
   var $container = $('#pixi-list');
   var localUrl, item_str = '';
-  console.log('in loadCardList');
 
   title_str = "<span>My Accounts</span>"; 
   $('#inv-pg-title').html(title_str);
@@ -102,7 +101,7 @@ function loadCardAcct() {
     +         "<td>Card #</td>"
     +         "<td>"
     +           "<div data-role='fieldcontain' class='sm-top ui-hide-label'>"
-    +             "<input type='text' name='card_number' id='card_number'"
+    +             "<input type='number' name='card_number' id='card_number' maxlength=16 size=16"
     +               "placeholder='Card Number' data-theme='a'"
     +               "value='" + card_no + "' />"
     +           "</div>"
@@ -118,7 +117,7 @@ function loadCardAcct() {
     +         "<td>Card Code</td>"
     +         "<td>"
     +           "<div data-role='fieldcontain' class='sm-top ui-hide-label'>"
-    +             "<input type='text' name='card_code' id='card_code'"
+    +             "<input type='number' name='card_code' id='card_code' maxlength=4 size=4"
     +               "placeholder='Card Code' data-theme='a'"
     +               "value='" + card_code + "' />"
     +           "</div>"
@@ -134,8 +133,8 @@ function loadCardAcct() {
     +         "<td>Postal Code</td>"
     +         "<td>"
     +           "<div data-role='fieldcontain' class='sm-top ui-hide-label'>"
-    +             "<input type='text' name='postal_code' id='postal_code'"
-    +                "placeholder='Postal Code' data-theme='a'"
+    +             "<input type='number' name='zip' id='zip'"
+    +                "placeholder='Postal Code' data-theme='a' maxlength=5 size=5"
     +                "value='" + postal_code + "' />"
     +           "</div>"
     +         "</td>"
@@ -243,11 +242,18 @@ $(document).on('click', ".card-item", function(e) {
 // process card delete btn 
 $(document).on('click', "#remove-card-btn", function (e) {
   var id = $(this).attr('data-id');
-  var cardUrl = url + '/card_accounts/' + pid + '.json' + token;
-  deleteData(cardUrl, 'card');
+  deleteUrl = url + '/card_accounts/' + id + '.json' + token;
+  navigator.notification.confirm('Are you sure? Your data will be removed!', onCardRemoveConfirm, 'Remove', 'No, Yes');
 });
 
 // process new card btn
 $(document).on('click', "#add-card-btn", function (e) {
   loadCardAcct();
 });
+
+// process confirmation
+function onCardRemoveConfirm(button) {
+  if (button == 2) {
+    deleteData(deleteUrl, 'card');  // delete record
+  }
+}

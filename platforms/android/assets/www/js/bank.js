@@ -76,7 +76,7 @@ function loadBankPage(data, resFlg) {
 	+ "<tr><td>Account Name: </td><td class='width30'></td><td>" + data.account.acct_name + "</td></tr>"
 	+ "<tr><td>Description: </td><td class='width30'></td><td>" + data.account.description + "</td></tr>"
 	+ "<tr><td>Account Type: </td><td class='width30'></td><td>" + data.account.acct_type + "</td></tr></table></div>"
-	+ "<div class='mtop center-wrapper'><a href='#' id='rm-acct-btn' data-role='button' data-inline='true' data-acct-id='" 
+	+ "<div class='mtop center-wrapper'><a href='#' id='remove-bank-btn' data-role='button' data-inline='true' data-acct-id='" 
 	+ data.account.id + "'>Remove</a></div></div>";
 
       // build page
@@ -111,13 +111,13 @@ function loadBankPage(data, resFlg) {
 
       var inv_str = "<div id='data_error' style='display:none' class='error'></div>"
         + "<div class='mleft10'><div class='sm-top'><table class='inv-descr'>"
-	+ "<tr><td>Bank Name: </td><td class='width30'></td><td>" + data.account.bank_name + "</td></tr>"
-	+ "<tr><td>Account #: </td><td class='width30'></td><td>" + data.account.acct_no + "</td></tr>"
-	+ "<tr><td>Account Name: </td><td class='width30'></td><td>" + data.account.acct_name + "</td></tr>"
-	+ "<tr><td>Description: </td><td class='width30'></td><td>" + data.account.description + "</td></tr>"
-	+ "<tr><td>Account Type: </td><td class='width30'></td><td>" + data.account.acct_type + "</td></tr></table></div>"
+	+ "<tr><td>Bank Name: </td><td class='width30'></td><td>" + data.bank_name + "</td></tr>"
+	+ "<tr><td>Account #: </td><td class='width30'></td><td>" + data.acct_no + "</td></tr>"
+	+ "<tr><td>Account Name: </td><td class='width30'></td><td>" + data.acct_name + "</td></tr>"
+	+ "<tr><td>Description: </td><td class='width30'></td><td>" + data.description + "</td></tr>"
+	+ "<tr><td>Account Type: </td><td class='width30'></td><td>" + data.acct_type + "</td></tr></table></div>"
 	+ "<div class='mtop center-wrapper'><a href='#' id='rm-acct-btn' data-role='button' data-inline='true' data-acct-id='" 
-	+ data.account.id + "'>Remove</a></div></div>";
+	+ data.id + "'>Remove</a></div></div>";
 
       // build page
       $('#acct-frm').append(inv_str).trigger('create');
@@ -185,8 +185,8 @@ $(document).on('click', ".bank-item", function(e) {
 // process bank delete btn 
 $(document).on('click', "#remove-bank-btn", function (e) {
   var id = $(this).attr('data-id');
-  var bankUrl = url + '/bank_accounts/' + pid + '.json' + token;
-  deleteData(bankUrl, 'bank');
+  deleteUrl = url + '/bank_accounts/' + id + '.json' + token;
+  navigator.notification.confirm('Are you sure? Your data will be removed!', onBankRemoveConfirm, 'Remove', 'No, Yes');
 });
 
 // process new bank btn
@@ -195,4 +195,9 @@ $(document).on('click', "#add-bank-btn", function (e) {
   loadBankAcct(data, true);
 });
 
-
+// process confirmation
+function onBankRemoveConfirm(button) {
+  if (button == 2) {
+    deleteData(deleteUrl, 'bank');  // delete record
+  }
+}
