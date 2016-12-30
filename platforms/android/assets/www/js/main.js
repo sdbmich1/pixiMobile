@@ -157,6 +157,8 @@ $(document).ready(function(){
 $(document).on("click", ".pixi-cat", function(showElem){
   var cid = $(this).attr("data-cat-id");
   console.log('category id = ' + cid);
+  $('#pixi-list, #pxboard').html('');
+
 
   // toggle value
   $('#category_id').val(cid);
@@ -167,7 +169,15 @@ $(document).on("click", ".pixi-cat", function(showElem){
   }
 
   // process ajax call
-  resetBoard(cid);
+  if (curTab == 'cat-btn')
+    var tabName = (tabType == 'BUS') ? '#brand-btn' : '#owner-btn';
+  else
+    var tabName = curTab;
+
+  setItem('cid', cid);
+  $(tabName).trigger('click');
+    
+  // resetBoard(cid, tabType);
 });
 
 // reload masonry on ajax calls to swap data
@@ -176,7 +186,7 @@ $(document).on("click", ".slrUrl", function(showElem){
   nextPg = 1;
 
   // toggle value
-  homeUrl = url + '/biz/' + slrUrl + '.json' + token;
+  homeUrl = url + slrUrl + '.json' + token;
   console.log('seller url = ' + homeUrl);
 
   // process ajax call
@@ -356,7 +366,7 @@ $(document).on("keypress", "#comment_content", function(e){
 });
 
 // submit search form on enter key
-$(document).on("keypress", "#search", function(e){
+$(document).on("keypress", "#search_txt", function(e){
   keyEnter(e, $(this), '#submit-btn');
 });
 
@@ -370,6 +380,7 @@ $(document).on("change", "#site_id, #category_id", function() {
 
   // reset board
   if($('#px-container').length > 0) {
+    console.log('in category_id change');
     resetBoard();
   }
   
@@ -391,23 +402,32 @@ $(document).on("click", "#recent-link", function() {
 $(document).on('click', "#search-btn", function (e) {
   uiLoading(true);
   console.log('in click search');
+  processSearch();
+});
 
+function processSearch() {
   if ($('#search_txt').val().length > 0) {
     $(this).attr('disabled', 'disabled');
     nextPg = 1;
 
     // set path
-    homeUrl = url + '/searches/locate.json' + token;
+    if (curTab == 'promo-btn') {
+      homeUrl = url + '/promo_code_searches/locate.json' + token;
+    }
+    else {
+      homeUrl = url + '/searches/locate.json' + token;
+    }
+
     refreshBoard(isDefined($('#site_url').val()));
   }
-});
+}
 
 function loadSearchParams(pg) {
   console.log('in loadSearchParams...');
   var txt =  $('#search_txt').val();
-  var loc = $('#site_id').val() || window.localStorage['home_site_id'];
   var cid = $('#category_id').val() || ''; // grab the selected category 
   var mUrl = $('#site_url').val() || '';
+  var loc = $('#site_id').val() || '';
   var params = new Object();
   params.locate = { loc: loc, cid: cid, search: txt, url: mUrl, page: pg };
 
@@ -415,9 +435,10 @@ function loadSearchParams(pg) {
 }
 
 // reset board pixi based on location
-function resetBoard(cid) {
+function resetBoard(cid, utype) {
   var loc = $('#site_id').val(); // grab the selected location 
   cid = cid || $('#category_id').val(); // grab the selected category 
+  utype = utype || 'BUS';
   nextPg = 1;
 
   // set search form fields
@@ -427,18 +448,30 @@ function resetBoard(cid) {
   // check location
   if (loc > 0) {
     if (cid > 0) {
-      homeUrl = url + '/listings/category.json' + token +  '&loc=' + loc + '&cid=' + cid; 
+      homeUrl = url + '/listings/category.json' + token + '&loc=' + loc + '&cid=' + cid + '&utype=' + utype;
     }
     else {
-      homeUrl = url + '/listings/local.json' + token + '&loc=' + loc;
+      if (utype != 'STORE')
+        homeUrl = url + '/listings/local.json' + token + '&loc=' + loc + '&utype=' + utype;
+      else
+        homeUrl = url + '/users.json' + token + '&zip=' + usr.home_zip + '&miles=2';
     }
   }
   else {
-    if (cid > 0) {
-      homeUrl = url + '/listings/category.json' + token + '&cid=' + cid; 
+    if ($.mobile.activePage.attr("id") != 'store') {
+      if (cid > 0) {
+        homeUrl = url + '/listings/category.json' + token + '&cid=' + cid + '&utype=' + utype;
+      }
+      else {
+        if (utype == 'MBR')
+          homeUrl = url + '/listings.json' + token + '&utype=' + utype;
+        else
+          homeUrl = url + '/users.json' + token + '&zip=' + usr.home_zip;
+      }
     }
     else {
-      homeUrl = url + '/listings.json' + token;
+      if (cid > 0) 
+        homeUrl += '&cid=' + cid;
     }
   }
 
@@ -454,13 +487,14 @@ function resetBoard(cid) {
 // refresh board content
 function refreshBoard(flg) {
   $(".item").remove();
-  $('#pxboard').html('');
+  $('#pixi-list, #pxboard').html('');
 
   // reset featured band if needed
   if(!flg) {
     $('.featured').html('');
   }
-  reload_items(renderBoard(homeUrl, nextPg, flg));
+  //reload_items(renderBoard(homeUrl, nextPg, flg));
+  renderBoard(homeUrl, nextPg, flg);
 }
 
 // Fix input element click problem
@@ -536,13 +570,19 @@ function get_item_size() {
 
 // process Enter key
 function keyEnter(e, $this, str) {
-  if (e.keyCode == 13 && !e.shiftKey && !keyPress) {
+  if ((e.keyCode == 13 || e.keyCode == 10) && !e.shiftKey && !keyPress) {
     keyPress = true;
     e.preventDefault();
 
-    if($this.val().length > 0)
-      $(str).click();
+    if($this.val().length > 0) {
+      if(str == '#submit-btn')
+        processSearch();
+      else
+        $(str).click();
+    }
   }
+  else
+    keyPress = false;
 }
 
 // process window scroll for main image board
@@ -577,13 +617,20 @@ $(window).scroll(function(e) {
   }
 });
 
-// check for category board
 function set_home_location(loc){
   var newUrl = url + '/pages/location_name.json?loc_name=' + loc;
   console.log('set home location url = ' + newUrl);
 
   // process ajax call
-  loadData(newUrl, 'home');
+  return loadData(newUrl, 'home');
+}
+
+function set_home_by_zip(loc){
+  var newUrl = url + '/pages/location_id.json?zip=' + loc;
+  console.log('set home loc zip url = ' + newUrl);
+
+  // process ajax call
+  return loadData(newUrl, 'home');
 }
 
 function reload_ratings() {
@@ -593,9 +640,18 @@ function reload_ratings() {
 function fld_form(fid, sid, fld, txt, bname, btnID) {
   var str = '<form id="' + fid + '" data-ajax="false"><div id="form_errors" style="display:none" class="error"></div>' +
     '<div id="' + sid + '" class="clear-all sm-bot"><table><tr><td class="cal-size"><div data-role="fieldcontain" class="ui-hide-label">' +
-    '<input name="content" id="' + fld + '" class="slide-menu" placeholder="' + txt + '" data-theme="a" required /></div></td>' +
-    '<td><input type="submit" value="' + bname + '" data-theme="b" data-inline="true" id="' + btnID + '" data-mini="true"></td>' +
-    '</tr></table></div></form>';
+    '<input name="content" id="' + fld + '" class="slide-menu" data-mini="true" placeholder="' + txt + '" data-theme="a" required /></div></td>' ;
+    if(btnID != '') 
+      str += '<td><input type="submit" value="' + bname + '" data-theme="b" data-inline="true" id="' + btnID + '" data-mini="true"></td>';
+
+    str += '</tr></table></div></form>';
+  return str;    
+}
+
+function search_form(fid, sid, fld, txt) {
+  var str = '<form id="' + fid + '" data-ajax="false"><div id="form_errors" style="display:none" class="error"></div>' +
+    '<div id="' + sid + '" class="clear-all sm-bot"><div data-role="fieldcontain" class="pct-width70 ui-hide-label">' +
+    '<input type="search" name="content" id="' + fld + '" class="inv-descr" data-mini="true" placeholder="' + txt + '" data-theme="a" required /></div></div></form>';
   return str;    
 }
 
@@ -619,8 +675,9 @@ function numberFld(title, fnID, fld, cls, sz) {
 
 // build masonry blocks for board
 function reload_items(str) {
+  console.log('in reload_items');
   var $container = $('#px-container');
-  if(isDefined($('#site_url').val()))
+  if(isDefined($('#site_url').val()) || curTab !='promo-btn') 
     $container.masonry('reloadItems');
   else {
     var $elem = $(str).css({ opacity: 0 });

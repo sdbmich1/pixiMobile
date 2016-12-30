@@ -133,7 +133,8 @@ textarea { width: 99%!important; height: 32px!important; }
 }
 
 /* page settings */
-#mxboard, .posts { margin-top: -14px; }
+#mxboard, .posts { margin-top: 20px; }
+/*.posts { margin-top: -14px; } */
 .board-top, .cat-top { top: 85px; height: auto; width: 95%!important; margin-left: 5px!important; }
 
 .subhead, .listpg, .pixiPg {top: 10%; height: auto; }
@@ -285,7 +286,7 @@ label .ui-body-a, .ui-overlay-a { border: none; }
 #search-mform .ui-shadow-inset { font-size: 12px!important; }
 #search-mform .ui-btn-inner { padding: 0.25em 6px .5em; }
 
-.mtop { margin-top: 12px;}
+.mtop { margin-top: 15px!important;}
 .ptop { margin-top: 8px; }
 
 /* mobile form infield label */
@@ -830,6 +831,10 @@ a.close-btn, a.change-btn {
 	margin-top: 75%;
 }
 
+.store-splash-top {
+	margin-top: 135px;
+}
+
 #reoccur-dt, #start-dt, #end-dt, #start-tm, #end-tm {
 	width:140px!important;
 }
@@ -874,8 +879,48 @@ a.close-btn, a.change-btn {
   -webkit-overflow-scrolling: touch;
 }
 
-/*
-#add-card-btn {
-  padding-right: 40px;
+.show-pixi-bar ul li a {
+  border-color: white!important;
+  background: white!important;
+  text-transform: uppercase;
+  color: #000;
+  border-bottom: 3px solid #fff !important;
+  font-weight: normal;
 }
-*/
+
+.main-menu-bar ul li a {
+  border-color: white!important;
+  background: white!important;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.show-pixi-bar ul li a.ui-focus, .main-menu-bar ul li a.ui-focus {
+  border-color: white!important;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+}
+
+.show-pixi-bar ul li a.ui-btn-active {
+  border-bottom: 3px solid #F95700 !important;
+  color: #F95700 !important;
+  text-shadow: none !important;
+  box-shadow: none  !important;
+  font-weight: bold;
+}
+
+.main-menu-bar ul li a.ui-btn-active {
+  border-bottom: 3px solid #F95700 !important;
+  color: #F95700 !important;
+  padding-bottom: 6.75px;
+  text-shadow: none !important;
+  box-shadow: none  !important;
+}
+
+.main-menu-bar, .show-pixi-bar, .bkgnd-white {
+  background: white!important;
+}
+
+.ui-bar-d {
+  border: none!important;
+}

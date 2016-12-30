@@ -2,7 +2,7 @@ var states_str = '';
 
 // load data based on given url & display type
 function loadData(listUrl, dType, params) {
-  console.log('in loadData: ' + listUrl);
+  console.log('in loadData: ' + listUrl + ' str= ' + dType);
   var dFlg, result;
 
   // turn on spinner
@@ -24,7 +24,7 @@ function loadData(listUrl, dType, params) {
       // load data based on display type
       switch (dType) {
       case 'home':
-        set_home_data(data, dFlg);
+        result = set_home_data(data, dFlg);
 	break;
       case 'board':
         loadBoard(data, dFlg); 
@@ -44,7 +44,7 @@ function loadData(listUrl, dType, params) {
         setSelectMenu(params.fld, result, params.val);  // set option menu
 	break;
       case 'pixi':
-        loadPixiPage(data, dFlg);
+        loadPixiPage(data, dFlg, params);
 	break;
       case 'edit':
         editPixiPage(data, dFlg);
@@ -91,8 +91,17 @@ function loadData(listUrl, dType, params) {
       case 'card':
         loadCardList(data, dFlg);
         break;
+      case 'catlist':
+        loadCatList(data, dFlg);
+        break;
       case 'cardpg':
         loadCardPage(data, dFlg);
+        break;
+      case 'promolist':
+        loadPromoList(data, dFlg);
+        break;
+      case 'promo':
+        loadPromoPage(data, dFlg);
         break;
       default:
 	break;
@@ -108,12 +117,17 @@ function loadData(listUrl, dType, params) {
 }
 
 function set_home_data(data, dFlg) {
+  var sid = '';
+  var pgName = '../html/listings.html';
   if (data !== undefined) {
     console.log('home region = ' + data.id);
     setItem('home_site_id', data.id);
-    setItem('home_site_name', data.name);
+    setItem('home_site_name', data.city);
     setItem('home_image', data.photo_url);
+    sid = data.id;
+    goToUrl(pgName);
   }
+  return sid;
 }
 
 // process results
@@ -168,6 +182,12 @@ function loadListPage(pgType, viewType) {
   case 'contact':
     var pixiUrl = url + '/settings/contact.json' + token;
     break;
+  case 'coupon':
+    var pixiUrl = url + '/promo_code_users.json' + token + "&uid=" + getUserID() + '&status=active';
+    break;
+  case 'stores':
+    var pixiUrl = url + '/favorite_sellers.json' + token + '&id=' + getUserID() + '&ftype=buyer&status=active';
+    break;
   }
   
   // load pixi data
@@ -218,9 +238,9 @@ function loadUserPage(data, resFlg) {
     // set pixi header details
     console.log('in loadUserPage');
     $('#show-list-hdr').html('');
-    var cstr = "<div class='show-pixi-bar' data-role='navbar'><ul>"
-      + "<li><a href='#' id='profile-nav-btn' data-dtype='user' data-mini='true' class='ui-btn-active'>Profile</a></li>"
-      + "<li><a href='#' id='contact-nav-btn' data-dtype='contact' data-mini='true'>Contact</a></li>";
+    var cstr = "<div class='show-pixi-bar med-neg-top' data-role='navbar'><ul>"
+      + "<li><a href='#' id='profile-nav-btn' data-role='none' data-dtype='user' data-mini='true' class='ui-btn-active'>Profile</a></li>"
+      + "<li><a href='#' id='contact-nav-btn' data-role='none' data-dtype='contact' data-mini='true'>Contact</a></li>";
 
     if (data !== undefined) {
       var dt_arr = data.birth_date.split('-');
@@ -342,8 +362,12 @@ function load_cover(flg, pic, sid, rating, descr, flwFlg) {
   if (!flg && pic.length > 0) {
     rating = rating || 0;
     descr = descr || '';
-    var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + '</div>'
-      + '<div id="store-btn">' + toggle_follow_btn(sid, flwFlg) + '</div>';
+    var item = load_rating('med-pixis', rating, 21, 24) + '<div class="white-text">' + descr + '</div>';
+    
+    // check if business user
+    console.log('site url = ' + $('#site_url').val());
+    if ($('#site_url').val().match(/biz/i))
+      item += '<div id="store-btn">' + toggle_follow_btn(sid, flwFlg) + '</div>';
     px_str += '<br /><div class="usr-profile-photo">' + showUserPhoto(pic, pgTitle, 'small-title-white', item) + '</div>'; 
   }
   else {
@@ -355,7 +379,8 @@ function load_cover(flg, pic, sid, rating, descr, flwFlg) {
 
 // add search form
 function loadSearch(txt) {
-  var str = fld_form('search-doc', 'seller-search', 'search_txt', txt, 'Search', 'search-btn');
+  var str = search_form('search-doc', 'seller-search', 'search_txt', txt);
+  //var str = fld_form('search-doc', 'seller-search', 'search_txt', txt, 'Search', 'search-btn');
   $("#search_txt").addClear();
   $('#search_form').append(str).trigger("create");
 }
@@ -389,7 +414,7 @@ function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
     load_cover(slrFlg, pic, sid, rating, descr, flwFlg);
 
   // check if min # of featured items exist
-  if(data.length > 2) {
+  if(isDefined(data) && data.length > 2) {
     var title = (slrFlg) ? 'Featured Sellers' : 'Featured Pixis';
     var str = '<div class="center-wrapper"><div class="bold-tag-line sm-bot">' + title 
       + '</div></div><div class="featured mleft20">' + '</div>'; 
@@ -401,12 +426,10 @@ function load_featured_items(data, slrFlg, user, pic, sid, rating, descr) {
       $('.featured-container').html(str).trigger("create");
     }
 
-    //$("#pxboard").addClass('splash-top').removeClass('sm-splash-top');
     $('.featured-container').show('fast');
     load_featured_slider(build_str(data, slrFlg));
   }
   else {
-    //$("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
     $('.featured-container').hide('fast');
   }
 }
@@ -415,7 +438,7 @@ function build_str(data, sFlg) {
   var localUrl, cls, str='', title, pic;
   $.each(data, function(index, item) {
     title = (sFlg) ? item.name : item.title;
-    localUrl = (sFlg) ? 'data-url="' + item.url + '"' : 'data-pixi-id="' + item.pixi_id + '"';
+    localUrl = (sFlg) ? 'data-url="/biz/' + item.url + '"' : 'data-pixi-id="' + item.pixi_id + '"';
     cls = (sFlg) ? 'slrUrl' : 'bd-item';
     pic = (sFlg) ? item.photo_url : item.pictures[0].photo_url;
     str += '<div class="featured-item"><div class="center-wrapper">'
@@ -429,6 +452,7 @@ function build_str(data, sFlg) {
 
 // load board if resFlg else return not found
 function loadBoard(data, resFlg) {
+  console.log('in loadBoard');
   var $container = $('#px-container'); 
   var result = '', item_str = '';
   uiLoading(true);
@@ -440,17 +464,11 @@ function loadBoard(data, resFlg) {
     load_seller_header(data);
   }
   else { 
-    load_featured_items(data.sellers, true, '');
+    //load_featured_items(data.sellers, true, '');
   }
 
   if(resFlg) {
     result = load_board_items(data, item_str, resFlg);
-
-    // load categories
-    if (data.categories !== undefined) {
-      categories = data.categories;
-      loadList(data.categories, '#category_id', 'Category');
-    }
   } 
   else {
     // not found
@@ -471,41 +489,37 @@ function load_seller_header(data) {
   var descr = data.sellers[0].description;
   var pic = data.sellers[0].photo_url;
 
-  // set seller url 
-  $('#site_url').val(data.sellers[0].url);
+  var upath = (isDefined(data.sellers[0].business_name)) ? '/biz/' : '/mbr/';
+  upath += data.sellers[0].url;
 
-  if(data.listings.length >= 10) {
-    load_featured_items(data.listings, false, usr, pic, sid, rating, descr);
-  }
-  else {
-    //$("#pxboard").removeClass('splash-top').addClass('sm-splash-top');
-    load_cover(false, pic, sid, rating, descr, isFollowed(data, sid));
-  }
+  // set seller url 
+  $('#site_url').val(upath);
+
+  // set seller id 
+  $('#store_id').val(sid);
+  load_cover(false, pic, sid, rating, descr, isFollowed(usr, sid));
 }
 
 // build board
 function load_board_items(data, str, resFlg) {
+  console.log('in load board items');
   if (!resFlg) {
      console.log('Error load_board_items: No data found.');
      return '';
   }
 
-  var post_dt, localUrl;
+  var sFlg;
   myPixiPage = 'active';
+  sFlg = (!homeUrl.match(/users/i)) ? false : true;
 
   // load pixis
-  $.each(data.listings, function(index, item) {
-    var prc = (typeof item.price == "number" && item.price >= 0) ? '$' + humanizeNumber(item.price) : '$0';
-    localUrl = 'data-pixi-id="' + item.pixi_id + '"';
-
-    str += '<div class="item"><div class="center-wrapper">'
-      + '<a href="#" ' + localUrl + ' class="bd-item" data-ajax="false">'  
-      + getPixiPic(item.pictures[0].photo_url, 'height:135px; width:135px;') + '</a>'
-      + '<div class="sm-top profile-txt mbdescr">' + item.title + '<br /><span class="mgdescr">' + item.site_name + '</span></div>'
-      + '<div class="sm-top mgdescr">' + '<div class="item-cat pixi-grey-bkgnd">' 
-      + '<a href="#" class="pixi-cat"' + ' data-cat-id=' + item.category_id + '>'
-      + item.category_name + '</a></div><div class="item-dt pixi-grey-bkgnd">' + prc + '</div></div></div></div>';
-  });
+  if (sFlg) 
+    str += build_item_row(data, sFlg);
+  else {
+    $.each(data.listings, function(index, item) {
+      str += build_item_row(item, sFlg);
+    });
+  }
 
   // attach to div
   $('#pxboard').append(str);
@@ -513,6 +527,28 @@ function load_board_items(data, str, resFlg) {
   // initialize infinite scroll
   load_masonry('#px-nav', '#px-nav a', '#pxboard .item', 1);
   return str;
+}
+
+function build_item_row(item, sFlg) {
+  var prc, title, localUrl, str;
+    localUrl = (sFlg) ? 'data-url="/biz/' + item.url + '"' : 'data-pixi-id="' + item.pixi_id + '"';
+    title = (sFlg) ? item.name : item.title;
+    cls = (sFlg) ? 'slrUrl' : 'bd-item';
+    pic = (sFlg) ? item.photo_url : item.pictures[0].photo_url;
+
+    str = '<div class="item"><div class="center-wrapper">'
+      + '<a href="#" ' + localUrl + ' class=' + cls + ' data-ajax="false">'  
+      + getPixiPic(pic, 'height:135px; width:135px;') + '</a>'
+      + '<div class="sm-top profile-txt mbdescr">' + title + '<br /><span class="mgdescr">' + item.site_name + '</span></div>';
+
+    if (!sFlg) {
+      prc = (typeof item.price == "number" && item.price >= 0) ? '$' + humanizeNumber(item.price) : '$0';
+      str += '<div class="sm-top mgdescr">' + '<div class="item-cat pixi-grey-bkgnd">' 
+      + '<a href="#" class="pixi-cat"' + ' data-cat-id=' + item.category_id + '>'
+      + item.category_name + '</a></div><div class="item-dt pixi-grey-bkgnd">' + prc + '</div></div>';
+    }
+    str += '</div></div>';
+    return str;
 }
 
 // load year dropdown
@@ -658,7 +694,6 @@ function loadList(list, fld, descr, val) {
   var item_str = '<option default value="">' + 'Select ' + descr + '</option>';
   var len = list.length;
   val = val || '';
-  console.log('loadList = ' + list[0].name_title);
 
   // load list as options for select
   for (var i = 0; i < len; i++){
@@ -666,22 +701,13 @@ function loadList(list, fld, descr, val) {
   }  
 
   // update field
-  //$(fld).append(item_str).selectmenu().selectmenu('refresh', true);
   setSelectMenu(fld, item_str, val);  // set option menu
 }
 
 function processReload(res, dFlg) {
   var result = '';
   if (!$.isEmptyObject(res)) {
-    console.log('in process reload');
     $('#px-container').infinitescroll('unbind');
-
-    if(!isDefined($('#site_url').val()))
-      if (nextPg < 3)
-        load_featured_items(res.sellers, true, '');
-    else
-      if (res.sellers.length < 2)
-        $("#pxboard").removeClass('splash-top');
 
     result = load_board_items(res, '', dFlg);
     reload_items(result);

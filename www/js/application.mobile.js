@@ -1,6 +1,6 @@
 // initialize var
 var localPixFlg = false;
-var url = (localPixFlg) ? 'http://192.168.1.14:3001' : 'http://54.215.187.243';  //staging
+var url = (localPixFlg) ? 'http://plumboard-sdbmich1.c9users.io' : 'http://54.215.187.243';  //staging
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://52.8.224.173';  //demo
 //var url = (localPixFlg) ? 'http://192.168.1.7:3001' : 'http://54.67.56.200';  //production
 var listPath = url + '/listings';
@@ -11,10 +11,10 @@ var listPage = '../html/show_listing.html';
 var homePage = "../html/listings.html";
 var catPath = pxPath + 'category.json' ;
 var locPath = pxPath + 'local.json';
-var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #want-btn';
+var plist = '#active-btn, #draft-btn, #sold-btn, #purchase-btn, #sent-inv-btn, #recv-inv-btn, #saved-btn, #coupon-btn';
 var nextPg = 1;
 var email, pwd, pid, token, usr, categories, deleteUrl, myPixiPage, invFormType, pxFormType, txnType, deviceType,
-  addr, cover, pgTitle, homeUrl, postType = 'recv';
+  addr, cover, pgTitle, homeUrl, postType = 'recv', tabType;
 var invID, scrolled = 0;  
 
 // ajax setup
@@ -48,25 +48,39 @@ $(document).on('pageinit', '#myposts', function() {
 
 // load list page
 $(document).on('pageinit', '#mypixis, #myinv', function() {
-  if (myPixiPage == 'purchase') {
-    dType = 'view';
-    togglePath();
+  switch(myPixiPage) {
+    case 'purchase':
+      dType = 'view';
+      togglePath();
+      loadListPage(myPixiPage, dType); 
+      break;
+    case 'draft':
+    case 'active':
+      dType = 'view';
+      togglePath();
+      $('#' + myPixiPage + '-btn').trigger('click');
+      break;
+    case 'coupon':  
+      dType = 'promolist';
+      $('#coupon-btn').trigger('click');
+      break;
+    default:
+      dType = 'inv';
+      loadListPage(myPixiPage, dType); 
+      break;
   }
-  else
-    dType = 'inv';
-  loadListPage(myPixiPage, dType); 
 });
 
 // process next page
 $(document).on('click', '.nxt-pg', function(e) {
   console.log('in click nxt pg' + nextPg);
-  //renderBoard(homeUrl, nextPg);
   var pgName = homePage + "?page=" + nextPg;
   $('#px-container').infinitescroll({pathParse:[pgName]});
 });
 
 // used to render main board
 function renderBoard(hUrl, pg, rFlg) {
+  console.log('in renderBoard');
   var result;
   uiLoading(true);
   rFlg = rFlg || false;
@@ -87,20 +101,63 @@ function renderBoard(hUrl, pg, rFlg) {
   return result;
 }
 
+var curTab;
+$(document).on('click', '#brand-btn, #store-btn, #owner-btn, #promo-btn, #cat-btn', function(e) {
+  var item = this.id
+  $('#pixi-list, #pxboard').html('');
+  $('#px-container').css({ width: 'auto', height: 'auto' });
+  if ($.mobile.activePage.attr("id") == 'store') {
+    $('.app-content').removeClass('store-splash-top');
+    var slrUrl = $('#site_url').val();
+    homeUrl = url + slrUrl + '.json' + token;
+  }
+  else {
+    homeUrl = locPath + token + '&loc=' + getItem("home_site_id") + '&utype=BUS';
+  }
+
+  if (item == 'cat-btn' || curTab !== item) {
+    switch (item) {
+      case 'brand-btn':
+	resetBoard(getItem('cid'));  // reload main page
+	break;
+      case 'owner-btn':
+	resetBoard(getItem('cid'), 'MBR');  // reload main page
+	break;
+      case 'store-btn':
+	resetBoard('', 'STORE');  // reload main page
+	break;
+      case 'cat-btn':
+        tabType = (curTab == 'owner-btn') ? 'MBR' : 'BUS';
+        getCatListData(getItem('home_site_id'));
+	break;
+      case 'promo-btn':
+        getPromoListData(getItem('home_zip'));
+	break;
+    }
+  }
+  else {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+  }
+  curTab = item;
+  setItem('cid', '');
+});
+
+
 // load initial board
 $(document).on('pageinit', '#listapp', function() {
-  console.log('in listapp pageinit');
   nextPg = 1;
   isScrolled = false;
 
   // set token string for authentication
   if(getItem('cid') == '') {
     token = '?auth_token=' + getItem("token");
-    homeUrl = locPath + token + '&loc=' + getItem("home_site_id");
+    homeUrl = locPath + token + '&loc=' + getItem("home_site_id") + '&utype=BUS';
   }
 
   // set site id
-  $('#site_id').val(getItem("home_site_id"));
+  $('#site_id, #loc').val(getItem("home_site_id"));
+  $('#store_id').val('');
   loadDisplayPage('Search item, store or brand...');
 });
 
@@ -118,8 +175,9 @@ function loadDisplayPage(txt) {
 
 // load store page
 $(document).on('pageinit', '#store', function() {
-  console.log('in store pageinit');
   nextPg = 1;
+  isScrolled = false;
+  $('.app-content').removeClass('store-splash-top').addClass('store-splash-top');
   loadDisplayPage('Search item or brand...');
 });
 
@@ -202,6 +260,28 @@ function getCatData (val) {
   loadData(catUrl, 'category', params);
 }
 
+// get category list data
+function getCatListData (val) {
+  if ($.mobile.activePage.attr("id") == 'store') {
+    var store_id = $('#store_id').val();
+    var catUrl = url + '/categories.json' + token + '&uid=' + store_id;
+  }
+  else
+    var catUrl = url + '/categories.json' + token + '&loc=' + val + '&utype=' + tabType;
+  loadData(catUrl, 'catlist');
+}
+
+// get promo list data
+function getPromoListData (val) {
+  if ($.mobile.activePage.attr("id") == 'store') {
+    var store_id = $('#store_id').val();
+    var promoUrl = url + '/promo_codes.json' + token + '&uid=' + store_id;
+  }
+  else
+    var promoUrl = url + '/promo_codes.json' + token + '&zip=' + val + '&miles=2';
+  loadData(promoUrl, 'promolist');
+}
+
 // get user id
 function getUserID() {
   return getItem("user_id");
@@ -223,6 +303,26 @@ function getPixiPic(pic, style, fld, cls) {
   img_str += (fld.length > 0) ? ' id="' + fld + '">' : '>';
   return img_str
 }
+
+function searchResult(res, flg) {
+  keyPress = false;
+  $('#search-btn').prop('disabled', false);
+  $('#search_txt').val('').blur();
+  if (flg) {
+    if (curTab == 'promo-btn') {
+      loadPromoList(res, flg);
+    }
+    else {
+      isScrolled = (res.listings.length < 10) ? true : false;
+      var result = processReload(res, flg);
+    }
+  }
+  else {
+    var item_str = '<li class="center-wrapper">No results found.</li>';
+    $('#pixi-list').append(item_str).listview('refresh');
+  }
+}
+
 // put data based on given url & data type
 function putData(putUrl, fdata, dType) {
   console.log('in putData: ' + putUrl);
@@ -239,7 +339,7 @@ function putData(putUrl, fdata, dType) {
     data: fdata,
     contentType: "application/json",
     success: function(data, status, xhr) {
-      console.log('putData success: ' + JSON.stringify(data));
+      //console.log('putData success: ' + JSON.stringify(data));
 
       // load data based on display type
       switch (dType) {
@@ -334,24 +434,42 @@ function postData(postUrl, fdata, dType) {
 	break;
       case 'search':
         //console.log('search result: ' + res.listings.length);
-	isScrolled = (res.listings.length < 10) ? true : false;
-	$('#search-btn').prop('disabled', false);
-	$('#search_txt').val('').blur();
-	result = processReload(res, dFlg);
+        searchResult(res, true);
+	break;
+      case 'map':
+        var lat = res.results[0].geometry.location.lat;
+	var lng = res.results[0].geometry.location.lng;
+	//console.log('Latitude: ' + lat + ' Logitude: ' + lng);
+	return getCityName(lat, lng);
+	break;
+      case 'promo':
+        goToUrl(prevPg);
 	break;
       default:
         return res;
 	break;
     }
   },"json").fail(function (a, b, c) {
-  	uiLoading(false);
-        PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Post Data', 'Done');
-	if (dType == 'txn') {
-	  $('#payForm').prop('disabled', false);
-	  $btnID.prop('disabled', false);
-	}
-
-        console.log(a.responseText + ' | ' + b + ' | ' + c);
+    uiLoading(false);
+    PGproxy.navigator.notification.alert(a.responseText, function() {}, 'Post Data', 'Done');
+    switch (dType) {
+      case 'login':
+	if ($("#signin-btn").length > 0)
+	  $("#signin-btn").prop('disabled', false);
+	else
+          goToUrl("../www/html/login.html");
+	break;
+      case 'txn': 
+	$('#payForm').prop('disabled', false);
+	$btnID.prop('disabled', false);
+	break;
+      case 'search':
+        searchResult('', false);
+	break;
+      default:
+	break;
+    }
+    console.log(a.responseText + ' | ' + b + ' | ' + c);
   });
   return result;
 }
@@ -552,8 +670,7 @@ $(document).on('click', plist, function(e) {
   // set var to active item
   myPixiPage = $this.attr('data-view'); 
   var dType = $this.attr('data-dtype'); 
-  console.log('myPixiPage = ' + myPixiPage);
-  console.log('dType = ' + dType);
+  console.log('plist myPixiPage = ' + myPixiPage);
 
   // set correct path 
   togglePath();
@@ -702,7 +819,8 @@ $(document).on('click', "#contact-btn", function (e) {
     var params = new Object();
 
     // set params
-    params.post = { content: txt,  user_id: $('#user_id').val(), pixi_id: $('#pixi_id').val(), recipient_id: $('#recipient_id').val() };
+    params.post = { content: txt,  user_id: $('#user_id').val(), pixi_id: $('#pixi_id').val(), 
+      recipient_id: $('#recipient_id').val() };
 
     // set path
     var pxUrl = url + '/posts.json' + token;
@@ -713,31 +831,48 @@ $(document).on('click', "#contact-btn", function (e) {
 });
 
 // add follower
-$(document).on('click', "#follow-btn", function (e) {
-  var sid = $(this).attr("data-seller_id");
+$(document).on('click', "#follow-btn, #save-promo-btn", function (e) {
+  var params = new Object();
+  var dType;
+
+  if ($.mobile.activePage.attr("id") == 'promo') {
+    var sid = $(this).attr("data-promo-id");
+    var str = '/promo_code_users.json';
+    params = { uid: getUserID(), id: sid };
+    dType = 'promo';
+  }
+  else {
+    var sid = $(this).attr("data-seller_id");
+    var str = '/favorite_sellers.json';
+    params = { uid: getUserID(), seller_id: sid };
+    dType = 'follow';
+  }
   console.log('sid = ' + sid);
 
   if (sid.length > 0) {
     uiLoading(true);
     $(this).attr('disabled', 'disabled');
 
-    // store form data
-    var params = new Object();
-
-    // set params
-    params = { uid: getUserID(), seller_id: sid };
-
     // set path
-    var pxUrl = url + '/favorite_sellers.json' + token;
+    var pxUrl = url + str + token;
 
     // post data
-    postData(pxUrl, params, 'follow');
+    postData(pxUrl, params, dType);
   }
 });
 
 // buy now
-$(document).on('click', "#buy-btn", function (e) {
+$(document).on('click', "#buy-btn, #want-btn", function (e) {
+  var txt = $(this).text();
   var xid = $(this).attr("data-pixi-id");
+  var str, btype;
+
+  if (txt == 'Want') {
+    str = '/pixi_wants.json'; btype = 'want';
+  }  
+  else {
+    str = '/pixi_wants/buy_now.json'; btype = 'buy';
+  }
 
   if (xid.length > 0) {
     uiLoading(true);
@@ -750,10 +885,10 @@ $(document).on('click', "#buy-btn", function (e) {
     params = { id: xid, qty: $('#px_qty').val(), fulfillment_type_code: $('#ftype').val() };
 
     // set path
-    var pxUrl = url + '/pixi_wants/buy_now.json' + token;
+    var pxUrl = url + str + token;
 
     // post data
-    postData(pxUrl, params, 'buy');
+    postData(pxUrl, params, btype);
   }
 });
 
@@ -1085,9 +1220,13 @@ function processLogin(res, params, resFlg) {
       setItem("user_id", usr.id);
       setItem("pixi_count", usr.pixi_count);
       setItem('cid', '');
+      setItem("home_zip", usr.home_zip);
 
       // go to main board
-      goToUrl(pgName);
+      if (localStorage["home_site_id"]) 
+        goToUrl(pgName);
+      else
+        getSiteID();
     }
     else {
       console.log('login failed');
@@ -1111,9 +1250,6 @@ function checkPreAuth() {
 
   if(isDefined(email) && isDefined(pwd)) {
     console.log("in local storage");
-
-    //$("#email", $form).val(email);
-    //$("#password", $form).val(pwd);
 
     // process login
     handleLogin(email, pwd);
@@ -1197,7 +1333,7 @@ $(document).on('click', ".bd-item, .pixi-link", function(e) {
 
   // reset vars
   pid = $(this).attr("data-pixi-id");
-  console.log('pid = ' + pid);
+  console.log('bd-item pid = ' + pid);
 
   // set correct path 
   togglePath();
@@ -1212,12 +1348,30 @@ $(document).on('click', ".inv-item", function(e) {
   e.preventDefault();
 
   pid = $(this).attr("data-inv-id");
-  console.log('pid = ' + pid);
+  console.log('inv-item pid = ' + pid);
 
   if ( pid !== undefined && pid != '' ) {
     openTxnPage('invoice');
     //goToUrl('../html/invoice.html', false);
   }
+});
+
+// process click on promo item
+$(document).on('click', ".promo-item", function(e) {
+  e.preventDefault();
+  pid = $(this).attr("data-promo-id");
+
+  if ( pid !== undefined && pid != '' ) {
+    goToUrl('../html/promo.html', false);
+  }
+});
+
+// set data for 'promo' page
+$(document).on("pageinit", "#promo", function(event) {
+  var promoUrl = url + '/promo_codes/' + pid + '.json' + token;
+  
+  // load promo data
+  loadData(promoUrl, 'promo'); 
 });
 
 // set data for txn form page
@@ -1233,7 +1387,7 @@ $(document).on("pageinit", "#txn-form", function(event, ui) {
 $(document).on("pageinit", "#storeList", function(event) {
   var storeUrl = url + '/favorite_sellers.json' + token + '&id=' + getUserID() + '&ftype=buyer&status=active';
   
-  // load inv data
+  // load store data
   loadData(storeUrl, 'stores'); 
 });
 
@@ -1261,10 +1415,9 @@ $(document).on('click', ".conv-item", function(e) {
 
 // parameter for show listing page
 $(document).on("pageinit", "#show_listing, #comment-page", function(event) {
-  var pixiUrl = pxPath + pid + '.json' + token;
-  
-  // load pixi data
-  loadData(pixiUrl, 'pixi'); 
+  var clk_id = event.target.id;
+  set_pixi_url(clk_id);
+  $('.app-content').removeClass('med-top').addClass('med-top');
 });
 
 // parameter for signup page
@@ -1356,13 +1509,14 @@ var menu = [
   { title: 'Home', href: '#', icon: '../img/home_button_blue.png', id: 'home-menu-btn' },
 //  { title: 'Pay Bill', href: '../html/invoice.html', icon: '../img/rsz_pixipay_wings_blue.png', id: 'pay-menu-btn' },
 //  { title: 'MY STUFF', href: '#', icon: '', id: 'menu-divider' },
-  { title: 'My Pixis', href: '../html/pixis.html', icon: '../img/pixi_wings_blue.png', id: 'pixis-menu-btn' },
+  { title: 'Sell Item', href: '#', icon: '../img/rsz_camera-icon_blue.png', id: 'add-pixi-link' },
+  { title: 'My Stuff', href: '../html/pixis.html', icon: '../img/pixi_wings_blue.png', id: 'pixis-menu-btn' },
   { title: 'My Messages', href: '../html/posts.html', icon: '../img/09-chat-2.png', id: 'posts-menu-btn' },
 //  { title: 'My Invoices', href: '../html/invoices.html', icon: '../img/bill.png', id: 'inv-menu-btn' },
   { title: 'My Settings', href: '#', icon: '../img/19-gear.png', id: 'settings-menu-btn' },
   { title: 'My Accounts', href: '../html/accounts.html', icon: '../img/190-bank.png', id: 'acct-menu-btn' },
   { title: 'My Stores', href: '../html/store_list.html', icon: '../img/store.png', id: 'store-menu-btn' },
-  { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
+//  { title: 'Shop by Category', href: '../html/category_list.html', icon: '../img/shoppingbag.png', id: 'cat-menu-btn' },
 //  { title: 'Sign out', href: '../index.html', icon: '../img/logout.png', id: 'signout-menu-btn' },
 ];
 
@@ -1378,7 +1532,10 @@ $(document).on("pageshow", function(event) {
       load_cover(true, '', 0);
     }
   }
+  loadMenu();
+});
 
+function loadMenu() {
   var items = '', // menu items list
     ul = $(".mainMenu:empty");  // get "every" mainMenu that has not yet been processeD
   
@@ -1395,18 +1552,11 @@ $(document).on("pageshow", function(event) {
     if(usr !== undefined) { 
       if(menu[i].id == 'bill-menu-btn') {
         if (usr.pixi_count < 1) {
-          console.log('usr has no active pixis');
           continue;
 	}
-/*
-        if (usr.active_bank_accounts.length < 1) {
-	  menu[i].href = '../html/accounts.html';
-	}
-*/
       }
 
       if(usr.unpaid_invoice_count < 1 && menu[i].id == 'pay-menu-btn') {
-        console.log('usr has no unpaid invoices');
         continue;
       }
 
@@ -1423,7 +1573,7 @@ $(document).on("pageshow", function(event) {
 
   // append items
   ul.append(items).listview('refresh');
-});
+}
 
 // check JSON returned booleans
 function parseBoolean(str) {
@@ -1433,15 +1583,22 @@ function parseBoolean(str) {
 // process menu click
 $(document).on("click", "#show-cmt, #show-pixi", function(e) {
   uiLoading(true);  // toggle spinner
+  var clk_id = $(this).text();
 
   // show pixi comments
-  if ($.mobile.activePage.attr("id") !== 'comment-page') 
-    { goToUrl('../html/comments.html'); }  
+  if ($.mobile.activePage.attr("id") !== 'show_listing') 
+    { goToUrl(listPage); }
   else
-    { goToUrl(listPage); }  
+    set_pixi_url(clk_id);
  
   return false;
 });
+
+function set_pixi_url(clk_id) {
+  var pixiUrl = pxPath + pid + '.json' + token;
+  console.log('set pixi target id = ' + clk_id);
+  loadData(pixiUrl, 'pixi', clk_id);  // load pixi data
+}
 
 // build popup dialog for use on multiple pages
 function pixPopup(fld) {
@@ -1504,18 +1661,15 @@ $(document).on("scrollstop", checkScroll);
 
 function setScroll() {
   var activePage = $.mobile.activePage.attr("id");
-  if (activePage == 'listapp' || activePage == 'store') {
-    /* window's scrollTop() */
-    //scrolled = $(window).scrollTop(),
+  if ((activePage == 'listapp' || activePage == 'store') && (curTab != 'promo-btn') && 
+      ($('#pixi-list li').length === 0)) {
+  //if ((activePage == 'listapp' || activePage == 'store') && (curTab != 'promo-btn')) {
 
     /* viewport */
     screenHeight = $.mobile.getScreenHeight(),
-    //console.log('screenHeight: ' + screenHeight),
-
 
     /* content div height within active page */
     contentHeight = $(".ui-content").outerHeight(true),
-    //console.log('contentHeight: ' + contentHeight),
 
     /* header's & footer's height within active page (remove -1 for unfixed) */
     header = $(".ui-header").outerHeight(true) - 1,
@@ -1525,14 +1679,12 @@ function setScroll() {
 
 function checkScroll() {
   var activePage = $.mobile.activePage.attr("id");
-  if (activePage == 'listapp' || activePage == 'store') {
+  if ((activePage == 'listapp' || activePage == 'store') && (curTab != 'promo-btn') && 
+      ($('#pixi-list li').length === 0)) {
 
     /* total height to scroll */
     scrollEnd = contentHeight - screenHeight + header + footer;
 
-    //console.log('scrolled = ' + scrolled);
-    //console.log('scrollEnd = ' + scrollEnd);
-    
     if (scrolled >= scrollEnd && !isScrolled) {
       addMore(activePage);
       scrolled = 0;
@@ -1548,11 +1700,13 @@ function addMore(page) {
   $(document).off("scrollstop");
 
   setTimeout(function() {
+    console.log('homeUrl = ' + homeUrl);
     renderBoard(homeUrl, nextPg);
 
     /* re-attach scrollstop */
     $(document).on("scrollstop", checkScroll);
     isScrolled = false;
+    loadMenu();
   }, 500);
 }
 
@@ -1565,7 +1719,7 @@ function showButton(tag, id, title, theme, btnID, cls, sz, tag2, id2) {
   return str;
 }
 
-$(document).on("orientationchange", function (e) {
+$(window).on("orientationchange", function (e) {
   var activePage = $.mobile.activePage.attr("id");
   console.log('active page: ' + activePage);
   /*
@@ -1584,3 +1738,15 @@ $(document).on('click', '#txn-prev-btn', function(e) {
   navigator.notification.confirm('Cancel Purchase?', onCancelConfirm, 'Cancel?', 'No, Yes');
   return false;
 });
+
+function getSiteID() {
+  var sid = '';
+  if (localStorage["home_site_id"]) 
+    sid = getItem('home_site_id');
+  else {
+    console.log('user home zip ' + usr.home_zip);
+    //sid = getLatLngByZip(usr.home_zip);
+    sid = set_home_by_zip(usr.home_zip);
+  }
+  return sid;
+}

@@ -55,7 +55,7 @@ var App = {
 
         function initPages () {
 	  console.log("[initPages]");
-	  getLocation(true);
+	  //getLocation(true);
 	  checkPreAuth();
         }
     },
