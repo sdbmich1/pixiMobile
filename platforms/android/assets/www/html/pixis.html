@@ -9,15 +9,16 @@
     	    <ul data-role='listview' data-icon="false" data-theme='e' class='mainMenu'></ul>
         </div>
       </div>    
-      <div data-role="header" data-theme="d">
-        <div class='pg-title center-wrapper'>My Pixis</div>
-	<a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
-	<a href='#' data-theme="app-loc" id='settings-menu-btn'><img src='../img/19-gear.png'></a>
+      <div data-enhance="false" data-role="header" data-theme="d" data-position="fixed">
+        <div class='pg-title center-wrapper'>My Stuff</div>
+	<a href="#navpanel" id='list' data-theme="app-bar" data-role="none"><img class='mleft10 sm-top' src='../img/rsz_menu_white.png'></a>
+	<a href='#' data-theme="app-loc" id='cart-link' data-role="none"><img class='mright sm-top' src='../img/rsz_cart_white.png'></a>
 	<div class='show-pixi-bar' data-role='navbar'><ul id='pxStatus'>
-	  <li><a href='#' id='purchase-btn' data-mini='true' class='ui-btn-active' data-theme='d' data-view='purchase' data-dtype='view'>Purchased</a></li>
-	  <li><a href='#' id='active-btn' data-mini='true' data-theme='d' data-view='active' data-dtype='view'>For Sale</a></li>
-	  <li><a href='#' id='draft-btn' data-mini='true' data-theme='d' data-view='draft' data-dtype='view'>Draft</a></li>
-	</div>
+	  <li><a href='#' id='purchase-btn' data-mini='true' class='ui-btn-active' data-role='none' data-view='purchase' data-dtype='view'>Bought</a></li>
+	  <li><a href='#' id='active-btn' data-mini='true' data-role='none' data-view='active' data-dtype='view'>For Sale</a></li>
+	  <li><a href='#' id='draft-btn' data-mini='true' data-role='none' data-view='draft' data-dtype='view'>Draft</a></li>
+	  <li><a href='#' id='coupon-btn' data-mini='true' data-role='none' data-view='coupon' data-dtype='promolist'>Promos</a></li>
+	</ul></div>
       </div>
       <div class="app-content" data-theme="a" data-role="content">
         <div id="mxboard">

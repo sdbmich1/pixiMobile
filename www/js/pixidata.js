@@ -57,14 +57,16 @@ function editPixiPage(data, resFlg) {
 }
 
 // process pixi page display
-function loadPixiPage(data, resFlg) {
+function loadPixiPage(data, resFlg, ptype) {
   if (resFlg) {
 
     // show pixi details
-    if ($.mobile.activePage.attr("id") == 'show_listing') 
-      { showPixiPage(data); }  // load page data
+    var title_regex = "pixi|listing|Details";
+    var re = new RegExp(title_regex, 'ig');
+    if(ptype.match(re)) 
+      showPixiPage(data);   // load page data
     else
-      { showCommentPage(data); } // load comment data
+      showCommentPage(data);  // load comment data
   }
   else {
     console.log('pixi page load failed');
@@ -107,6 +109,16 @@ function showUserPhoto(pic, name, cls, item) {
   return str;
 }
 
+// load seller header
+function loadSellerTop(sname, locUrl, pic, rating, cnt) {
+  var localUrl = 'data-url="' + locUrl + '"';
+  var str = '<a href="#" ' + localUrl + ' class="slrUrl" data-ajax="false">' + sname + '</a>';
+  var item = load_rating('bmed-pixis', rating, 21, 24) + '<div class="inv-descr">Items: ' + cnt + '</div>';
+  var seller_str = '<div class="blk-profile-photo">' + showUserPhoto(pic, str, 'small-title', item) + '</div>';
+  $("#seller-name").append(seller_str).trigger("create");
+  reload_ratings();
+}
+
 // open pixi page
 function showPixiPage(data) {
   var px_str = '', cstr='', detail_str = '';
@@ -114,12 +126,15 @@ function showPixiPage(data) {
 
   // check if pixi is in temp status - if not show navbar else hide post form 
   if(pxPath.indexOf("temp_listing") < 0) {
+    $('#pixi-details, #show-list-hdr, #seller-name, #pixi-footer-details, #comment_form, #pixi-list').html('');
 
     // set pixi header details
     cstr = "<div class='show-pixi-bar' data-role='navbar'><ul>"
-      + "<li><a href='#' id='show-pixi' data-theme='d' class='ui-btn-active' data-pixi-id='" + pid + "' data-mini='true'>Details</a></li>"
-      + "<li><a href='#' id='show-cmt' data-theme='d' data-mini='true' data-pixi-id='" + pid + "'>Reviews (" + data.comments.length 
-      + ")</a></li></ul></div>";
+      + "<li><a href='#' id='show-pixi' data-role='none' data-theme='b' class='ui-btn-active' data-pixi-id='" + pid 
+      + "' data-mini='true'>Details</a></li>"
+      + "<li><a href='#' id='show-cmt' data-role='none' data-theme='b' data-mini='true' data-pixi-id='" + pid 
+      + "'>Reviews (" + data.comments.length + ")</a></li></ul></div>";
+      
   } 
   else {
     var pg_title = 'Review Your Pixi';
@@ -131,16 +146,14 @@ function showPixiPage(data) {
   // load title
   showPixiTitle(data.listing.title);
 
-  // load seller
-  var sname = data.listing.seller_name; 
-  var localUrl = 'data-url="' + data.listing.user.url + '"';
-  var str = '<a href="#" ' + localUrl + ' class="slrUrl" data-ajax="false">' + sname + '</a>';
-  var pic = data.listing.seller_photo;
-  var rating = data.listing.user.rating;
-  var item = load_rating('bmed-pixis', rating, 21, 24) + '<div class="inv-descr">Pixis: ' + data.listing.seller_pixi_count + '</div>';
-  var seller_str = '<div class="blk-profile-photo">' + showUserPhoto(pic, str, 'small-title', item) + '</div>';
-  $("#seller-name").append(seller_str).trigger("create");
-  reload_ratings();
+  // load seller top
+  //console.log('data.listing[61] = ' + data.listing[Object.keys(data.listing)[61]]);
+  //var bizFlg = data.listing[Object.keys(data.listing)[61]];
+  var bizFlg = data.listing['sold_by_business?'];
+  var upath = (parseBoolean(bizFlg)) ? '/biz/' : '/mbr/';
+  upath += data.listing.user.url;
+  loadSellerTop(data.listing.seller_name, upath, data.listing.seller_photo, data.listing.user.rating, 
+    data.listing.seller_pixi_count);
 
   // load post values
   $('#user_id').val(getUserID()); 
@@ -156,11 +169,11 @@ function showPixiPage(data) {
   var cntl = (data.listing.pictures.length > 1) ? true : false;
 
   // load slider
+  $('#px-pix').show();
   $('.bxslider').append(px_str).bxSlider({ controls: false, pager: cntl, mode: 'fade' });
-  //$( ".bx-wrapper" ).css( "max-width", '70%!important;' );
 
   // add details
-  pixi_details(data.listing); 
+  pixi_details(data.listing, bizFlg); 
 
   // add pixi footer
   var post_dt = $.timeago(data.listing.updated_at); // set post dt
@@ -176,7 +189,7 @@ function showPixiPage(data) {
 // load title
 function showPixiTitle(title) {
   var tstr = "<h4 class='mbot major_evnt'>" + title + "</h4><hr class='neg-top'>";
-  $('#list_title').append(tstr);
+  $('#list_title').html('').append(tstr);
 }
 
 // check if listing owner to display edit buttons
@@ -206,18 +219,21 @@ function show_arrow(style) {
   return img_str;
 }
 
-function pixi_details(item) {
+function pixi_details(item, bFlg) {
   var btn_str, str = '';
 
   if(item.price !== undefined) {
-    console.log('pixi_details myPixiPage = ' + myPixiPage);
     if (myPixiPage == 'active' && item.seller_id != getUserID())
-      btn_str = showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn');
+      // toggle between want(non-biz) and buy now(biz)
+      if (bFlg)
+        btn_str = showButton('data-pixi-id', item.pixi_id, 'Buy Now', 'd', 'buy-btn');
+      else
+        btn_str = showButton('data-pixi-id', item.pixi_id, 'Want', 'd', 'want-btn');
     else
       btn_str = '';
 
     var prc = parseFloat(item.price).toFixed(2);
-    str += "<br /><div><table><tr><td><span class='pixi-str'>$" + humanizeNumber(prc) + "</span></td><td class='width60'></td><td>"  
+    str += "<br /><div class='sm-top'><table><tr><td><span class='pixi-str'>$" + humanizeNumber(prc) + "</span></td><td class='width60'></td><td>"  
       + btn_str + "</td></tr></table></div></div>";
   } 
   else {
@@ -350,17 +366,20 @@ function showCommentPage(data) {
   var item_str = '';
   var post_dt;
 
-  //uiLoading(true);  // toggle spinner
+  uiLoading(true);  // toggle spinner
 
   // clear page
   $('#content').html('').val('');
+  $('#pixi-details, #show-list-hdr, #seller-name, #pixi-footer-details').html('');
   $container.html('');
+  $('#px-pix').toggle();
   $("#comment-btn").removeAttr("disabled");
 
   // set pixi header details
   var cstr = "<div class='show-pixi-bar' data-role='navbar'><ul>"
-    + "<li><a href='#' id='show-pixi' data-theme='d' data-pixi-id='" + pid + "' data-mini='true'>Details</a></li>"
-    + "<li><a href='#' id='show-cmt' data-theme='d' class='ui-btn-active' data-mini='true' data-pixi-id='" + pid + "'>Reviews (" 
+    + "<li><a href='#' id='show-pixi'data-role='none' data-theme='b' data-pixi-id='" + pid 
+    + "' data-mini='true'>Details</a></li>"
+    + "<li><a href='#' id='show-cmt' data-role='none' data-theme='b' class='ui-btn-active' data-mini='true' data-pixi-id='" + pid + "'>Reviews (" 
     + data.comments.length + ")</a></li></ul></div>";
 
   // load post values
@@ -383,11 +402,12 @@ function showCommentPage(data) {
 
   // append content
   $('#show-list-hdr').append(cstr).trigger("create");
-  $container.append(item_str).listview('refresh');
 
-  // set title
-  $('.pg-title').html(data.listing.title);
+  var txt = 'Add review on item...';
+  var str = fld_form('comment-doc', 'seller-comment', 'content', txt, 'Add', 'comment-btn');
+  $('#comment_form').append(str).trigger("create");
 
+  $container.html(item_str).listview().listview('refresh');
   uiLoading(false);  // toggle spinner
 }
 

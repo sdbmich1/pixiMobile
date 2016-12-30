@@ -11,15 +11,14 @@
         </div>    
         <div data-enhance="false" data-role="header" data-theme="d" id="app-header" data-position="fixed">
 	  <div class="center-wrapper">
-	    <a href='#' id='home-link'><img class='' src='../img/sm_px_word_logo.png'></a>
+	    <div id='search_form'></div>
 	  </div>
-	  <a href="#navpanel" id='list' data-theme="app-bar"><img src='../img/rsz_list-view_blue.png'></a>
-	  <a href='#' data-theme="app-loc" id='add-pixi-link'><img src='../img/rsz_camera-icon_blue.png'></a>
-	  <div id='search_form'></div>
-        </div>    
+	  <a href="#navpanel" id='list' data-theme="app-bar" data-role="none"><img class='mleft10 sm-top' src='../img/rsz_menu_white.png'></a>
+	  <a href='#' data-theme="app-loc" id='cart-link' data-role="none"><img class='mright sm-top' src='../img/rsz_cart_white.png'></a>
 	  <div id="board-top">
 	    <div id='pixi-loc' class='center-wrapper' style='display:none'>
 	      <div id='site_id'></div>
+	      <div id='store_id'></div>
 	    </div>
 	    <div id='cat-top' class='center-wrapper' style='display:none'>
 	      <div data-role="fieldcontain">
@@ -27,17 +26,22 @@
 	      </div>
 	    </div>
 	  </div>
+          <div class='main-menu-bar' data-role='navbar'><ul>
+            <li><a href='#' id='brand-btn' data-mini='true' data-role='none' class='ui-btn-active tab'><img src='../img/rsz_ecommerce-price-tag-icon.png'></a></li>
+            <li><a href='#' id='owner-btn' data-mini='true' data-role='none' class='tab'><img src='../img/rsz_owner1.png'></a></li>
+            <li><a href='#' id='store-btn' data-mini='true' data-role='none' class='tab'><img src='../img/rsz_icon_store.png'></a></li>
+            <li><a href='#' id='promo-btn' data-mini='true' data-role='none' class='tab'><img src='../img/rsz_sales2.png'></a></li>
+            <li><a href='#' id='cat-btn' data-mini='true' data-role='none' class='tab'><img src='../img/rsz_category128.png'></a></li></ul>
+          </div>
+        </div>    
 	<div class="app-content" data-theme="a" data-role="content">
 	  <div id="px-container">
+	    <ul id='pixi-list' data-role="listview"></ul>
   	    <div id="pxboard" class='mleft10'></div> 
-
   	    <div id="px-div">
               <a href='../html/listings.html?page=2' class='nxt-pg' id=''>Next</a>
             </div>
 	  </div>
-        </div>    
-        <div data-enhance="false" data-role="footer" data-theme="d" id="app-footer">
-	  <div id='listpush'></div>
         </div>    
       </div>
     </body>

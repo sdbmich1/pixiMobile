@@ -26,12 +26,13 @@ function loadCardList(data, resFlg) {
   $('.acct-btn').attr('id', 'add-card-btn');
   $('#add-card-btn').show();
   $('#acct-frm').empty();
-  $container.append(item_str).listview('refresh');
+  $container.html(item_str).listview().listview('refresh');
+  //$container.append(item_str).listview('refresh');
 }
 
 // process card account page
 function loadCardPage(data, resFlg) {
-  var $container = $('#pixi-list');
+  var $container = $('#acct-frm');
   var title_str= '';
 
   // turn on spinner

@@ -4,6 +4,7 @@ function loadPosts(data, resFlg) {
   var $container = $('#pixi-list');
   var item_str = ''
   console.log('in loadPosts...');
+  $container.empty();
 
   // load listview
   if(resFlg) {
@@ -31,15 +32,16 @@ function loadPosts(data, resFlg) {
       });
     }
     else {
-      item_str = '<div class="center-wrapper">No messages found.</div>'
+      item_str = '<li class="center-wrapper">No messages found.</li>'
     }
   }
   else {
-    item_str = '<div class="center-wrapper">No messages found.</div>'
+    item_str = '<li class="center-wrapper">No messages found.</li>'
   }
 
   // render content
-  $container.empty().append(item_str).listview('refresh');
+  $container.html(item_str).listview().listview('refresh');
+  //$container.append(item_str).listview('refresh');
 }
 
 function send_msg(data) {
@@ -132,13 +134,17 @@ function parseDate(dateString) {
   var date = new Date(dateString);
   // display time if date is today's date
   if (date.toDateString() === (new Date()).toDateString()) {
-    var minutes = ((date.getMinutes() < 10) ? '0' : '') + date.getMinutes();
-    if (date.getHours() >= 12) {
-      return ((date.getHours() - 12) || 12) + ':' + minutes + ' PM'
-    } else {
-      return date.getHours() + ':' + minutes + ' AM'
-    }
+    return parseTime(date);
   } else {
     return (date.getMonth() + 1) + '/' + date.getDate() + '/' + (date.getFullYear() % 100);
+  }
+}
+
+function parseTime(date) {
+  var minutes = ((date.getMinutes() < 10) ? '0' : '') + date.getMinutes();
+  if (date.getHours() >= 12) {
+    return ((date.getHours() - 12) || 12) + ':' + minutes + ' PM'
+  } else {
+    return date.getHours() + ':' + minutes + ' AM'
   }
 }

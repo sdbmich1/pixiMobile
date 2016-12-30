@@ -173,6 +173,7 @@ function getLatLng(showMkr) {
 
 function getMyLocation(dFlg, nearby) {
   // set default url for nearby events	
+  console.log("in getMyLocation");
   mapUrl = '/listings/local.json';
   var newUrl;
 
@@ -269,7 +270,7 @@ function getCity(lat, lng) {
 	  if (data.results[i].address_components[j].types[k] === 'locality') {
 	    var city_name = data.results[i].address_components[j].long_name;
             $('#home_site_name').val(city_name);
-	    console.log(' city name = ' + city_name);
+	    console.log('getCity city name = ' + city_name);
 	  }
 	}
       }
@@ -280,6 +281,7 @@ function getCity(lat, lng) {
 // find nearest city based on geocode
 function getCityName(lat, lng) {
   var latlng = new google.maps.LatLng(lat, lng);
+  var city_name = '', sid = '';
   geocoder = new google.maps.Geocoder();
 
   geocoder.geocode({'latLng': latlng}, function(results, status) {
@@ -291,10 +293,10 @@ function getCityName(lat, lng) {
 	$.each(arrAddress, function (i, address_component) {
 	  switch(address_component.types[0]) {
 	  case 'locality':
-	    var city_name = address_component.long_name;
-	    console.log('city = ' + city_name);
+	    city_name = address_component.long_name;
+	    console.log('getCityName city = ' + city_name);
             //$('#home_site_name').val(city_name);
-	    set_home_location(city_name);
+	    sid = set_home_location(city_name);
 	    break;
 	  default: 
 	    break;
@@ -309,9 +311,23 @@ function getCityName(lat, lng) {
       console.log('Geocoder failed due to: ' + status);
     }
   });
+  return sid;
 }
 
 // open map
 $(document).on('shown', '#mapDialog', function(e) {
   getLatLng(true);		
 });
+
+// get latlng by zip
+function getLatLngByZip(zipcode) {
+  var lat = '';
+  var lng = '';
+  var mapurl = "https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:"+zipcode+"&sensor=false";
+  var params = new Object();
+
+  // set params
+  params.components = { postal_code: zipcode, sensor: 'false' };
+  return postData(mapurl, params, 'map');
+
+}
